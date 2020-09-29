@@ -79,7 +79,10 @@ The easiest trick here is starting each on a different port  as described in the
 For our example, we shall use port `5000` to run the External USSD Channel development server
 
 Inside the [External USSD channel](https://github.com/dsmagicug/rapidpro-external-ussd-channel.git) project directory run
-```python manage.py 0.0.0.0:5000```
+
+```
+python manage.py 0.0.0.0:5000
+```
 
 Then you can visit http://localhost:5000 to access the web interface
 
@@ -95,7 +98,7 @@ We recommend that you leave RapidPro use the default port `8000`
 
 With your [RapidPro](https://github.com/rapidpro/rapidpro) instance running either remotely or on the same machine,
  
- ######CHANNEL CONFIGURATIONS
+ ####CHANNEL CONFIGURATIONS
  
  Go to `CHANNEL CONFIGS` on the sidemenu to configure a channel closely following the instructions on the Step by step form.
  Note  that you will need to configure the following for your channel to work properly. 
@@ -113,7 +116,8 @@ With your [RapidPro](https://github.com/rapidpro/rapidpro) instance running eith
  6. Click Next to configure the Trigger word `(default=USSD)`. This is a keyword to trigger a given flow execution in Rapidpro when a contact starts a new session when it isn't involved with any RapidPro flows yet.
  7. Submit the form to save the channel configurations.
  
- ###### AGGREGATOR HANDLER CONFIGURATIONS
+ #### AGGREGATOR HANDLER CONFIGURATIONS
+ 
  Since different USSD aggregator APIs have different Request/Response formats, this channel provides a way to standardize these formats into one commonly understood by RapidPro.
  This is achieved through configuring handlers for each one of the aggregator APIs that you want to use.
  
@@ -125,23 +129,35 @@ With your [RapidPro](https://github.com/rapidpro/rapidpro) instance running eith
  3. `Request format`: This is a very important field which you MUST have right so as the channel can safely standardize aggregator Requests to RapidPro understandable ones.
   The template format is provided already in that textarea as shown below. 
     
-    `{{short_code=ussdServiceCode}},  {{session_id=transactionId}}, {{from=msisdn}}, {{text=ussdRequestString}}, {{date=creationTime}}`
+    ```
+    {{short_code=ussdServiceCode}},  {{session_id=transactionId}}, {{from=msisdn}}, {{text=ussdRequestString}}, {{date=creationTime}}
+    ```
 
     Each is a combination of two parameters, one on the left hand side of the equal sign(`=`) and the other on the left.
 The one on the let represents the format understood by RapidPro and our External channel which *MUST* not change.
 The one on the right hand side represents the format in which the aggregator requests delivers that value to our channel.
 
-    for example ```{{short_code=ussdServiceCode}},  {{session_id=transactionId}}, {{from=msisdn}},  {{text=ussdRequestString}}``` means the request from the aggregator API in this case say `DMARK` will arrive as
-     ```{"ussdServiceCode:"257","transactionId":123456789, "msisdn":"25678xxxxxx","ussdRequestString":"Hello world"}```. 
-    This format will then be converted into ```{"short_code":"257", "session_id":123456789, "from":"25678xxxxxx", "text":"Hello World"}``` which is understood by Rapidpro and our Channel.
+    for example 
+    ```
+    {{short_code=ussdServiceCode}},  {{session_id=transactionId}}, {{from=msisdn}},  {{text=ussdRequestString}}
+    ``` 
+    means the request from the aggregator API in this case say `DMARK` will arrive as
+     ```
+     {"ussdServiceCode:"257","transactionId":123456789, "msisdn":"25678xxxxxx","ussdRequestString":"Hello world"}
+    ``` 
+    This format will then be converted into 
+    ```
+    {"short_code":"257", "session_id":123456789, "from":"25678xxxxxx", "text":"Hello World"}
+    ``` 
+    which is understood by Rapidpro and our Channel.
 for example if a particular aggregator represents `short_code` as `serviceCode`, the combination to map this will be `{{short_code=serviceCode}}`. Please refer to your respective aggregator USSD Docs for their formats.
 
     Note that our channel and RapidPro have the following standard formats 
-    -   `session_id` for USSD session ID
-    -   `short_code` for USSD short codes e.g. `348`
-    -   `from` for the phone number in the Request.
-    -   `text` for the content(message) in the request i.e. User replies.
-    -    `date` (Optionally set) for the time string in the request.
+    -   **_session_id_** for USSD session ID
+    -   **_short_code_** for USSD short codes e.g. `348`
+    -   _**from**_ for the phone number in the Request.
+    -   **_text_** for the content(message) in the request i.e. User replies.
+    -    **_date_** (Optionally set) for the time string in the request.
     Note that apart from `date`, your request format has to cater for all the rest by mapping them to their equivalents in the USSD request from a given aggregator API.
 4. `Response content type`: how the response to the aggregator API should be encoded(default is `application/json`) (refer to your aggregator's USSD Docs for such information )
 5. `Response method` (whether your aggregator expects a `POST`, `GET` or `PUT` method in the response) 
@@ -155,9 +171,16 @@ two options are so far provided,
     with similar logic, our channel understands as follows
        -    `text` for the text(message) in the response
        -    `action` for the signal keywords set above.
-       for example if aggregator A's response should be in this format `{"responseString":"Hello User how are you": "signal":"Signal_keyword"}`, 
-       the entry in this field will be `{{text=responseString}}, {{action=signal}}` 
+       for example if aggregator A's response should be in this format 
+       ```
+       {"responseString":"Hello User how are you": "signal":"Signal_keyword"}
+       ```
+       the entry in this field will be 
+       ```
+       {{text=responseString}}, {{action=signal}}
+        
 8.  `Push support`: Boolean to specify whether your aggregator supports USSD PUSH protocal i.e MT USSD sessions (Default=`False`)
+
 
 Submit this form and you are ready to enjoy the power of RapidPro through USSD. You can configure multiple handlers for multiple aggregators but each aggregator must have one handler depending on the format of their requests. 
  
