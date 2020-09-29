@@ -1,0 +1,97 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Contacts{% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card ">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="card card-user">
+                                <div class="card-body">
+
+                                    <div class="card-description">
+                                        <span class="icons icon-address-book"
+                                              style="font-size: 150pt;color:grey"></span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="card card-user">
+                                <div class="card-body">
+
+                                    <div class="card-description">
+                                        {% if contacts is not None %}
+                                            <div class="card ">
+                                                <div class="card-header">
+                                                    <h4 class="card-title" style="font-weight: 500"> CHANNEL CONTACTS</h4>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table" id="urn">
+                                                            <thead class=" text-primary">
+                                                            <tr>
+                                                                <th>
+                                                                    URN
+                                                                </th>
+                                                                <th></th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {% for contact in contacts %}
+                                                                <tr>
+                                                                    <td>
+                                                                        {{ contact.urn }}
+                                                                    </td>
+                                                                    <td>
+                                                                        <a href="#"  data-toggle="popover" data-placement="bottom" data-trigger="hover" data-content="See {{ contact.urn }}'s channel interactions">
+                                                                            <i class="icon icon-bubble-3" style="font-size: 12pt" ></i></a>
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+
+
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        {% else %}
+                                            <div class="card-header text-capitalize ">
+                                                <h4 class="card-title" style="font-weight: 500"> CHANNEL CONTACTS</h4>
+                                            <hr>
+                                            </div>
+                                            <div class="" style="font-weight: lighter;margin-left: 1em;">
+                                            Contacts will be automatically added here as the USSD channel communicates with then you can see all contacts interacting with the channel here.
+                                            </div>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script>
+        $(document).ready(function(){
+          $('[data-toggle="popover"]').popover();
+        });
+    </script>
+{% endblock javascripts %}

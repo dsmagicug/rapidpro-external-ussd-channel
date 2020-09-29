@@ -1,0 +1,195 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Configure Channel {% endblock %}
+{% load static %}
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <link href="{% static 'assets/form/css/style.css' %}" rel="stylesheet"/>
+    <style>
+
+        .container1 {
+            height: 100%;
+        }
+    </style>
+
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="main">
+
+        <div class="container">
+            <h2>USSD CHANNEL CONFIGURATIONS</h2>
+            <form method="POST" id="config-form" class="config-form" enctype="multipart/form-data">
+                {% csrf_token %}
+                <section class="content">
+                    send url
+                </section>
+                <div class="text-center">
+
+                </div>
+                <fieldset>
+                    <div class="card card-body col-lg-12">
+                        <div class="text-center">
+                            <label id="header-label" style="margin-top: 2em" for="job" class="">Generating
+                                RapidPro SEND URL</label><br>
+                            <B>SEND URL:&nbsp;</B>
+                            <code id="generated-url" class="label font-weight-light" style="color:#135496;">
+                               https://{{ hostname }}{% url 'send_url' %}
+                            </code>
+                            <hr>
+                        </div>
+                        <div class="row form-row ">
+                            <div class="col-lg-4" style="margin-right: 0.5em">
+                            <span class="font-weight-lighter text-center" style="color:#000000">
+                                    Please Enter your URL
+                                    here, copy the generated <b>SEND URL</b> for use in the Send URL field
+                                    on RapidPro's External API configuration form
+                                </span>
+                            </div>
+                            <div class="col-lg-7">
+                                <div class="form-group">
+                                    {{ form.send_url }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <section>
+                    Receive url
+                </section>
+
+                <fieldset>
+                    <div class="form-row card card-body">
+                        <div class="text-center">
+                            <label id="header-label" style="margin-top: 1em" for="job" class="">Configure RapidPro receive URL</label>
+                        </div>
+                        <div class="col-lg-10">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td>
+                                    <span class="font-weight-lighter text-center" style="color:#000000">
+                                    Enter receive URL provide by RapidpPro as demonstrated in the screen shot below
+                                </span>
+                                        {{ form.rapidpro_receive_url }}</td>
+                                    <td><a class="col-lg-2"><i style="font-size: 20pt;color:blue"
+                                                               data-container="body" data-toggle="popover"
+                                                               data-trigger="hover" data-placement="bottom"
+
+                                                               data-content="This is RapidPros' URL that this USSD channel will call to forward any messages it receives from the outside."
+                                                               class="fa fa-info-circle"></i></a></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="col-lg-8 text-center">
+                            <img style="width:100%;height:100%;" src="{% static 'assets/img/receive.png' %}" class="img-thumbnail" alt="Responsive image">
+                        </div>
+                    </div>
+                </fieldset>
+                <section>
+                    Time Out
+                </section>
+
+                <fieldset>
+                    <div class="form-row card card-body">
+                        <div class="text-center">
+                            <label id="header-label" style="margin-top: 1em" for="job" class="">Configure Channel Max-timeout</label>
+                        </div>
+                        <div class="col-lg-10">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td>
+                                    <span class="font-weight-lighter text-center" style="color:#000000">
+                                    How long in seconds should the channel wait for a response from RapidPro during a transaction
+                                </span>
+                                        {{ form.timeout_after }}</td>
+                                    <td><a class="col-lg-2"><i style="font-size: 20pt;color:blue"
+                                                               data-container="body" data-toggle="popover"
+                                                               data-trigger="hover" data-placement="bottom"
+                                                               data-content="This channel by default will wait for 10 seconds. Then times out when a response is not returned"
+                                                               class="fa fa-info-circle"></i></a></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </fieldset>
+                <section>
+                    Start word
+                </section>
+
+                <fieldset>
+                    <div class="form-row card card-body">
+                        <div class="text-center">
+                            <label id="header-label" style="margin-top: 1em" for="job" class="">Configure Trigger word</label>
+                        </div>
+                        <div class="col-lg-10">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td>
+                                    <span class="font-weight-lighter text-center" style="color:#000000">
+                                    A keyword to trigger flow execution in Rapidpro when receive URL is called for the first time for a given contact.
+                                </span>
+                                        {{ form.trigger_word }}</td>
+                                    <td><a class="col-lg-2"><i style="font-size: 20pt;color:blue"
+                                                               data-container="body" data-toggle="popover"
+                                                               data-trigger="hover" data-placement="bottom"
+                                                               data-content="Default is 'USSD'. This must be a single word"
+                                                               class="fa fa-info-circle"></i></a></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </fieldset>
+                <section>
+                    Summary
+                </section>
+
+                <fieldset>
+                    <div class="form-row card card-body">
+                        <div class="text-center">
+                            <label id="header-label" style="margin-top: 1em" for="job" class="">Done</label>
+                        </div>
+                        <div class="col-lg-10">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td>Send URL</td><td><span id="send-value"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Receive Url</td><td><span id="receive-value"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Max-Timeout</td><td><span id="timeout-value"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Trigger word</td><td><span id="trigger_word-value"></span></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+             let sendURL = "{% url 'send_url' %}";
+            $("#id_send_url").on("input",function(){
+
+                $("#generated-url").html(`${$(this).val()}${sendURL}`)
+            });
+            {% if success and msg %}
+                let msg = "{{ msg }}";
+                demo.showNotification('top','center',2, msg);
+                {% elif msg %}
+                let errorMsg = "{{ msg }}";
+                demo.showNotification('top','center',4,errorMsg);
+            {% endif %}
+        });
+    </script>
+{% endblock javascripts %}

@@ -1,0 +1,88 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Add Handler {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <div class="container-scroller">
+        <div class="container-fluid page-body-wrapper full-page-wrapper">
+            <div class="content-wrapper d-flex align-items-stretch auth auth-img-bg"
+                 style="background-image: radial-gradient(circle, #E3F2FD, #ffffff, #ffffff);">
+                <div class="row flex-grow col-lg-12">
+                    <div class="col-lg-12 d-flex align-items-center justify-content-center">
+                        <div class="auth-form-transparent col-lg-12 text-left p-3">
+
+                            <hr>
+
+                            <div class="col-md-12">
+                                <div class="card col-md-10">
+                                    <div class="card-header " style="margin-left:1em;">
+                                    <a href="{% url 'handlers' %}" class="btn btn-simple btn-sm">
+                                        <i class="icon icon-arrow-left">
+                                    </i>&nbsp;&nbsp;Back to List</a>
+                                    <hr>
+                                    <h4 class="card-title" style="font-weight: 500">REGISTER A NEW AGGREGATOR HANDLER</h4>
+
+                                        <h4 class="card-category">
+                                            {% if success %}
+                                                <span style="font-size: 15pt" class="icons icon-checkmark text-success">&nbsp;&nbsp;{{ msg }}</span>
+                                            {% elif msg %}
+                                                <span style="font-size: 15pt" class="text-danger"><i
+                                                        class="icon icon-warning"></i>&nbsp;&nbsp;{{ msg }}</span>
+                                            {% else %}
+                                                <i></i>
+                                            {% endif %}
+                                        <hr>
+                                        </h4>
+                                    <div class="" style="font-weight: lighter;color:black">
+                                                A handler enables this channel understand different
+                                                request-formats from different USSD aggregators, then convert them to a
+                                                format understandable by
+                                                RapidPro.
+                                            </div>
+                                        <hr>
+                                    </div>
+                                    <form role="form" method="post" action="" id="handler-form">
+
+                                        {% csrf_token %}
+                                        <div class="card-body" style="margin-left:2em;">
+
+                                            <div class="col-lg-12">
+                                                {{ form.as_p }}
+
+                                            </div>
+                                        </div>
+                                        <div class="card-footer" style="margin-left:1em;">
+                                            <button type="submit" name="submit" class="btn btn-fill btn-primary">Submit
+                                            </button>
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+     <script>
+    $(document).ready(()=>{
+       const requestFormat = `[[short_code=ussdServiceCode]],  [[session_id=transactionId]], [[from=msisdn]], [[to=msisdn]], [[text=ussdRequestString]], [[date=creationTime]]`;
+       // double braces will be confused fro jinja. so we replace using regex
+       const formats = requestFormat.replace(/\[/g, '{').replace(/\]/g,'}');
+       if($("#id_request_format").val() ===""){
+           $("#id_request_format").val(formats);
+       }
+
+    });
+    </script>
+{% endblock javascripts %}

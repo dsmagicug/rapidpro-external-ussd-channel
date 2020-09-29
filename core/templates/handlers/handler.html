@@ -1,0 +1,95 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Handlers {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+{% block content %}
+    <div class="container-scroller">
+        <div class="container-fluid page-body-wrapper full-page-wrapper">
+            <div class="content-wrapper d-flex align-items-stretch auth auth-img-bg"
+                 style="background-image: radial-gradient(circle, #E3F2FD, #ffffff, #ffffff);">
+                <div class="row flex-grow col-lg-12">
+                    <div class="col-lg-12 d-flex align-items-center justify-content-center">
+                        <div class="auth-form-transparent col-lg-12 text-left p-3">
+
+                            <hr>
+
+                            <div class="col-md-12">
+                                <div class="card col-md-12">
+                                    <div class="card-header " style="margin-left:1em;">
+                                        <h4 class="card-title" style="font-weight: 500">AGGREGATOR HANDLERS</h4><hr>
+                                        <h6 class="card-category">
+                                            <div class="" style="font-weight: lighter;color:black">
+                                                Handlers are adaptors that enable this channel understand different
+                                                request-formats from different USSD aggregators, then convert them to a
+                                                format understandable by
+                                                RapidPro.
+                                            </div>
+                                        </h6>
+                                        <hr>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <div class="col-lg-12 text-right">
+                                                <a class="btn btn-info btn-sm" href="{% url 'add_handler' %}">
+                                                    <i class="fa fa-plus-circle" style="font-size: 15pt"></i>&nbsp;Add Handler
+                                                </a>
+                                                <hr>
+                                            </div>
+                                            <table class="table tablesorter table-hover table-striped" id="">
+                                                <thead class="btn-primary" >
+                                                    <tr>
+                                                        <th class="text-white">
+                                                            Aggregator
+                                                        </th>
+                                                        <th class="text-center text-white">
+                                                            Short&nbsp;Code
+                                                        </th>
+                                                        <th class="text-center text-white">
+                                                            Supports&nbsp;Push
+                                                        </th>
+                                                        <th  class="text-center text-white">
+                                                            Edit
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for handler in handlers %}
+                                                    <tr>
+                                                    <td>
+                                                        {{ handler.aggregator }}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        {{ handler.short_code }}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        {% if handler.push_support == False %}
+                                                            <span class="badge badge-danger">No</span>
+                                                            {% else %}
+                                                            <span class="badge badge-success">Yes</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <a href="add-handler/handler/{{ handler.id }}"><i style="font-size: 15pt;color:blue" class="icon icon-pencil"></i></a>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

@@ -1,0 +1,76 @@
+<!-- Static assets -->
+{% load static %}
+
+      <!-- Navbar -->
+      <nav class="navbar fixed-top navbar-expand-lg  navbar-transparent" >
+        <div class="container-fluid" style="height:50px">
+          <div class="navbar-wrapper">
+
+            <ul class="navbar-nav ml-auto">
+              <li class="search-bar input-group">
+                <a class="navbar-brand"  href="javascript:void(0)">
+                    <i class="tim-icons icon-channel-ussd" style="font-size: 30pt;color:#ffffff"></i>
+                    <span class="font-weight-light" style="color:#ffffff">USSD Channel</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="collapse navbar-collapse" id="navigation">
+
+            {% if user.is_authenticated %}
+            <ul class="navbar-nav ml-auto">
+              <!--<li class="search-bar input-group">
+                <button class="btn btn-link" id="search-button" data-toggle="modal" data-target="#searchModal">
+                    <i class="tim-icons icon-zoom-split" style="color:#ffffff;font-size: 20pt" ></i>
+                    <span class="d-lg-none d-md-block" style="color:#ffffff">Search</span>
+                </button>
+              </li>-->
+                <li class="search-bar input-group">
+                    <a class="btn btn-link" >
+                        <span class="d-lg-1 d-md-block font-weight-light"
+                              style="color:#ffffff;font-size: 9pt;margin-top: 10px">{{ request.user.username }}</span>
+                    </a>
+                </li>
+              <li class="dropdown nav-item">
+                <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+                  <div class="photo">
+                    <img src="{% static 'assets/img/anime3.png' %}" alt="Profile Photo">
+                  </div>
+                  <b class="caret d-none d-lg-block d-xl-block" style="color:#ffffff"></b>
+                  <p class="d-lg-none">
+                    Log out
+                  </p>
+                </a>
+                <ul class="dropdown-menu dropdown-navbar">
+                  <li class="nav-link"><a href="{% url 'profile' %}" class="nav-item dropdown-item">Profile</a></li>
+                  <li class="dropdown-divider"></li>
+                  <li class="nav-link"><a href="{% url 'logout' %}" class="nav-item dropdown-item">Log out</a></li>
+                </ul>
+              </li>
+              <li class="separator d-lg-none"></li>
+            </ul>
+            {% else %}
+            <ul class="navbar-nav ml-auto">
+              <li class="search-bar input-group">
+                
+              </li>
+            </ul>
+            {% endif %}
+
+          </div>
+        </div>
+      </nav>
+     <div class="modal modal-search fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="SEARCH">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <i class="tim-icons icon-simple-remove"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Navbar -->

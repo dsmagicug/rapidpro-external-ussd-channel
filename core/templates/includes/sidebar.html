@@ -1,0 +1,62 @@
+
+
+    <div class="sidebar">
+      <div class="sidebar-wrapper">
+        {% if user.is_authenticated %}
+        <div class="logo">
+          
+          <a href="#" class="simple-text logo-normal text-center">
+            MENU
+          </a>
+        </div>
+
+        <ul class="nav">
+          <li class="active ">
+            <a href="/">
+              <i class="tim-icons icon-chart-pie-36"></i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <!--<li>
+            <a href="/ui-icons.html">
+              <i class="tim-icons icon-atom"></i>
+              <p>Icons</p>
+            </a>
+          </li>-->
+          <li class="dropdown">
+            <a href="{% url 'channel_conf' %}">
+              <i class="tim-icons icon-feed"></i>
+              <p>Channel Configs</p>
+            </a>
+          </li>
+            <li>
+            <a href="{% url 'handlers' %}">
+              <i class="tim-icons icon-luis" style="color:#ffffff;font-size: 20pt" ></i>
+              <p>Handlers</p>
+            </a>
+          </li>
+
+          <li>
+            <a href="#">
+              <i class="tim-icons icon-support-17"></i>
+              <p>Documentation</p>
+            </a>
+          </li>
+            <hr>
+            <li>
+            <a href="{% url 'profile' %}">
+              <i class="tim-icons icon-single-02"></i>
+              <p>User Profile</p>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'logout' %}" >
+              <i class="tim-icons icon-user-run"></i>
+              <p>Logout</p>
+            </a>
+          </li>
+        </ul>
+        {% endif %}
+        
+      </div>
+    </div>
