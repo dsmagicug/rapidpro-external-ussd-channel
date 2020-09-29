@@ -120,19 +120,21 @@ With your [RapidPro](https://github.com/rapidpro/rapidpro) instance running eith
  To set up a Handler,
  
  Go to `HANDLERS` on your side menu, click `Add Handler` button, You will be presented with a form with the following fields
- 1. Aggregator: (the name of the USSD aggregator that you want to use for example [DMARK](#) or [Africa's Talking](https://africastalking.com/ussd))
- 2. Shot code: (Short code you are provided with by your aggregator e.g `348`.)
- 3. Request format: This is a very important field which you MUST have right so as the channel can safely standardize aggregator Requests to RapidPro understandable ones.
+ 1. `Aggregator`: (the name of the USSD aggregator that you want to use for example [DMARK](#) or [Africa's Talking](https://africastalking.com/ussd))
+ 2. `Shot code`: (Short code you are provided with by your aggregator e.g `348`.)
+ 3. `Request format`: This is a very important field which you MUST have right so as the channel can safely standardize aggregator Requests to RapidPro understandable ones.
   The template format is provided already in that textarea as shown below. 
     
-    `{{short_code=ussdServiceCode}},  {{session_id=transactionId}}, {{from=msisdn}}, {{to=msisdn}}, {{text=ussdRequestString}}, {{date=creationTime}}`
+    `{{short_code=ussdServiceCode}},  {{session_id=transactionId}}, {{from=msisdn}}, {{text=ussdRequestString}}, {{date=creationTime}}`
 
     Each is a combination of two parameters, one on the left hand side of the equal sign(`=`) and the other on the left.
 The one on the let represents the format understood by RapidPro and our External channel which *MUST* not change.
 The one on the right hand side represents the format in which the aggregator requests delivers that value to our channel.
 
-    for example `{{short_code=ussdServiceCode}},  {{session_id=transactionId}}, {{from=msisdn}},  {{text=ussdRequestString}}` means the request from the aggregator API in this case say `DMARK` will arrive as `{"ussdServiceCode:"257","transactionId":123456789, "msisdn":"25678xxxxxx","ussdRequestString":"Hello world"}`. This format will then be converted into `{"short_code":"257", "session_id":123456789, "from":"25678xxxxxx", "text":"Hello World"}` which is understood by Rapidpro and our Channel.
-For say a different aggregator represents `short_code` as `serviceCode`, the combination to map this will be `{{short_code=serviceCode}}`. Please refer to your respective aggregator USSD Docs for their formats.
+    for example ```{{short_code=ussdServiceCode}},  {{session_id=transactionId}}, {{from=msisdn}},  {{text=ussdRequestString}}``` means the request from the aggregator API in this case say `DMARK` will arrive as
+     ```{"ussdServiceCode:"257","transactionId":123456789, "msisdn":"25678xxxxxx","ussdRequestString":"Hello world"}```. 
+    This format will then be converted into ```{"short_code":"257", "session_id":123456789, "from":"25678xxxxxx", "text":"Hello World"}``` which is understood by Rapidpro and our Channel.
+for example if a particular aggregator represents `short_code` as `serviceCode`, the combination to map this will be `{{short_code=serviceCode}}`. Please refer to your respective aggregator USSD Docs for their formats.
 
     Note that our channel and RapidPro have the following standard formats 
     -   `session_id` for USSD session ID
@@ -141,21 +143,21 @@ For say a different aggregator represents `short_code` as `serviceCode`, the com
     -   `text` for the content(message) in the request i.e. User replies.
     -    `date` (Optionally set) for the time string in the request.
     Note that apart from `date`, your request format has to cater for all the rest by mapping them to their equivalents in the USSD request from a given aggregator API.
-4. Response content type: how the response to the aggregator API should be encoded(default is `application/json`) (refer to your aggregator's USSD Docs for such information )
-5. Response method (whether your aggregator expects a `POST`, `GET` or `PUT` method in the response) 
-6.  Signal response string: this is a keyword in the response to your aggregator's API that is used to signal further interaction in the USSD session, i.e. a USSD menu with an inputbox for the end user to reply. (Refer to aggregator's USSD Docs for this keyword)
-7.  Signal end string: this is the Keyword your aggregator uses in the response string to indicate end of USSD Session in order to send a USSD prompt without an inputbox to the end user device.(Refer to aggregator's USSD Docs for this keyword)
-8.  Response format: This field indicates the format expected by the aggregator's API in the response sent by our channel.
+4. `Response content type`: how the response to the aggregator API should be encoded(default is `application/json`) (refer to your aggregator's USSD Docs for such information )
+5. `Response method` (whether your aggregator expects a `POST`, `GET` or `PUT` method in the response) 
+6.  `Signal response string`: this is a keyword in the response to your aggregator's API that is used to signal further interaction in the USSD session, i.e. a USSD menu with an inputbox for the end user to reply. (Refer to aggregator's USSD Docs for this keyword)
+7.  `Signal end string`: this is the Keyword your aggregator uses in the response string to indicate end of USSD Session in order to send a USSD prompt without an inputbox to the end user device.(Refer to aggregator's USSD Docs for this keyword)
+8.  `Response format`: This field indicates the format expected by the aggregator's API in the response sent by our channel.
 two options are so far provided, 
-    - Is Key Value (Default) means the aggregator API will accept the message and signal response string(seen above)  from our channel if its in a `json` like key-value string e.g `{"responseString":"Hello User how are you": "signal":"request"}`
-    - Starts With means the aggregator expects a string in the response body that *starts* with a keyword to signal end or request for interaction as seen above.
-9.  Response format template: if option 1 (Is Key Value)in 8 above is chosen, a textarea will come from hiding expecting entries discussed under `Request Format` in `(3)` above.
+    - `Is Key Value:` (Default) means the aggregator API will accept the message and signal response string(seen above)  from our channel if its in a `json` like key-value string e.g `{"responseString":"Hello User how are you": "signal":"request"}`
+    - `Starts With`: means the aggregator expects a string in the response body that *starts* with a keyword to signal end or request for interaction as seen above.
+9.  `Response format` template: if option 1 (Is Key Value)in 8 above is chosen, a textarea will come from hiding expecting entries discussed under `Request Format` in `(3)` above.
     with similar logic, our channel understands as follows
        -    `text` for the text(message) in the response
        -    `action` for the signal keywords set above.
        for example if aggregator A's response should be in this format `{"responseString":"Hello User how are you": "signal":"Signal_keyword"}`, 
        the entry in this field will be `{{text=responseString}}, {{action=signal}}` 
-8.  Push support: Boolean to specify whether your aggregator supports USSD PUSH protocal i.e MT USSD sessions (Default=`False`)
+8.  `Push support`: Boolean to specify whether your aggregator supports USSD PUSH protocal i.e MT USSD sessions (Default=`False`)
 
 Submit this form and you are ready to enjoy the power of RapidPro through USSD. You can configure multiple handlers for multiple aggregators but each aggregator must have one handler depending on the format of their requests. 
  
