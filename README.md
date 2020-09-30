@@ -154,7 +154,7 @@ You will then be presented with a form with the following fields;
  1. `Aggregator`: (the name of the USSD aggregator that you want to use 
  for example [DMARK](#) or [Africa's Talking](https://africastalking.com/ussd))
  
- 2. `Shot code`: (The short code provided by your aggregator e.g `348`.)
+ 2. `Shortcode`: (The shortcode provided by your aggregator e.g `348`.)
  
  3. `Request format`: This is a very important field which must be set correctly 
  in order for the channel to safely standardize aggregator Requests.
