@@ -44,7 +44,7 @@ def send_url(request):
             data = request.data
             content = data.dict()
         else:
-            content = request.data # for application/json
+            content = request.data  # for application/json
         # decrement key1
         to = content['to']
         key1 = f"MO_MT_KEY_{to}"
@@ -74,8 +74,8 @@ def send_url(request):
 def call_back(request):
     # access_logger.info(str(request.META))
     try:
-        # request_dict = literal_eval(json.dumps(request.data['info']))  # from GCE
-        request_dict = literal_eval(json.dumps(request.data))
+        request_dict = literal_eval(json.dumps(request.data['info']))  # from GCE
+        # request_dict = literal_eval(json.dumps(request.data))
         sr = ProcessAggregatorRequest(request_dict)
         standard_request_string = sr.process_handler()
         current_session_id = sr.log_session()
