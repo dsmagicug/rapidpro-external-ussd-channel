@@ -191,5 +191,5 @@ class ProcessAggregatorRequest:
             get_sessions()
         return session.session_id
 
-    def get_hundler(self):
+    def get_handler(self):
         return self.handler
