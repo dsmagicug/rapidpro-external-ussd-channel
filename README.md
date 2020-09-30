@@ -1,24 +1,27 @@
  ##RapidPro External USSD channel
- This channel uses RapidPro's Generic External Channel API to relay messages between RapidPro and USSD supported devices through USSD aggregator APIs that are configurable within this channel.
-
-
+ RapidPro External USSD channel is an open source software that uses RapidPro's Generic External Channel API to relay messages between RapidPro and USSD supported devices through USSD aggregator APIs that are configurable within the channel.
 ### Setting up this channel
-In order to run this channel for development, follow this quick guide.
-Note that development and deployment has only been tested on OSX and Linux, you will likely have to modify a couple of steps below if using Windows.
+In order to use the USSD External Channel Service, you must have a fully installed and working instance of the supported RapidPro system (i.e. post v5). Please follow the setup instructions found [here](http://rapidpro.github.io/rapidpro/docs/):  
 
-### Prerequisites
+Once RapidPro is up and running, you can install and configure the channel service as detailed below.
+
+The minimum requirements for the channel service are the same as those for RapidPro, specifically:
 
  * [Python v3.6](https://www.python.org/downloads/release/python-360/) and later
 
  * An RDBMS preferably [PostgreSQL 9.6](https://www.postgresql.org/) or later
  * [Redis 3.2](https://redis.io/) or later
+ 
+This means that RapidPro and the channel service can co-exist on the same server instance.
 
-
+The setup has been broken down into five simple steps described below.
 
 ### Database setup
+
 Start the [Redis 3.2](https://redis.io/) server. 
  
-Let's use [PostgreSQL](https://www.postgresql.org/) as our database software.
+You can use other RDMS like MySQL but we recommend  [PostgreSQL](https://www.postgresql.org/).
+
 
 
 Create a new database user `ussd_user` for postgreSQL
@@ -68,28 +71,30 @@ $python manage.py collectstatic
 ```
 $python manage.py runserver
 ```
-## Running The channel and RapidPro on the same host machine
-In most cases, you may want to install both [RapidPro](https://github.com/rapidpro/rapidpro) and our [External USSD channel](https://github.com/dsmagicug/rapidpro-external-ussd-channel.git) on the same local machine. 
+## Running The channel and RapidPro on the same server instance
+In most cases, you may want to install both [RapidPro](https://github.com/rapidpro/rapidpro) and the [External USSD channel](https://github.com/dsmagicug/rapidpro-external-ussd-channel.git) on the same server instance. 
 
 To set up RapidPro follow the instructions [Here](http://rapidpro.github.io/rapidpro/docs/development/)
 
-Since they are both Django applications, you may find your self needing to run `python manage.py runserver` for both cases and this will complain with a ```Address already in use.``` error since the Django development server by default runs on port `8000`.
+Since they are both Django applications, you have to run `python manage.py runserver` for each of them.
+ This will return an error (```Address already in use.```) since the Django development server by default runs on port `8000`.
 
-The easiest trick here is starting each on a different port  as described in the django documentation [Here](https://docs.djangoproject.com/en/3.1/ref/django-admin/).
-For our example, we shall use port `5000` to run the External USSD Channel development server
+The trick here is starting each application on a different port  as described in the django documentation [Here](https://docs.djangoproject.com/en/3.1/ref/django-admin/).
+
+In this case, we shall use port `5000` to run the External USSD Channel development server
 
 Inside the [External USSD channel](https://github.com/dsmagicug/rapidpro-external-ussd-channel.git) project directory run
 
 ```
-python manage.py 0.0.0.0:5000
+python manage.py runserver 0.0.0.0:5000
 ```
 
 Then you can visit http://localhost:5000 to access the web interface
 
-We recommend that you leave RapidPro use the default port `8000`
+We recommend that you leave RapidPro use the default port `8000`.
 
 
-## Configuring External USSD channel to communicate to RapidPro.
+### Configuring External USSD channel to talk to RapidPro.
 
 * Visit http://localhost:8000 or https://localhost:5000  as seen above.
 **NOTE** You can use any free ports of your choice.
