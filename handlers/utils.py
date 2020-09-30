@@ -30,8 +30,18 @@ RESPONSE_CONTENT_TYPES = [
 SESSION_STATUSES = dict(
     TIMEDOUT='Timed Out',
     TERMINATED='Terminated',
-    COMPLETED ='Completed'
+    COMPLETED='Completed'
 )
+
+RP_RESPONSE_FORMAT = {
+    "text": "text",
+    "to": "to",
+    "session_status": "status"
+}
+
+RP_RESPONSE_STATUSES = {
+    "waiting": "W"
+}
 
 
 def get_sessions():
@@ -51,6 +61,21 @@ def get_sessions():
     )
 
 
+def separate_keys(string):
+    """'
+    @string => a string in the format of "{{short_code=ussdServiceCode}},  {{session_id=transactionId}}"
+    """
+    rapidpro_keys = []
+    aggregator_keys = []
+    matches = re.compile('{{(.*?)}}', re.DOTALL).findall(string)
+    for match in matches:
+        split_list = match.split("=")
+        rapidpro_keys.append(split_list[0].strip())
+        aggregator_keys.append(split_list[1].strip())
+
+    return [rapidpro_keys, aggregator_keys]
+
+
 class ProcessAggregatorRequest:
     rapidpro_keys = []
     handler_keys = []
@@ -60,18 +85,6 @@ class ProcessAggregatorRequest:
 
     def __init__(self, aggregator_request):
         self.request_data = aggregator_request
-
-    def separate_keys(self, string):
-        """'
-        @string => a string in the format of "{{short_code=ussdServiceCode}},  {{session_id=transactionId}}"
-        """
-        matches = re.compile('{{(.*?)}}', re.DOTALL).findall(string)
-        for match in matches:
-            split_list = match.split("=")
-            self.rapidpro_keys.append(split_list[0].strip())
-            self.handler_keys.append(split_list[1].strip())
-
-        return [self.rapidpro_keys, self.handler_keys]
 
     def generate_standard_request(self):
         not_in_template = []  # all keys not defined in the template but exist in the request
@@ -94,18 +107,55 @@ class ProcessAggregatorRequest:
         else:
             self.standard_request = self.request_data
 
+    def get_expected_response(self, response_dict):
+        """"
+        We so far have two response formats,
+        1. key-value type of response i.e (json,url-params, etc) with text and action,
+        2. string response that begins with a keyword as the action
+        """
+        # dict has to have those keys below else keyError
+        text = response_dict["text"]
+        action = response_dict["action"]
+        if self.handler:
+            response_structure = self.handler.response_structure
+            # check if aggregator response format
+            res_format = self.handler.response_format
+            if res_format == 1:
+                # key-value
+                rp_response_keys, h_response_keys = separate_keys(response_structure)
+                known_keys = ['text', 'action']
+                if set(known_keys) == set(rp_response_keys):
+                    text_index = rp_response_keys.index("text")
+                    action_index = rp_response_keys.index("action")
+                    # construct response
+                    h_response = {
+                        h_response_keys[text_index]: text,
+                        h_response_keys[action_index]: action
+                    }
+                    return h_response
+                else:
+                    raise Exception(f'The response structure "{response_structure}" has no keywords [text , action] '
+                                    f'in the cgi params definitions. ensure format is [{{text=..}},{{action=..}}]')
+            else:
+                # string which begins with
+                h_response = f"{action.upper()} {text}"
+                return h_response
+
     def process_handler(self):
-        # determine service_code
-        self.determine_service_code()
-        self.handler = Handler.objects.get(short_code=self.service_code)
-        request_format = self.handler.request_format
-        # use defined template
-        self.separate_keys(request_format)
-        # generate standard request_string to send to rapidPro
-        self.generate_standard_request()
-        # save contact if it doesn't exist
-        self.store_contact()
-        return self.standard_request
+        try:
+            # determine service_code
+            self.determine_service_code()
+            self.handler = Handler.objects.get(short_code=self.service_code)
+            request_format = self.handler.request_format
+            # use defined template
+            self.rapidpro_keys, self.handler_keys = separate_keys(request_format)
+            # generate standard request_string to send to rapidPro
+            self.generate_standard_request()
+            # save contact if it doesn't exist
+            self.store_contact()
+            return self.standard_request
+        except Exception as err:
+            print(err)
 
     def determine_service_code(self):
         short_codes = Handler.objects.values_list('short_code', flat=True)
@@ -113,6 +163,9 @@ class ProcessAggregatorRequest:
         for code in codes:
             if str(code) in self.request_data.values():
                 self.service_code = str(code)
+            else:
+                raise Exception("This aggregator most likely has no handler or a wrong shortcode was registered with "
+                                "handler")
 
     def store_contact(self):
         if Contact.objects.filter(urn=self.standard_request['from']).exists():
@@ -137,3 +190,6 @@ class ProcessAggregatorRequest:
             session = USSDSession.objects.create(session_id=session_id, contact=contact, handler=self.handler)
             get_sessions()
         return session.session_id
+
+    def get_hundler(self):
+        return self.handler

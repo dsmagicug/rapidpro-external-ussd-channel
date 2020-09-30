@@ -61,7 +61,7 @@ class HandlerForm(forms.ModelForm):
         )
     )
 
-    signal_response_string = forms.CharField(
+    signal_reply_string = forms.CharField(
         help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>String keyword that signals when USSD menu "
                             "expects a reply from the user e.g. \n<b>CON</b> for Africa's Talking signals USSD menu "
                             "with reply box.</pre>"),

@@ -15,7 +15,7 @@
 
 import re
 
-format_string = "{{short_code=ussdServiceCode}}  {{session_id=transactionId}} {{from=msisdn}} {{text=ussdRequestString}}, {{date=creationTime}}"
+format_string = "{{text=responseString}}, {{action=signal}}"
 request_data = {
     'ussdRequestString': "Wrote you a letter, didn't wanna see you eyes, gonna hold onto my feelings no matter who is wrong or right",
     'msisdn': '077363256',
@@ -39,17 +39,16 @@ def separate_keys(string):
     return [rapidpro_keys, handler_keys]
 
 
-rapidpro_keys, handler_keys = separate_keys(format_string);
+rapidpro_keys, handler_keys = separate_keys(format_string)
 
-not_in_template = []  # all keys not defined in the template but exist in the request
-map_list = [(rapidpro_keys[handler_keys.index(key)], key) if key in handler_keys else (not_in_template.append(key)) for
-            key in request_data.keys()]
+# get positions of text and action then get corresponding ones in the other list
 
-# remove all we never defined in the template
-removed = [request_data.pop(v, None) for v in not_in_template if len(not_in_template) > 0]
 
-for item in map_list:
-    if item is not None:
-        request_data[item[0]] = request_data.pop(item[1])
-
-print(request_data)
+# # remove all we never defined in the template
+# removed = [request_data.pop(v, None) for v in not_in_template if len(not_in_template) > 0]
+#
+# for item in map_list:
+#     if item is not None:
+#         request_data[item[0]] = request_data.pop(item[1])
+#
+# print(request_data)
