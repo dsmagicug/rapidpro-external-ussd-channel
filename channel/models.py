@@ -2,7 +2,7 @@ from django.db import models
 from core.utils import AuthSignature
 from contacts.models import Contact
 from handlers.models import Handler
-
+from django.utils import timezone
 
 # Create your models here.
 
@@ -47,7 +47,9 @@ class USSDSession(models.Model):
     started_at = models.DateTimeField(
         auto_now_add=True
     )
-    last_access_at = models.DateTimeField()
+    last_access_at = models.DateTimeField(
+        auto_now_add=True
+    )
     ended_at = models.DateTimeField(
         auto_now_add=True
     )

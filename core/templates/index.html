@@ -73,7 +73,6 @@
                     <th>
                       Aggregator(Handler)
                     </th>
-                      <th>Last used at</th>
                     <th class="text-center">
                       Status
                     </th>
@@ -90,9 +89,6 @@
                     </td>
                     <td>
                       {{ session.handler }}
-                    </td>
-                        <td>
-                        {{ session.last_access_at | date:"Y M d, H:m:s" }}
                     </td>
                     <td  class="text-center">
                       <div class="badge-{{ session.badge }}">{{ session.status }}</div>
@@ -264,16 +260,15 @@ document.getElementById('addData').addEventListener('click', function() {
              { data: 'session_id' },
              { data: 'contact' },
              { data: 'handler' },
-                     { data: 'last_access_at' },
              { data: 'status' }]
              });
       // Javascript method's body can be found in assets/js/demos.js
         //demo.showNotification('top','center',1,"Welcome to Exteranal USSD channel for RapidPro ");
         //websocket
 
-        console.log('ws://'+ window.location.host+ ':8000/ws/sessions');
+        console.log('ws://'+ window.location.host+ '/ws/sessions');
         const chatSocket = new WebSocket(
-            'ws://'+ window.location.host+ ':8000/ws/sessions'
+            'ws://'+ window.location.host+ '/ws/sessions'
         );
         chatSocket.onopen = function(e){
             console.log("connection established")
@@ -287,8 +282,8 @@ document.getElementById('addData').addEventListener('click', function() {
             const newSessions = JSON.parse(data.sessions);
             let trows='';
             newSessions.forEach((session)=>{
-                const {session_id, contact,handler,last_access_at, badge, status} = session;
-                trows +=`<tr><td>${session_id}</td><td>${contact}</td><td>${handler}</td><td>${last_access_at}</td><td class="text-center"><div class="badge-${badge}">${status}</div></td></tr>`
+                const {session_id, contact,handler, badge, status} = session;
+                trows +=`<tr><td>${session_id}</td><td>${contact}</td><td>${handler}</td><td class="text-center"><div class="badge-${badge}">${status}</div></td></tr>`
             });
             //$('#table-sessions-live tbody').append(trows)
             setTimeout(()=>{

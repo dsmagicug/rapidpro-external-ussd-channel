@@ -9,7 +9,7 @@ from websocket import create_connection
 from msgs.utils import MESSAGE_TYPE
 from handlers.utils import ProcessAggregatorRequest, get_sessions
 from channel.models import USSDChannel, USSDSession
-
+import re
 from core.utils import access_logger, error_logger
 
 # Create your views here.
@@ -75,7 +75,7 @@ def call_back(request):
     # access_logger.info(str(request.META))
     try:
         request_dict = literal_eval(json.dumps(request.data['info']))  # from GCE
-        # request_dict = literal_eval(json.dumps(request.data))
+        #request_dict = literal_eval(json.dumps(request.data))
         sr = ProcessAggregatorRequest(request_dict)
         standard_request_string = sr.process_handler()
         current_session_id = sr.log_session()
@@ -101,8 +101,9 @@ def call_back(request):
 
         # receive_url is used to send msgs to rapidpro
         receive_url = channel.rapidpro_receive_url
-        # receive_url = "http://localhost:5000/adaptor/receive"
-        # req = requests.post(receive_url, json.dumps(rapid_pro_request), headers=HEADERS)
+        #receive_url = "http://localhost:5000/adaptor/receive"
+        #req = requests.post(receive_url, json.dumps(rapid_pro_request), headers=HEADERS)
+
         req = requests.post(receive_url, rapid_pro_request, headers=HEADERS)
         if req.status_code == 200:
             # TODO log message in database
@@ -133,7 +134,6 @@ def call_back(request):
 @api_view(['POST', 'GET', 'PUT'])
 def receive(request):
     # access_logger.info(str(request.META))
-    print(request.META)
     try:
         url = "http://localhost:5000/adaptor/processor"
         req = requests.post(url, json.dumps(request.data), headers=HEADERS)
@@ -155,7 +155,9 @@ def processor(request):
     ]
     text = secrets.choice(phrases)
     to = "rapidPro"
+    print(data)
     _from = data['from']
+    print(_from)
     response = {"text": text, "to": to, "from": _from, "status": "waiting"}
     # call send url
     url = "http://localhost:5000/adaptor/send-url"
