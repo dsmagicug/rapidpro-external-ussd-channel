@@ -75,14 +75,21 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
      <script>
+     function convertFormat(string){
+         const formats = string.replace(/\[/g, '{').replace(/\]/g,'}');
+         return formats
+
+     }
     $(document).ready(()=>{
        const requestFormat = `[[short_code=ussdServiceCode]],  [[session_id=transactionId]], [[from=msisdn]], [[to=msisdn]], [[text=ussdRequestString]], [[date=creationTime]]`;
+       const responseStruncture = `[[text=responseString]], [[action=signal]]`;
        // double braces will be confused fro jinja. so we replace using regex
-       const formats = requestFormat.replace(/\[/g, '{').replace(/\]/g,'}');
        if($("#id_request_format").val() ===""){
-           $("#id_request_format").val(formats);
+           $("#id_request_format").val(convertFormat(requestFormat));
        }
-
+        if($("#id_response_structure").val()===""){
+            $("#id_response_structure").val(convertFormat(responseStruncture))
+        }
     });
     </script>
 {% endblock javascripts %}

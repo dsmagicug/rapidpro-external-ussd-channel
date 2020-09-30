@@ -11,7 +11,7 @@ from ast import literal_eval
 import re
 
 RESPONSE_FORMAT = [
-    (1, "Is Json string"),
+    (1, "Is Key Value"),
     (2, "Starts with")
 ]
 

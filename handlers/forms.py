@@ -36,7 +36,7 @@ class HandlerForm(forms.ModelForm):
             attrs={
                 "class": "form-control",
                 "placeholder": "e.g. {{short_code=ussdServiceCode}},  {{session_id=transactionId}}, {{from=msisdn}}, "
-                               "{{to=msisdn}}, {{text=ussdRequestString}}, {{datetime=creationTime}}"
+                               "{{text=ussdRequestString}}, {{datetime=creationTime}}"
             }
         ))
     response_format = forms.CharField(
@@ -83,7 +83,18 @@ class HandlerForm(forms.ModelForm):
             }
         )
     )
-
+    response_structure = forms.CharField(
+        help_text=mark_safe("<pre  style='font-size:8pt;color:#757575'>The structure of the response as expected by "
+                            "the aggregator API\n e.g. {{text=responseString}}, {{action=signal}}. means the "
+                            "aggregator API expects \na response structure similar to \n"
+                            "{\"responseString\":\"Hello User how are you\": \"signal\":\"Signal_keyword\"}</pre><br>"),
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "placeholder": "e.g. {{text=responseString}}, {{action=signal}}",
+                "type": "hidden"
+            }
+        ))
     push_support = forms.BooleanField(
         help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>Whether this aggregator API supports USSD PUSH "
                             "protocol (default=unchecked).</pre>")
