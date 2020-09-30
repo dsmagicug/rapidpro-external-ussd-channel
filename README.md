@@ -74,7 +74,7 @@ $python manage.py collectstatic
 ```
 $python manage.py runserver
 ```
-## Running The channel and RapidPro on the same server instance
+### Running The channel and RapidPro on the same server instance
 In most cases, you may want to install both [RapidPro](https://github.com/rapidpro/rapidpro) and the [External USSD channel](https://github.com/dsmagicug/rapidpro-external-ussd-channel.git) on the same server instance. 
 
 To set up RapidPro follow the instructions [Here](http://rapidpro.github.io/rapidpro/docs/development/)

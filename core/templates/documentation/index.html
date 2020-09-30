@@ -72,15 +72,12 @@
             <div class="container">
                 <article class="docs-article" id="section-1">
                     <header class="docs-header">
-                        <h3 class="docs-heading"><span style="font-size: 15pt">What is the USSD External Channel?</span><span
+                        <h3 class="docs-heading"><span >External USSD Channel</span><span
                                 class="docs-time">Last updated: 2020-09-30</span>
                         </h3>
                         <section class="docs-intro">
                             <p>
-                                RapidPro External USSD channel is an open source software that uses RapidPro's Generic
-                                External
-                                Channel API to relay messages between RapidPro and USSD supported devices through USSD
-                                aggregator APIs that are configurable within the channel.
+                                RapidPro External USSD channel is an open source software that uses RapidPro's Generic External Channel API to relay messages between RapidPro and USSD supported devices through USSD aggregator APIs that are configurable within the channel.
 
                             </p>
                         </section><!--//docs-intro-->
@@ -129,11 +126,9 @@
                     <section class="docs-section" id="item-1-1">
                         <h2 class="section-heading">Technologies</h2>
                         <p>
-                            We lean on some frameworks and technologies to make the RapidPro USSD External Channel work,
-                            below is a brief overview of the ones we directly use.
-                            It is recommended to first have a grasp about the basics of how these frameworks and the
-                            programming languages used before
-                            you proceed.
+                            The minimum requirements and technologies for the channel service are the same as those for RapidPro:
+                            It is recommended to first have a grasp about the basics of how these technologies work and the
+                            programming languages they use before you can contribute to the code base.
                         </p>
 
                         <h5>Frontend</h5>
@@ -181,7 +176,7 @@
                         </p>
                         <h5>Code Reviews & Pull Requests</h5>
                         <p>
-                            All committed code must be code reviewed via a formal pull request. Whether it is new
+                            All committed code must be code reviewed via a formal pull request. Whether it is a new
                             feature work or bug fixes, all code should be written on a branch apart from master, then a
                             pull request should be opened to review those changes before committing to master. Any code
                             on the master branch is considered ready for live deployment.
@@ -199,10 +194,12 @@
                     <header class="docs-header">
                         <h1 class="docs-heading">Installation</h1>
                         <section class="docs-intro">
-                            <p>In order to run this channel for development, follow this quick guide. Note that
-                                development and deployment has only been tested on OSX and Linux, you will likely have
-                                to modify a couple of steps below if using Windows.</p>
-                        </section><!--//docs-intro-->
+                            <p>
+                                In order to use the USSD External Channel Service, you must have a fully installed and working instance of the supported RapidPro system (i.e. post v5). Please follow the setup instructions found <a href="http://rapidpro.github.io/rapidpro/docs/">Here</a>:
+                                <br><br>
+                                Once RapidPro is up and running, you can install and configure the channel service as detailed below.
+                            </p>
+                        </section>
                     </header>
                     <p class="docs-section" id="item-2-1">
                     <h2 class="section-heading">Database Setup</h2>
@@ -296,20 +293,20 @@
                         <p>
                             In most cases, you may want to install both <a
                                 href="https://rapidpro.github.io/rapidpro/docs/development/">RapidPro</a> and the
-                            External USSD channel on the same local machine.<br>
+                            External USSD channel on the same server instance.<br>
                             To set up RapidPro follow the instructions <a
                                 href="https://rapidpro.github.io/rapidpro/docs/development/">Here</a><br>
-                            Since they are both Django applications, you may find your self needing to run <code>python
-                            manage.py runserver</code> for both cases and this will complain with error <code
+                            Since they are both Django applications, you have to run <code>python
+                            manage.py runserver</code> for each of them. This will return an error  <code
                                 style="color:darkred">Address already in use</code>, since the Django development server
-                            by default runs on port <code>8000</code>.<br>
-                            The easiest trick here is starting each on a different port as described in the django
+                            by default runs on port <code>8000</code>.<br><br>
+                            The trick here is starting each on a different port as described in the django
                             documentation <a href="https://docs.djangoproject.com/en/3.1/ref/django-admin/">Here</a>.
                             For our example, we shall use port <code>5000</code> to run the External USSD Channel
                             development server.<br>
-                            Inside the External USSD channel project directory run<br>
+                            Inside the External USSD channel project directory, run<br>
                             <code>python manage.py 0.0.0.0:5000</code><br>
-                            Visit http://localhost:5000<br>
+                            Visit http://localhost:5000<br><br>
                             We recommend that you leave RapidPro use the default port <code>8000</code>
                         </p>
                     </section><!--//section-->
@@ -321,8 +318,7 @@
                         <h1 class="docs-heading">Integration with RapidPro</h1>
                         <section class="docs-intro">
                             <p>
-                                For this step, You need an online RapidPro instance (it could be hosted together with
-                                USSD channe on the same machine)
+                                For this step, You need an online RapidPro instance (it could be on the same server instance as the USSD channel on the same machine)
                                 as described <a href="#item-2-3">above</a>.
                             </p>
                         </section><!--//docs-intro-->
