@@ -219,8 +219,7 @@ Two options are provided,
     
 9. `Response Structure`: if option 1 (Is Key Value)in 8 above is chosen, a text area will appear expecting entries discussed under `Request Format` in `(3)`   above.
 
-With similar logic as in (3) above, our channel understands as follows
-
+    With similar logic as in (3) above, our channel understands as follows
 
    -  `text` for the text(message) in the response
    -   `action` for the signal keywords i.e (the ones that signale end of session or more interaction as discussed above).
