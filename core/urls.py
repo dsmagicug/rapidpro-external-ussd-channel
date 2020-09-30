@@ -26,7 +26,8 @@ urlpatterns = [
     path("", include("ui.urls")),
     path("", include("channel.urls")),
     path("", include("handlers.urls")),
-    path("", include("contacts.urls"))
+    path("", include("contacts.urls")),
+    path("", include("documentation.urls"))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

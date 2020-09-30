@@ -1,10 +1,796 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'documentation/base.html' %}
+{% load static %}
+
+{% block header %}
+    {% include 'documentation/heeader.html' %}
+{% endblock header %}
+
+{% block content %}
+    <div class="docs-wrapper">
+        <div id="docs-sidebar" class="docs-sidebar">
+            <div class="top-search-box d-lg-none p-3">
+                <form class="search-form">
+                    <input type="text" placeholder="Search the docs..." name="search" class="form-control search-input">
+                    <button type="submit" class="btn search-btn" value="Search"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+            <nav id="docs-nav" class="docs-nav navbar">
+                <ul class="section-items list-unstyled nav flex-column pb-3">
+                    <li class="nav-item section-title"><a class="nav-link scrollto active" href="#section-1"><span
+                            class="theme-icon-holder mr-2"><i class="fas fa-map-signs"></i></span>Overview</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#section-1">About USSD External Channel </a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-1-1">Technologies</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-1-2">Coding Conventions</a></li>
+                    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-2"><span
+                            class="theme-icon-holder mr-2"><i class="fas fa-arrow-down"></i></span>Installation</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-2-1">Database Setup</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-2-2">User Interface Setup</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-2-3">Running Channel and RapidPro
+                        locally together </a></li>
+                    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-3"><span
+                            class="theme-icon-holder mr-2"><i class="fas fa-cogs"></i></span>Intergration with RapidPro</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-3-1">Channel Configurations</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-3-2">Aggregator Handler
+                        Configurations</a></li>
+                    <!--<li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-4"><span
+                            class="theme-icon-holder mr-2"><i class="fas fa-cogs"></i></span>Integrations</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-4-1">Section Item 4.1</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-4-2">Section Item 4.2</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-4-3">Section Item 4.3</a></li>
+                    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-5"><span
+                            class="theme-icon-holder mr-2"><i class="fas fa-tools"></i></span>Utilities</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-5-1">Section Item 5.1</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-5-2">Section Item 5.2</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-5-3">Section Item 5.3</a></li>
+                    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-6"><span
+                            class="theme-icon-holder mr-2"><i class="fas fa-laptop-code"></i></span>Web</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-6-1">Section Item 6.1</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-6-2">Section Item 6.2</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-6-3">Section Item 6.3</a></li>
+                    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-7"><span
+                            class="theme-icon-holder mr-2"><i class="fas fa-tablet-alt"></i></span>Mobile</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-7-1">Section Item 7.1</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-7-2">Section Item 7.2</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-7-3">Section Item 7.3</a></li>
+                    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-8"><span
+                            class="theme-icon-holder mr-2"><i class="fas fa-book-reader"></i></span>Resources</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-8-1">Section Item 8.1</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-8-2">Section Item 8.2</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-8-3">Section Item 8.3</a></li>
+                    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-9"><span
+                            class="theme-icon-holder mr-2"><i class="fas fa-lightbulb"></i></span>FAQs</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-9-1">Section Item 9.1</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-9-2">Section Item 9.2</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-9-3">Section Item 9.3</a></li>-->
+                </ul>
+
+            </nav><!--//docs-nav-->
+        </div><!--//docs-sidebar-->
+        <div class="docs-content">
+            <div class="container">
+                <article class="docs-article" id="section-1">
+                    <header class="docs-header">
+                        <h3 class="docs-heading"><span style="font-size: 15pt">What is the USSD External Channel?</span><span
+                                class="docs-time">Last updated: 2020-09-30</span>
+                        </h3>
+                        <section class="docs-intro">
+                            <p>
+                                RapidPro External USSD channel is an open source software that uses RapidPro's Generic
+                                External
+                                Channel API to relay messages between RapidPro and USSD supported devices through USSD
+                                aggregator APIs that are configurable within the channel.
+
+                            </p>
+                        </section><!--//docs-intro-->
+
+                        <!--<h5>Github Code Example:</h5>
+                        <p>You can <a class="theme-link" href="https://gist.github.com/" target="_blank">embed your code
+                            snippets using Github gists</a></p>
+                        <div class="docs-code-block">
+                            <script src="https://gist.github.com/xriley/fce6cf71edfd2dadc7919eb9c98f3f17.js"></script>
+
+                        </div>
+
+                        <h5>Highlight.js Example:</h5>
+                        <p>You can <a class="theme-link" href="https://github.com/highlightjs/highlight.js"
+                                      target="_blank">embed your code snippets using highlight.js</a> It supports <a
+                                class="theme-link" href="https://highlightjs.org/static/demo/" target="_blank">185
+                            languages and 89 styles</a>.</p>
+                        <p>This template uses <a class="theme-link" href="https://highlightjs.org/static/demo/"
+                                                 target="_blank">Atom One Dark</a> style for the code blocks: <br><code>&#x3C;link
+                            rel=&#x22;stylesheet&#x22; href=&#x22;//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.2/styles/atom-one-dark.min.css&#x22;&#x3E;</code>
+                        </p>
+                        <div class="docs-code-block">
+							<pre class="shadow-lg rounded"><code class="json hljs">[
+  {
+    <span class="hljs-attr">"title"</span>: <span class="hljs-string">"apples"</span>,
+    <span class="hljs-attr">"count"</span>: [<span class="hljs-number">12000</span>, <span
+                                        class="hljs-number">20000</span>],
+    <span class="hljs-attr">"description"</span>: {<span class="hljs-attr">"text"</span>: <span class="hljs-string">"..."</span>, <span
+                                        class="hljs-attr">"sensitive"</span>: <span class="hljs-literal">false</span>}
+  },
+  {
+    <span class="hljs-attr">"title"</span>: <span class="hljs-string">"oranges"</span>,
+    <span class="hljs-attr">"count"</span>: [<span class="hljs-number">17500</span>, <span
+                                        class="hljs-literal">null</span>],
+    <span class="hljs-attr">"description"</span>: {<span class="hljs-attr">"text"</span>: <span class="hljs-string">"..."</span>, <span
+                                        class="hljs-attr">"sensitive"</span>: <span class="hljs-literal">false</span>}
+  }
+]
+
+
+</code></pre>
+                        </div>-->
+
+
+                    </header>
+                    <section class="docs-section" id="item-1-1">
+                        <h2 class="section-heading">Technologies</h2>
+                        <p>
+                            We lean on some frameworks and technologies to make the RapidPro USSD External Channel work,
+                            below is a brief overview of the ones we directly use.
+                            It is recommended to first have a grasp about the basics of how these frameworks and the
+                            programming languages used before
+                            you proceed.
+                        </p>
+
+                        <h5>Frontend</h5>
+                        <ul>
+                            <li>
+                                <strong class="mr-1"><a href="https://www.djangoproject.com">Python - Django</a>:
+                                </strong>
+                                <p>
+                                    The entire frontend is built in django, we try to use the latest version of django
+                                    shortly in about 2 months when its out.
+                                </p>
+                            </li>
+
+                        </ul>
+                        <h5>Backend</h5>
+                        <ul>
+                            <li>
+                                <strong class="mr-1"><a href="http://www.postgresql.org/">PostgreSQL</a>:
+                                </strong>
+                                <p>
+                                    Although you can use other RDBMS together with Django as described <a
+                                        href="https://docs.djangoproject.com/en/3.1/ref/databases/">Here</a>,
+                                    We recommend and depend on PostgreSQL as our SQL server.
+                                </p>
+                            </li>
+                            <li>
+                                <strong class="mr-1"><a href="http://redis.io/">Redis</a>:
+                                </strong>
+                                <p>
+                                    We use Redis as a reliable and fast broker to provide a locking mechanism during
+                                    transactions between
+                                    our Channel and RapidPro.
+                                    It should be noted that the core logic of the system will not work when Redis is not
+                                    installed.
+                                </p>
+                            </li>
+
+                        </ul>
+                    </section><!--//section-->
+
+                    <section class="docs-section" id="item-1-2">
+                        <h2 class="section-heading">Coding Conventions</h2>
+                        <p>
+                            We generally try to adhere to the practices set forth by the Django, Python communities.
+                        </p>
+                        <h5>Code Reviews & Pull Requests</h5>
+                        <p>
+                            All committed code must be code reviewed via a formal pull request. Whether it is new
+                            feature work or bug fixes, all code should be written on a branch apart from master, then a
+                            pull request should be opened to review those changes before committing to master. Any code
+                            on the master branch is considered ready for live deployment.
+                        </p>
+                        <h5>Modularity of code</h5>
+                        <p>We try to keep related code together in less coupled modules that can be modified/removed
+                            from the core system at any time without grave effects on most parts of the system</p>
+                    </section><!--//section-->
+
+                    </section><!--//section-->
+
+                </article>
+
+                <article class="docs-article" id="section-2">
+                    <header class="docs-header">
+                        <h1 class="docs-heading">Installation</h1>
+                        <section class="docs-intro">
+                            <p>In order to run this channel for development, follow this quick guide. Note that
+                                development and deployment has only been tested on OSX and Linux, you will likely have
+                                to modify a couple of steps below if using Windows.</p>
+                        </section><!--//docs-intro-->
+                    </header>
+                    <p class="docs-section" id="item-2-1">
+                    <h2 class="section-heading">Database Setup</h2>
+                    <p>
+                        Create a new database user called <code>ussd_user</code> for postgreSQL
+                        <br>
+                        You can create one by running this command in your terminal
+                    <div class="docs-code-block rounded">
+                        <code class="code-samples hljs">
+                            $createuser ussd_user --pwprompt -d
+                        </code>
+                    </div>
+                    Create database named <code>ussd</code> by running the command below
+                    <div class="docs-code-block rounded">
+                        <code class="code-samples hljs">
+                            $createdb ussd
+                        </code>
+                    </div>
+
+                    If all is well with your PostgreSQL then your database is ready.
+                    </p>
+                    </section><!--//section-->
+
+                    <section class="docs-section" id="item-2-2">
+                        <h2 class="section-heading">User Interface Setup</h2>
+                        <p>
+                            Go on to clone the project <a
+                                href="https://github.com/dsmagicug/rapidpro-external-ussd-channel">Here</a> by running
+                            the command below.
+
+                            You can create one by running this command in your terminal
+                        <div class="shadow-lg rounded">
+                            <code class="code-samples hljs">
+                                $createdb ussd
+                            </code>
+                        </div>
+                        </p>
+                        <p>
+                        <div class="docs-code-block">
+                            <div class="shadow-lg rounded">
+                                <code class="code-samples hljs">
+                                    $git clone https://github.com/dsmagicug/rapidpro-external-ussd-channel.git<br>
+                                    $cd rapidpro-external-ussd-channel
+                                </code>
+                            </div>
+                        </div>
+                        </p>
+                        <h2 class="section-heading">Building a virtual environment</h2>
+                        <p>
+                            This step is optional but it's highly recommended to use a virtual environment to run your
+                            External USSD channel installation. The pinned python dependencies for the project can be
+                            found in pip-freeze.txt. You can build the recommended environment as follows (from the root
+                            External USSD channel installation directory)
+                        </p>
+                        <div class="docs-code-block">
+                            <div class="shadow-lg rounded">
+                                <code class="code-samples hljs">
+                                    $ virtualenv -p python3 env<br>
+                                    $ source env/bin/activate<br>
+                                    $(env) $ pip install -r pip-freeze.txt
+                                </code>
+                            </div>
+                        </div>
+                        <h2 class="section-heading">sync your database</h2>
+                        <p>
+                            Still inside your project root directory, run the following command
+                        </p>
+                        <div class="docs-code-block">
+                            <div class="shadow-lg rounded">
+                                <code class="code-samples hljs">
+                                    $python manage.py migrate
+                                </code>
+                            </div>
+                        </div>
+                        <h2 class="section-heading">Start django server</h2>
+                        <p>
+                            Start the django (rocket) server by running the code below.<br>
+                            Then visit <code><a href="#">http://localhost:8000</a></code>
+                        </p>
+                        <div class="docs-code-block">
+                            <div class="shadow-lg rounded">
+                                <code class="code-samples hljs">
+                                    $python manage.py runserver
+                                </code>
+                            </div>
+                        </div>
+                    </section><!--//section-->
+
+                    <section class="docs-section" id="item-2-3">
+                        <h5 class="section-heading">Running alongside RapidPro on the same machine</h5>
+                        <p>
+                            In most cases, you may want to install both <a
+                                href="https://rapidpro.github.io/rapidpro/docs/development/">RapidPro</a> and the
+                            External USSD channel on the same local machine.<br>
+                            To set up RapidPro follow the instructions <a
+                                href="https://rapidpro.github.io/rapidpro/docs/development/">Here</a><br>
+                            Since they are both Django applications, you may find your self needing to run <code>python
+                            manage.py runserver</code> for both cases and this will complain with error <code
+                                style="color:darkred">Address already in use</code>, since the Django development server
+                            by default runs on port <code>8000</code>.<br>
+                            The easiest trick here is starting each on a different port as described in the django
+                            documentation <a href="https://docs.djangoproject.com/en/3.1/ref/django-admin/">Here</a>.
+                            For our example, we shall use port <code>5000</code> to run the External USSD Channel
+                            development server.<br>
+                            Inside the External USSD channel project directory run<br>
+                            <code>python manage.py 0.0.0.0:5000</code><br>
+                            Visit http://localhost:5000<br>
+                            We recommend that you leave RapidPro use the default port <code>8000</code>
+                        </p>
+                    </section><!--//section-->
+                </article><!--//docs-article-->
+
+
+                <article class="docs-article" id="section-3">
+                    <header class="docs-header">
+                        <h1 class="docs-heading">Integration with RapidPro</h1>
+                        <section class="docs-intro">
+                            <p>
+                                For this step, You need an online RapidPro instance (it could be hosted together with
+                                USSD channe on the same machine)
+                                as described <a href="#item-2-3">above</a>.
+                            </p>
+                        </section><!--//docs-intro-->
+                    </header>
+                    <section class="docs-section" id="item-3-1">
+                        <h2 class="section-heading">Channel Configurations</h2>
+                        <ul>
+                            <li>Visit the web interface of RapidPro External USSD Channel system</li>
+                            <li>Create an account under <code>Register</code> if you haven't</li>
+                            <li>Login.</li>
+                        </ul>
+                        <p>
+                            <figure class="figure docs-figure py-3">
+                                <a href="{% static 'assets/img/demo/channel_conf.png' %}" data-title="Channel Configs"
+                                   data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded"
+                                                               src="{% static 'assets/img/demo/channel_conf.png' %}"
+                                                               alt="" style="width: 600px;"></a>
+                                <figcaption class="figure-caption mt-3"><i class="fas fa-image mr-2"></i>Channel
+                                    Configuration form
+                                </figcaption>
+                            </figure>
+                            <br>
+                            Continue to <code>CHANNEL CONFIGS</code>on the side menu(as shown in the image above) to
+                            configure a channel closely following the instructions on the Step by step form. Note that
+                            you will need to configure the following for your channel to work properly.
+                            <br>
+                            <ol>
+                                <li>
+                                    <code>Send&nbsp;URL</code>
+                        <p>
+                            This is a URL which RapidPro will call when sending an outgoing message. This URL will be
+                            generate for you as you key in your machine URL that is required by the. <br>The SEND URL
+                            will be in a format like this; <code>http://yourmachine/adaptor/send-url</code>. Copy this
+                            link, quickly head to Rapidpro and paste it into RapidPro's External API form under the Send
+                            url field.
+                            <figure class="figure docs-figure py-3">
+                                <a href="{% static 'assets/img/demo/send-url.png' %}"
+                                   data-title="RapidPro External API service config instructions page"
+                                   data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded"
+                                                               src="{% static 'assets/img/demo/send-url.png' %}" alt=""
+                                                               style="width: 600px;"></a>
+                                <figcaption class="figure-caption mt-3"><i class="fas fa-image mr-2"></i>RapidPro
+                                    external service conf Instructions screen
+                                </figcaption>
+                            </figure>
+                        </p>
+                        </li>
+                        <li>
+                            <p>
+                                Fill the rest of RapidPro's External API configuration form and then submit it. You will
+                                be presented with instructions on how to setup an external service (The USSD External
+                                Channel) similar to the image below.
+                                <figure class="figure docs-figure py-3">
+                                    <a href="{% static 'assets/img/demo/external_service.png' %}"
+                                       data-title="RapidPro External API service config instructions page"
+                                       data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded"
+                                                                   src="{% static 'assets/img/demo/external_service.png' %}"
+                                                                   alt="" style="width: 600px;"></a>
+                                    <figcaption class="figure-caption mt-3"><i class="fas fa-image mr-2"></i>Receive URL
+                                        required from RapidPro at step4 below
+                                    </figcaption>
+                                </figure>
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                On the above instructions pages in RapidPro, we are ONLY interested in the <code>RECEIVE
+                                URL</code>. Copy it and head back to our USSD channel form.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Click Next and paste the URL there. (make sure the <code style="color:blue">https://app.rapidpro.io</code>
+                                part of this URL is substituted with the correct link to your RapidPro instance and
+                                please leave the other part <code style="color:blue">/c/ex/......../receive</code>
+                                untouched).
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Click Next to configure the Channel's <code>Max-timeout</code> (default=10s). This is
+                                the time in seconds our channel shall wait for a response from RapidPro. It will time
+                                out if RapidPro does not reply within that time interval.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Click Next to configure the <code>Trigger word</code> (default=USSD). This is a keyword
+                                to trigger a given flow execution in Rapidpro when a contact starts a new session when
+                                it isn't involved with any RapidPro flows yet.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Submit the form to save the channel configurations.
+                            </p>
+                        </li>
+                        </ol>
+
+                        </p>
+                    </section><!--//section-->
+
+                    <section class="docs-section" id="item-3-2">
+                        <h2 class="section-heading">Aggregator Handler Configurations</h2>
+                        <p>
+                            Since different USSD aggregator APIs have different Request/Response formats(Structures),
+                            this channel provides a way to standardize these formats into one that is commonly
+                            understood by RapidPro. This is achieved through configuring handlers for each one of the
+                            aggregator APIs that you want to use.<br>
+                            Follow these instructions in order to set up a Handler for your USSD aggregator API<br>
+                            Go to <code>HANDLERS</code> on your side menu, click Add Handler button, You will be
+                            presented with a form(as shown in the image below).<br>
+                            <tr>
+                                <td>
+                                    <figure class="figure docs-figure py-3">
+                                        <a href="{% static 'assets/img/demo/add_handler.png' %}"
+                                           data-title="RapidPro External API service config instructions page"
+                                           data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded"
+                                                                       src="{% static 'assets/img/demo/add_handler.png' %}"
+                                                                       alt="" style="width: 600px;"></a>
+                                        <figcaption class="figure-caption mt-3"><i class="fas fa-image mr-2"></i>Add
+                                            Handler Button
+                                        </figcaption>
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="figure docs-figure py-3">
+                                        <a href="{% static 'assets/img/demo/register_handler.png' %}"
+                                           data-title="RapidPro External API service config instructions page"
+                                           data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded"
+                                                                       src="{% static 'assets/img/demo/register_handler.png' %}"
+                                                                       alt="" style="width: 600px;"></a>
+                                        <figcaption class="figure-caption mt-3"><i class="fas fa-image mr-2"></i>Register
+                                            Handler Form
+                                        </figcaption>
+                                    </figure>
+                                </td>
+                            </tr>
+                            <br>
+                            Below are the fields on the above form and what they require
+                            <ol>
+                                <li><code>Aggregator</code>
+                        <p>
+                            The name of the USSD aggregator that you want to use for example DMARK or <a
+                                href="https://africastalking.com/ussd">Africa's Talking</a>)
+                        </p>
+                        </li>
+                        <li><code>Shot code</code>
+                            <p>
+                                Short code you are provided with by your aggregator e.g 348.
+                            </p>
+                        </li>
+                        <li><code>Request format</code>
+                            <p>
+                                This is a very important field which you MUST have right so as the channel can safely
+                                standardize aggregator Requests to RapidPro understandable ones. The template format is
+                                provided already in that textarea as shown below.
+                            <div class="docs-code-block">
+                                <div class="shadow-lg rounded">
+                                    <code class="code-samples hljs">
+                                        {% templatetag openvariable %}short_code=ussdServiceCode}}, {% templatetag openvariable %}session_id=transactionId}}, {% templatetag openvariable %}from=msisdn}}, {% templatetag openvariable %}text=ussdRequestString}}, {% templatetag openvariable %}date=creationTime}}</code>
+                                </div>
+                                <br>
+                                Each is a combination of two parameters, one on the left hand side of the equal
+                                sign(<code>=</code>) and the other on the left. The one on the let represents the format
+                                understood by RapidPro and our External channel which MUST not change. The one on the
+                                right hand side represents the format in which the aggregator requests delivers that
+                                value to our channel.
+                                for example
+                                <br>
+                                <div class="docs-code-block">
+                                    <div class="shadow-lg rounded">
+                                        <code class="code-samples hljs">{% templatetag openvariable %}short_code=ussdServiceCode}}, {% templatetag openvariable %}session_id=transactionId}}, {% templatetag openvariable %}from=msisdn}}, {% templatetag openvariable %}text=ussdRequestString}}</code>
+                                    </div>
+                                    means the request from the aggregator API in this case say DMARK will arrive as<br>
+                                    <div class="docs-code-block">
+                                        <div class="shadow-lg rounded">
+                                            <code class="code-samples hljs">{"ussdServiceCode:"257","transactionId":123456789,
+                                                "msisdn":"25678xxxxxx","ussdRequestString":"Hello world"}</code>
+                                        </div>
+                                        <br>
+                                        the above format will then be converted into
+                                        <div class="shadow-lg rounded">
+                                            <code class="code-samples hljs">
+                                                {"short_code":"257", "session_id":123456789, "from":"25678xxxxxx",
+                                                "text":"Hello World"}
+                                            </code>
+                                        </div>
+                                        <br>
+                                        which is understood by Rapidpro and our Channel. for example if a particular
+                                        aggregator represents short_code as serviceCode, the combination to map this
+                                        will be <code>{% templatetag openvariable %}short_code=serviceCode}}</code>.
+                                        Please refer to your respective aggregator USSD Docs for their formats.
+                                        <br><br>
+                                        Note that our channel and RapidPro have the following standard formats
+                                        <div class="table-responsive my-4">
+                                            <table class="table table-bordered">
+                                                <tbody>
+                                                <tr>
+                                                    <th class="theme-bg-light"><a class="theme-link" href="#"><code>session_id</code></a>
+                                                    </th>
+                                                    <td>for USSD session ID</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="theme-bg-light"><a class="theme-link" href="#"><code>short_code</code></a>
+                                                    </th>
+                                                    <td>for USSD short codes e.g. 348</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <th class="theme-bg-light"><a class="theme-link"
+                                                                                  href="#"><code>from</code></a></th>
+                                                    <td>for the phone number in the Request.</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <th class="theme-bg-light"><a class="theme-link"
+                                                                                  href="#"><code>text</code></a></th>
+                                                    <td>for the content(message) in the request i.e. User replies.</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="theme-bg-light"><a class="theme-link"
+                                                                                  href="#"><code>date</code></a></th>
+                                                    <td> (Optionally set) for the time string in the request. Note that
+                                                        apart from date, your request format has to cater for all the
+                                                        rest by mapping them to their equivalents in the USSD request
+                                                        from a given aggregator API.
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                            </p>
+                        </li>
+                        <li><code>Response content type</code>
+                            <p>
+                                how the response to the aggregator API should be encoded(default is <code>application/json</code>)
+                                (refer to your aggregator's USSD Docs for such information )
+                            </p>
+                        </li>
+                        <li><code>Response method</code>
+                            <p>
+                                (whether your aggregator expects a POST, GET or PUT method in the response)
+                            </p>
+                        </li>
+                        <li><code>Signal reply string</code>
+                            <p>
+                                this is a keyword in the response to your aggregator's API that is used to signal
+                                further interaction in the USSD session, i.e. a USSD menu with an inputbox for the end
+                                user to reply. (Refer to aggregator's USSD Docs for this keyword)
+                            </p>
+                        </li>
+                        <li><code>Signal end string</code>
+                            <p>
+                                this is the Keyword your aggregator uses in the response string to indicate end of USSD
+                                Session in order to send a USSD prompt without an inputbox to the end user device.(Refer
+                                to aggregator's USSD Docs for this keyword)
+                            </p>
+                        </li>
+                        <li><code>Response format</code>
+                            <p>
+                                This field indicates the format expected by the aggregator's API in the response sent by
+                                our channel. two options are so far provided.
+                            </p>
+                            <ul>
+                                <li><code>Is Key Value</code>
+                                    <p>
+                                        (Default) means the aggregator API will accept the message and signal response
+                                        string(seen above) from our channel if its in a json like key-value string e.g
+                                        <code>{"responseString":"Hello User how are you": "signal":"request"}</code>
+                                    </p>
+                                </li>
+                                <li><code>Starts With</code>
+                                    <p>
+                                        means the aggregator expects a string in the response body that starts with a
+                                        keyword to signal end or request for interaction as seen above.
+                                    </p>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><code>Response Structure</code>
+                            <p>
+                                if option 1 (Is Key Value)in 8 above is chosen, a textarea will come from hiding
+                                expecting entries discussed under Request Format in <code>(3)</code> above. with similar
+                                logic, our channel understands as follows
+                            </p>
+                            <ul>
+                                <li><code>text</code>
+                                    <p>
+                                        for the text(message) in the response
+                                    </p>
+                                </li>
+                                <li><code>action</code>
+                                    <p>
+                                        for the signal keywords set above. for example if aggregator A's response should
+                                        be in this format
+                                        <code>{"responseString":"Hello User how are you":
+                                            "signal":"Signal_keyword"}</code>
+                                        <br>
+                                        <code>{% templatetag openvariable %}text=responseString}}, {% templatetag openvariable %}action=signal}}</code>
+                                    </p>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><code>Push support</code>
+                            <p>
+                                Boolean to specify whether your aggregator supports USSD PUSH protocal i.e MT USSD
+                                sessions (<code>Default=False</code>)
+                            </p>
+                        </li>
+                        </ol>
+                        <br>
+                        Submit this form and you are ready to enjoy the power of RapidPro through USSD. You can
+                        configure multiple handlers for multiple aggregators but each aggregator must have one handler
+                        depending on the format of their requests.
+                        </p>
+                    </section><!--//section-->
+
+                   <!-- <section class="docs-section" id="item-3-3">
+                        <h2 class="section-heading">Section Item 3.3</h2>
+                        <p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis
+                            leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis
+                            felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio
+                            in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec
+                            arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
+                    </section>-->
+                </article><!--//docs-article-->
+
+                <!--<article class="docs-article" id="section-4">
+                    <header class="docs-header">
+                        <h1 class="docs-heading">Intergrations</h1>
+                        <section class="docs-intro">
+                            <p>Section intro goes here. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
+                                finibus condimentum nisl id vulputate. Praesent aliquet varius eros interdum suscipit.
+                                Donec eu purus sed nibh convallis bibendum quis vitae turpis. Duis vestibulum diam
+                                lorem, vitae dapibus nibh facilisis a. Fusce in malesuada odio.</p>
+                        </section>
+                    </header>
+                    <section class="docs-section" id="item-4-1">
+                        <h2 class="section-heading">Section Item 4.1</h2>
+                        <p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis
+                            leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis
+                            felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio
+                            in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec
+                            arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
+                    </section>
+
+                    <section class="docs-section" id="item-4-2">
+                        <h2 class="section-heading">Section Item 4.2</h2>
+                        <p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis
+                            leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis
+                            felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio
+                            in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec
+                            arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
+                    </section>
+
+                    <section class="docs-section" id="item-4-3">
+                        <h2 class="section-heading">Section Item 4.3</h2>
+                        <p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis
+                            leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis
+                            felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio
+                            in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec
+                            arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
+                    </section>
+                </article>-->
+
+                <!--<article class="docs-article" id="section-5">
+                    <header class="docs-header">
+                        <h1 class="docs-heading">Utilities</h1>
+                        <section class="docs-intro">
+                            <p>Section intro goes here. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
+                                finibus condimentum nisl id vulputate. Praesent aliquet varius eros interdum suscipit.
+                                Donec eu purus sed nibh convallis bibendum quis vitae turpis. Duis vestibulum diam
+                                lorem, vitae dapibus nibh facilisis a. Fusce in malesuada odio.</p>
+                        </section>
+                    </header>
+                    <section class="docs-section" id="item-5-1">
+                        <h2 class="section-heading">Section Item 5.1</h2>
+                        <p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis
+                            leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis
+                            felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio
+                            in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec
+                            arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
+                    </section>
+
+                    <section class="docs-section" id="item-5-2">
+                        <h2 class="section-heading">Section Item 5.2</h2>
+                        <p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis
+                            leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis
+                            felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio
+                            in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec
+                            arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
+                    </section>
+
+                    <section class="docs-section" id="item-5-3">
+                        <h2 class="section-heading">Section Item 5.3</h2>
+                        <p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis
+                            leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis
+                            felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio
+                            in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec
+                            arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
+                    </section>
+                </article>
+                -->
+
+
+                <!--<article class="docs-article" id="section-6">
+                    <header class="docs-header">
+                        <h1 class="docs-heading">Web</h1>
+                        <section class="docs-intro">
+                            <p>Section intro goes here. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
+                                finibus condimentum nisl id vulputate. Praesent aliquet varius eros interdum suscipit.
+                                Donec eu purus sed nibh convallis bibendum quis vitae turpis. Duis vestibulum diam
+                                lorem, vitae dapibus nibh facilisis a. Fusce in malesuada odio.</p>
+                        </section>
+                    </header>
+                    <section class="docs-section" id="item-6-1">
+                        <h2 class="section-heading">Section Item 6.1</h2>
+                        <p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis
+                            leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis
+                            felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio
+                            in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec
+                            arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
+                    </section>
+
+                    <section class="docs-section" id="item-6-2">
+                        <h2 class="section-heading">Section Item 6.2</h2>
+                        <p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis
+                            leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis
+                            felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio
+                            in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec
+                            arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
+                    </section>
+
+                    <section class="docs-section" id="item-6-3">
+                        <h2 class="section-heading">Section Item 6.3</h2>
+                        <p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis
+                            leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis
+                            felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio
+                            in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec
+                            arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
+                    </section>
+                </article>-->
+
+                <!--<footer class="footer">
+                    <div class="container text-center py-5">
+                         This template is free as long as you keep the footer attribution link. If you'd like to use the template without the attribution link, you can buy the commercial license via our website: themes.3rdwavemedia.com Thank you for your support. :) */-->
+                        <!--<small class="copyright">Designed with <i class="fas fa-heart" style="color: #fb866a;"></i> by
+                            <a class="theme-link" href="http://themes.3rdwavemedia.com" target="_blank">Xiaoying
+                                Riley</a> for developers</small>-->
+                        <!--<ul class="social-list list-unstyled pt-4 mb-0">
+                            <li class="list-inline-item"><a href="#"><i class="fab fa-github fa-fw"></i></a></li>
+                            <li class="list-inline-item"><a href="#"><i class="fab fa-twitter fa-fw"></i></a></li>
+                            <li class="list-inline-item"><a href="#"><i class="fab fa-slack fa-fw"></i></a></li>
+                            <li class="list-inline-item"><a href="#"><i class="fab fa-product-hunt fa-fw"></i></a></li>
+                            <li class="list-inline-item"><a href="#"><i class="fab fa-facebook-f fa-fw"></i></a></li>
+                            <li class="list-inline-item"><a href="#"><i class="fab fa-instagram fa-fw"></i></a></li>
+                        </ul>
+                    </div>
+                </footer>-->
+            </div>
+        </div>
+    </div><!--//docs-wrapper-->
+{% endblock content %}
+
+
+
+
+<!-- Specific Page CSS goes HERE  -->
+
+
