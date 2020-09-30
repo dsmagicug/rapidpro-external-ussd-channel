@@ -319,7 +319,30 @@
                         <section class="docs-intro">
                             <p>
                                 For this step, You need an online RapidPro instance (it could be on the same server instance as the USSD channel on the same machine)
-                                as described <a href="#item-2-3">above</a>.
+                                as described <a href="#item-2-3">above</a>.<br><br>
+                                Go to RapidPro and select External API  as demonstrated in the image below.
+                                <figure class="figure docs-figure py-3">
+                                <a href="{% static 'assets/img/demo/external-channel-icon.png' %}" data-title="Channel Configs"
+                                   data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded"
+                                                               src="{% static 'assets/img/demo/external-channel-icon.png' %}"
+                                                               alt="" style="width: 600px;"></a>
+                                <figcaption class="figure-caption mt-3"><i class="fas fa-image mr-2"></i>
+                                    External API channel Option in RapidPro
+                                </figcaption>
+                            </figure><br>
+                                Proceed to the External API form as shown in the image below
+                                <br>
+                                <figure class="figure docs-figure py-3">
+                                <a href="{% static 'assets/img/demo/claim-form.png' %}" data-title="Channel Configs"
+                                   data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded"
+                                                               src="{% static 'assets/img/demo/claim-form.png' %}"
+                                                               alt="" style="width: 600px;"></a>
+                                <figcaption class="figure-caption mt-3"><i class="fas fa-image mr-2"></i>
+                                    External API channel Option in RapidPro
+                                </figcaption>
+                            </figure>
+                                <br>
+                                Head back to the External USSD Channel Web interface when you are sure the above steps.
                             </p>
                         </section><!--//docs-intro-->
                     </header>
@@ -349,11 +372,9 @@
                                 <li>
                                     <code>Send&nbsp;URL</code>
                         <p>
-                            This is a URL which RapidPro will call when sending an outgoing message. This URL will be
-                            generate for you as you key in your machine URL that is required by the. <br>The SEND URL
-                            will be in a format like this; <code>http://yourmachine/adaptor/send-url</code>. Copy this
-                            link, quickly head to Rapidpro and paste it into RapidPro's External API form under the Send
-                            url field.
+                            This is a URL which RapidPro will call when sending an outgoing message. This URL will be generated as you input your local server URL required.<br><br>
+                            The format of the SEND URL will be like this; <code>http://yourmachine/adaptor/send-url</code>.
+                        Copy this link, head to RapidPro's External API form and paste it under the <code>SEND URL</code> field as shown below.
                             <figure class="figure docs-figure py-3">
                                 <a href="{% static 'assets/img/demo/send-url.png' %}"
                                    data-title="RapidPro External API service config instructions page"
@@ -385,7 +406,7 @@
                         </li>
                         <li>
                             <p>
-                                On the above instructions pages in RapidPro, we are ONLY interested in the <code>RECEIVE
+                                On the above instructions page in RapidPro, we are ONLY interested in the <code>RECEIVE
                                 URL</code>. Copy it and head back to our USSD channel form.
                             </p>
                         </li>
@@ -406,9 +427,8 @@
                         </li>
                         <li>
                             <p>
-                                Click Next to configure the <code>Trigger word</code> (default=USSD). This is a keyword
-                                to trigger a given flow execution in Rapidpro when a contact starts a new session when
-                                it isn't involved with any RapidPro flows yet.
+                                Click Next to configure the <code>Trigger word</code> (default=USSD). This is a keyword to trigger a given flow execution in Rapidpro
+                                when a contact starts a new session when it isn't involved with any RapidPro flows yet.
                             </p>
                         </li>
                         <li>
@@ -424,12 +444,11 @@
                     <section class="docs-section" id="item-3-2">
                         <h2 class="section-heading">Aggregator Handler Configurations</h2>
                         <p>
-                            Since different USSD aggregator APIs have different Request/Response formats(Structures),
-                            this channel provides a way to standardize these formats into one that is commonly
-                            understood by RapidPro. This is achieved through configuring handlers for each one of the
+                            Since different USSD aggregator APIs have different Request/Response formats, this channel standardizes these formats into one understood by RapidPro.<br>
+                            This is achieved through configuring handlers for each one of the
                             aggregator APIs that you want to use.<br>
-                            Follow these instructions in order to set up a Handler for your USSD aggregator API<br>
-                            Go to <code>HANDLERS</code> on your side menu, click Add Handler button, You will be
+                            To set up a Handelr;<br><br>
+                            Go to <code>HANDLERS</code> on your side menu, click <code>Add Handler</code> button. You will be
                             presented with a form(as shown in the image below).<br>
                             <tr>
                                 <td>
@@ -466,15 +485,14 @@
                                 href="https://africastalking.com/ussd">Africa's Talking</a>)
                         </p>
                         </li>
-                        <li><code>Shot code</code>
+                        <li><code>Shotcode</code>
                             <p>
-                                Short code you are provided with by your aggregator e.g 348.
+                                The shortcode provided by your aggregator e.g 348.
                             </p>
                         </li>
                         <li><code>Request format</code>
                             <p>
-                                This is a very important field which you MUST have right so as the channel can safely
-                                standardize aggregator Requests to RapidPro understandable ones. The template format is
+                                This is a very important field which must be set correctly in order for the channel to safely standardize aggregator Requests/Responses.. The template format is
                                 provided already in that textarea as shown below.
                             <div class="docs-code-block">
                                 <div class="shadow-lg rounded">
@@ -482,9 +500,9 @@
                                         {% templatetag openvariable %}short_code=ussdServiceCode}}, {% templatetag openvariable %}session_id=transactionId}}, {% templatetag openvariable %}from=msisdn}}, {% templatetag openvariable %}text=ussdRequestString}}, {% templatetag openvariable %}date=creationTime}}</code>
                                 </div>
                                 <br>
-                                Each is a combination of two parameters, one on the left hand side of the equal
-                                sign(<code>=</code>) and the other on the left. The one on the let represents the format
-                                understood by RapidPro and our External channel which MUST not change. The one on the
+                                Each is a combination of two parameters, on either sides of the equal sign(<code>=</code>).
+                                <br>The one on the let represents the format
+                                understood by RapidPro and our External channel which MUST not change.<br> The one on the
                                 right hand side represents the format in which the aggregator requests delivers that
                                 value to our channel.
                                 for example
@@ -555,13 +573,13 @@
                         </li>
                         <li><code>Response content type</code>
                             <p>
-                                how the response to the aggregator API should be encoded(default is <code>application/json</code>)
+                                this is how the response to the aggregator API should be encoded(default is <code>application/json</code>)
                                 (refer to your aggregator's USSD Docs for such information )
                             </p>
                         </li>
                         <li><code>Response method</code>
                             <p>
-                                (whether your aggregator expects a POST, GET or PUT method in the response)
+                                Specifies whether your aggregator expects a POST, GET or PUT method in the response.
                             </p>
                         </li>
                         <li><code>Signal reply string</code>
@@ -588,7 +606,9 @@
                                     <p>
                                         (Default) means the aggregator API will accept the message and signal response
                                         string(seen above) from our channel if its in a json like key-value string e.g
-                                        <code>{"responseString":"Hello User how are you": "signal":"request"}</code>
+                                        <div class="shadow-lg rounded">
+                                            <code class="code-samples hljs">{"responseString":"Hello User how are you": "signal":"request"}</code>
+                                    </div>
                                     </p>
                                 </li>
                                 <li><code>Starts With</code>
@@ -601,9 +621,12 @@
                         </li>
                         <li><code>Response Structure</code>
                             <p>
-                                if option 1 (Is Key Value)in 8 above is chosen, a textarea will come from hiding
-                                expecting entries discussed under Request Format in <code>(3)</code> above. with similar
-                                logic, our channel understands as follows
+                                if option 1 (Is Key Value)in 8 above is chosen, a textarea appear
+                                expecting entries similar to ones discussed under Request Format in
+                                <code>(3)</code> above.<br>
+                                With similar logic as in (3) above, our channel understands as follows
+                            </ul>
+
                             </p>
                             <ul>
                                 <li><code>text</code>
@@ -613,12 +636,21 @@
                                 </li>
                                 <li><code>action</code>
                                     <p>
-                                        for the signal keywords set above. for example if aggregator A's response should
-                                        be in this format
-                                        <code>{"responseString":"Hello User how are you":
-                                            "signal":"Signal_keyword"}</code>
+                                        for the signal keywords i.e (the ones that signale end of session or more interaction as discussed above). <br><br>for example if aggregator A's expected response is in this format;
                                         <br>
-                                        <code>{% templatetag openvariable %}text=responseString}}, {% templatetag openvariable %}action=signal}}</code>
+                                        <div class="shadow-lg rounded">
+                                            <code class="code-samples hljs">
+                                                {"responseString":"Hello User how are you":"signal":"Signal_keyword"}
+                                            </code>
+                                        </div>
+
+                                        <br>
+                                        the entry in this field should then be <br>
+                                        <div class="shadow-lg rounded">
+                                            <code class="code-samples hljs">
+                                                {% templatetag openvariable %}text=responseString}}, {% templatetag openvariable %}action=signal}}
+                                            </code>
+                                        </div>
                                     </p>
                                 </li>
                             </ul>
@@ -631,9 +663,7 @@
                         </li>
                         </ol>
                         <br>
-                        Submit this form and you are ready to enjoy the power of RapidPro through USSD. You can
-                        configure multiple handlers for multiple aggregators but each aggregator must have one handler
-                        depending on the format of their requests.
+                        Submit this form and enjoy the power of RapidPro through USSD. You can configure multiple handlers for multiple aggregators but each aggregator must have one handler depending on the format of their requests/responses.
                         </p>
                     </section><!--//section-->
 

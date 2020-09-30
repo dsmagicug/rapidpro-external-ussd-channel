@@ -188,11 +188,12 @@ for example if a particular aggregator represents `short_code` as `serviceCode`,
 Please refer to your respective aggregator USSD Docs for their formats.
 
 Note that our channel and RapidPro have the following standard formats 
-    -   **_session_id_** for USSD session ID
-    -   **_short_code_** for USSD short codes e.g. `348`
-    -   _**from**_ for the phone number in the Request.
-    -   **_text_** for the content(message) in the request i.e. User replies.
-    -    **_date_** (Optionally set) for the time string in the request.
+
+   - **_session_id_** for USSD session ID
+   -   **_short_code_** for USSD short codes e.g. `348`
+   -   _**from**_ for the phone number in the Request.
+   -   **_text_** for the content(message) in the request i.e. User replies.
+   -    **_date_** (Optionally set) for the time string in the request.
     
 Note that apart from `date`, your request format has to cater for all the rest by mapping them 
 to their equivalents in the USSD request from a given aggregator API.
@@ -219,8 +220,10 @@ Two options are provided,
 9. `Response Structure`: if option 1 (Is Key Value)in 8 above is chosen, a text area will appear expecting entries discussed under `Request Format` in `(3)`   above.
 
 With similar logic as in (3) above, our channel understands as follows
-       -    `text` for the text(message) in the response
-       -    `action` for the signal keywords set above.
+
+
+   -  `text` for the text(message) in the response
+   -   `action` for the signal keywords i.e (the ones that signale end of session or more interaction as discussed above).
        
 for example if aggregator A's expected response is in this format; 
 ```
