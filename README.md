@@ -224,14 +224,14 @@ Two options are provided,
    -  `text` for the text(message) in the response
    -   `action` for the signal keywords i.e (the ones that signale end of session or more interaction as discussed above).
        
-for example if aggregator A's expected response is in this format; 
-```
-{"responseString":"Hello User how are you": "signal":"Signal_keyword"}
-```
-the entry in this field should then be 
-```
-{{text=responseString}}, {{action=signal}}
-```
+    for example if aggregator A's expected response is in this format; 
+    ```
+     {"responseString":"Hello User how are you": "signal":"Signal_keyword"}
+      ```
+     the entry in this field should then be 
+        ```
+       {{text=responseString}}, {{action=signal}}
+        ```
         
 8. `Push support`: A boolean to specify whether your aggregator supports USSD PUSH protocal i.e MT USSD sessions (Default=`False`).
 
