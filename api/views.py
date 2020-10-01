@@ -153,39 +153,3 @@ def call_back(request):
         error_logger.exception(err)
         response = {"responseString": "External Application unreachable", "action": "end"}
         return Response(response, status=500)
-
-
-# the endpoints below are for simulating rapidpro
-@api_view(['POST', 'GET', 'PUT'])
-def receive(request):
-    # access_logger.info(str(request.META))
-    data = request.data
-
-    clean_data = data.dict()
-    try:
-        url = "http://localhost:5000/adaptor/processor"
-        req = requests.post(url, clean_data, headers=HEADERS)
-        status = req.status_code
-        if status == 200:
-            return Response(dict(message="Receive got it"), status=200)
-        else:
-            return Response(dict(message="Some error"), status=200)
-    except Exception as err:
-        error_logger.exception(err)
-        print(err)
-
-
-@api_view(['POST'])
-def processor(request):
-    data = request.data
-    phrases = [
-        "What month did you start your last period?\n1.Jan\n2.Feb\n"
-    ]
-    text = secrets.choice(phrases)
-    _from = data['from']
-    response = {"text": text, "to": _from, "status": "W"}
-    # call send url
-    url = "http://localhost:5000/adaptor/send-url"
-    req = requests.post(url, response, headers=HEADERS)
-    if req.status_code == 200:
-        return Response(response, status=200)
