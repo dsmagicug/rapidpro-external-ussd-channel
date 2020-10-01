@@ -7,7 +7,7 @@ from ast import literal_eval
 import secrets
 from websocket import create_connection
 from handlers.utils import ProcessAggregatorRequest, RP_RESPONSE_FORMAT, RP_RESPONSE_STATUSES, standard_urn, \
-    SESSION_STATUSES
+    SESSION_STATUSES, get_channel
 from channel.models import USSDChannel, USSDSession
 from core.utils import access_logger, error_logger
 from django.http import QueryDict
@@ -78,19 +78,22 @@ def call_back(request):
     # access_logger.info(str(request.META))
     try:
         request_dict = literal_eval(json.dumps(request.data['info']))  # from GCE
-        #request_dict = literal_eval(json.dumps(request.data))
+        # request_dict = literal_eval(json.dumps(request.data))
         sr = ProcessAggregatorRequest(request_dict)
         standard_request_string = sr.process_handler()
         current_session = sr.log_session()
         is_new_session = sr.is_new_session()
         still_in_flow = sr.is_in_flow()
-        print(is_new_session, still_in_flow)
         handler = sr.get_handler()
         end_action = handler.signal_end_string
         reply_action = handler.signal_reply_string
         urn = standard_request_string['from']
+        channel = get_channel()
+        if channel is None:
+            raise Exception("Could not continue without a channel, configure one first and try again")
+
         if is_new_session:
-            text = " "
+            text = " " if still_in_flow else channel.trigger_word
         else:
             text = standard_request_string["text"]
         allowed_urn = standard_urn(urn)
@@ -100,17 +103,12 @@ def call_back(request):
             "from": allowed_urn,
             "text": text
         }
+        print(rapid_pro_request)
         # create redis keys
         key1 = f"MO_MT_KEY_{allowed_urn}"
         r.set(key1, 1)  # proven necessary or else
         key2 = f"MSG_KEY_{allowed_urn}"
         """""Channel details """""
-        # first fetch all since you are not sure of the id (in cases
-        # where once channel was deleted, (impossible to do that within the app though)
-        channels = USSDChannel.objects.all()
-        channel = channels[0] if len(channels) > 0 else None
-        if channel is None:
-            raise Exception("Could not continue without a channel, configure one first and try again")
 
         # receive_url is used to send msgs to rapidpro
         receive_url = channel.rapidpro_receive_url

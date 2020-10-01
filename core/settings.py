@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api.apps.ChannelApiConfig',
-    'django_countries',
+    'countries_plus',
     'rest_framework',
     'msgs',
     'ui',

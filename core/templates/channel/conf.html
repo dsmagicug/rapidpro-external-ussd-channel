@@ -130,11 +130,41 @@
                                     <span class="font-weight-lighter text-center" style="color:#000000">
                                     A keyword to trigger flow execution in Rapidpro when receive URL is called for the first time for a given contact.
                                 </span>
-                                        {{ form.trigger_word }}</td>
+                                        {{ form.trigger_word }}
+                                    </td>
                                     <td><a class="col-lg-2"><i style="font-size: 20pt;color:blue"
                                                                data-container="body" data-toggle="popover"
                                                                data-trigger="hover" data-placement="bottom"
                                                                data-content="Default is 'USSD'. This must be a single word"
+                                                               class="fa fa-info-circle"></i></a></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </fieldset>
+                <section>
+                    Country
+                </section>
+
+                <fieldset>
+                    <div class="form-row card card-body">
+                        <div class="text-center">
+                            <label id="header-label" style="margin-top: 1em" for="job" class="">Configure Country</label>
+                        </div>
+                        <div class="col-lg-10">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td>
+                                    <span class="font-weight-lighter text-center" style="color:#000000">
+                                        The Country in which this channel will be operating.(This is crucial for standard contacts
+                                        that RapidPro can understand)
+                                    </span>
+                                        {{ form.country }}
+                                    </td>
+                                    <td><a class="col-lg-2"><i style="font-size: 20pt;color:blue"
+                                                               data-container="body" data-toggle="popover"
+                                                               data-trigger="hover" data-placement="bottom"
+                                                               data-content="Set Country in order to have correct phone number formats"
                                                                class="fa fa-info-circle"></i></a></td>
                                 </tr>
                             </table>
@@ -153,16 +183,19 @@
                         <div class="col-lg-10">
                             <table class="table table-bordered">
                                 <tr>
-                                    <td>Send URL</td><td><span id="send-value"></span></td>
+                                    <td>Send&nbsp;URL</td><td><span id="send-value"></span></td>
                                 </tr>
                                 <tr>
-                                    <td>Receive Url</td><td><span id="receive-value"></span></td>
+                                    <td>Receive&nbsp;Url</td><td><span id="receive-value"></span></td>
                                 </tr>
                                 <tr>
-                                    <td>Max-Timeout</td><td><span id="timeout-value"></span></td>
+                                    <td>Max&nbsp;Timeout</td><td><span id="timeout-value"></span></td>
                                 </tr>
                                 <tr>
-                                    <td>Trigger word</td><td><span id="trigger_word-value"></span></td>
+                                    <td>Trigger&nbsp;word</td><td><span id="trigger_word-value"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Country</td><td><span id="trigger_country-value"></span></td>
                                 </tr>
                             </table>
                         </div>

@@ -1,7 +1,4 @@
 from django import forms
-
-from django_countries.widgets import CountrySelectWidget
-from django_countries import countries
 from django.utils.safestring import mark_safe
 from .models import USSDChannel
 import socket
@@ -41,7 +38,6 @@ class ChannelConfForm(forms.ModelForm):
                 "value": "10",
             }
         ))
-
     class Meta:
         model = USSDChannel
         exclude = ["is_active"]
