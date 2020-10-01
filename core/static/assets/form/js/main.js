@@ -59,6 +59,8 @@
             $("#receive-value").html($("#id_rapidpro_receive_url").val())
             $("#timeout-value").html($("#id_timeout_after").val())
             $("#trigger_word-value").html($("#id_trigger_word").val())
+            $("#trigger_country-value").html($("#id_country").val())
+
 
             return form.valid();
         },

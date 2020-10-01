@@ -1,10 +1,11 @@
 from .models import Handler
 from contacts.models import Contact
-from channel.models import USSDSession
+from channel.models import USSDSession, USSDChannel
 from channel.serializers import SessionSerializer
 from django.utils import timezone
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from countries_plus.models import Country
 import json
 from time import sleep
 from ast import literal_eval
@@ -28,15 +29,16 @@ RESPONSE_CONTENT_TYPES = [
 ]
 
 SESSION_STATUSES = dict(
-    TIMEDOUT='Timed Out',
+    TIMED_OUT='Timed Out',
     TERMINATED='Terminated',
-    COMPLETED='Completed'
+    COMPLETED='Completed',
+    IN_PROGRESS="In Progress"
 )
 
 RP_RESPONSE_FORMAT = {
     "text": "text",
     "to": "to",
-    "session_status": "status"
+    "session_status": "session_status"
 }
 
 RP_RESPONSE_STATUSES = {
@@ -61,6 +63,15 @@ def get_sessions():
     )
 
 
+# get configured channel, we can't simply assume the pk=1
+def get_channel():
+    channels = USSDChannel.objects.all()
+    if len(channels) > 0:
+        return channels[0]
+    else:
+        return None
+
+
 def separate_keys(string):
     """'
     @string => a string in the format of "{{short_code=ussdServiceCode}},  {{session_id=transactionId}}"
@@ -76,11 +87,27 @@ def separate_keys(string):
     return [rapidpro_keys, aggregator_keys]
 
 
+def standard_urn(urn):
+    channel = get_channel()
+    country = channel.country_id
+    country_obj = Country.objects.get(iso=country)
+    dial_code = country_obj.phone
+    if urn[0] == "0":
+        # add prefix
+        urn = re.sub('0', dial_code, urn, 1)
+    else:
+        urn = urn
+    return urn
+
+
 class ProcessAggregatorRequest:
     rapidpro_keys = []
     handler_keys = []
     standard_request = ''
     service_code = ''
+    contact = None
+    still_in_flow = None
+    is_session_start = None
     handler = None
 
     def __init__(self, aggregator_request):
@@ -118,7 +145,7 @@ class ProcessAggregatorRequest:
         action = response_dict["action"]
         if self.handler:
             response_structure = self.handler.response_structure
-            # check if aggregator response format
+            # check for aggregator response format
             res_format = self.handler.response_format
             if res_format == 1:
                 # key-value
@@ -153,6 +180,7 @@ class ProcessAggregatorRequest:
             self.generate_standard_request()
             # save contact if it doesn't exist
             self.store_contact()
+            self.is_in_flow_session()
             return self.standard_request
         except Exception as err:
             print(err)
@@ -168,28 +196,57 @@ class ProcessAggregatorRequest:
                                 "handler")
 
     def store_contact(self):
-        if Contact.objects.filter(urn=self.standard_request['from']).exists():
-            pass
+        filtered = Contact.objects.filter(urn=self.standard_request['from'])
+        if filtered.exists():
+            contact = Contact.objects.get(urn=self.standard_request['from'])
+            self.contact = contact
         else:
             # created record
-            Contact.objects.create(urn=self.standard_request['from'])
+            contact = Contact.objects.create(urn=self.standard_request['from'])
+            self.contact = contact
+
+    def is_in_flow_session(self):
+        # To know whether contact is hasn't completed a flow
+        # Get their lastest session if any
+        # check its status, if In Progress or Timed Out, then they are still in a flow.
+        latest_session = USSDSession.objects.filter(contact=self.contact).latest('started_at')
+
+        status = latest_session.status
+        if status == SESSION_STATUSES['TIMED_OUT'] or status == SESSION_STATUSES['IN_PROGRESS']:
+            self.still_in_flow = True
+        else:
+            self.still_in_flow = False
 
     def log_session(self):
         session_id = self.standard_request['session_id']
-        contact = Contact.objects.get(urn=self.standard_request['from'])
+        contact = self.contact
         # check if session id exists with
         if USSDSession.objects.filter(session_id=session_id).exists():
             # do nothing to this session
             session = USSDSession.objects.get(session_id=session_id)
+            # update last visited field of this session
+            session.last_access_at = timezone.now()
+            session.save()
+            self.is_session_start = False
         else:
             # First End all sessions attached to this urn that may already be recorded
-            USSDSession.objects.filter(contact=contact, status="In Progress").update(status='Terminated',
-                                                                                     badge='warning',
-                                                                                     ended_at=timezone.now())
+            self.is_session_start = True
+            in_progress_sessions = USSDSession.objects.filter(contact=contact, status=SESSION_STATUSES["IN_PROGRESS"])
+            in_progress_sessions.update(status='Terminated', badge='warning', ended_at=timezone.now())
             # create session
             session = USSDSession.objects.create(session_id=session_id, contact=contact, handler=self.handler)
             get_sessions()
-        return session.session_id
+        return session
 
     def get_handler(self):
         return self.handler
+
+    ''''
+        Please call these after self.log_session()
+    '''
+
+    def is_new_session(self):
+        return self.is_session_start
+
+    def is_in_flow(self):
+        return self.still_in_flow
