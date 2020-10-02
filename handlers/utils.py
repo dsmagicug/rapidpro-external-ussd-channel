@@ -223,7 +223,6 @@ class ProcessAggregatorRequest:
         # check its status, if In Progress or Timed Out, then they are still in a flow.
         try:
             latest_session = USSDSession.objects.filter(contact=self.contact).latest('started_at')
-            print(latest_session)
             if latest_session:
                 status = latest_session.status
                 if status == SESSION_STATUSES['TIMED_OUT'] or status == SESSION_STATUSES['IN_PROGRESS']:
