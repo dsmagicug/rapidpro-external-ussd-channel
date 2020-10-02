@@ -62,9 +62,6 @@ class USSDSession(models.Model):
     last_access_at = models.DateTimeField(
         auto_now_add=True
     )
-    ended_at = models.DateTimeField(
-        auto_now_add=True
-    )
 
     def __str__(self):
         return self.session_id

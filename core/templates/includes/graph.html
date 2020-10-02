@@ -1,0 +1,149 @@
+<script>
+    var chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)'
+    };
+    let data = [0,0]
+    function ajaxUpdator(){
+        $.ajax({
+            url: "{% url 'graph' %}",
+            type:"get",
+            success: function(result){
+                data = result.data
+        }});
+        return data
+    }
+    function randomScalingFactor() {
+        let data = ajaxUpdator()
+        return data;
+    }
+
+    function onReceive(event) {
+        window.myChart.config.data.datasets[event.index].data.push({
+            x: event.timestamp,
+            y: event.value
+        });
+        window.myChart.update({
+            preservation: true
+        });
+    }
+
+    var timeoutIDs = [];
+
+    function startSuccessSessionsFeed(index) {
+        var receive = function () {
+            let success = randomScalingFactor()
+            onReceive({
+                index: index,
+                timestamp: Date.now(),
+                value: success[0]
+            });
+            timeoutIDs[index] = setTimeout(receive,5000);
+        }
+        timeoutIDs[index] = setTimeout(receive, 5000);
+    }
+
+    function startTimedOutSessionsFeed(index) {
+        var receive = function () {
+            let timedOut = randomScalingFactor()
+            onReceive({
+                index: index,
+                timestamp: Date.now(),
+                value: timedOut[1]
+            });
+            timeoutIDs[index] = setTimeout(receive,5000);
+        }
+        timeoutIDs[index] = setTimeout(receive, 5000);
+    }
+
+    function startInProgressSessionsFeed(index) {
+        var receive = function () {
+            let inProgress = randomScalingFactor()
+            onReceive({
+                index: index,
+                timestamp: Date.now(),
+                value: inProgress[2]
+            });
+            timeoutIDs[index] = setTimeout(receive,5000);
+        }
+        timeoutIDs[index] = setTimeout(receive, 5000);
+    }
+
+    function stopFeed(index) {
+        clearTimeout(timeoutIDs[index]);
+    }
+
+    var color = Chart.helpers.color;
+    var config = {
+        type: 'bar',
+        data: {
+            datasets: [{
+                label: 'Timed Out',
+                backgroundColor: color(chartColors.red).alpha(0.9).rgbString(),
+                borderColor: chartColors.red,
+                fill: false,
+                cubicInterpolationMode: 'monotone',
+                data: []
+            }, {
+                label: 'Completed',
+                backgroundColor: color(chartColors.green).alpha(0.9).rgbString(),
+                borderColor: chartColors.green,
+                fill: false,
+                cubicInterpolationMode: 'monotone',
+                data: []
+            },
+             {
+                label: 'In Progress',
+                backgroundColor: color(chartColors.blue).alpha(0.9).rgbString(),
+                borderColor: chartColors.blue,
+                fill: false,
+                cubicInterpolationMode: 'monotone',
+                data: []
+            }
+            ]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Live USSD Session Tracking'
+            },
+            scales: {
+                xAxes: [{
+                    type: 'realtime',
+                    realtime: {
+                        duration: 20000,
+                        delay: 2000,
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'sessions'
+                    }
+                }]
+            },
+            tooltips: {
+                mode: 'nearest',
+                intersect: false
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: false
+            }
+        }
+    };
+
+    window.onload = function () {
+        var ctx = document.getElementById('myChart').getContext('2d');
+        window.myChart = new Chart(ctx, config);
+        startTimedOutSessionsFeed(0);
+        startSuccessSessionsFeed(1);
+        startInProgressSessionsFeed(2);
+    };
+
+</script>

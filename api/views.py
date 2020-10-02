@@ -3,8 +3,6 @@ from rest_framework.response import Response
 import redis
 import json
 import requests
-from ast import literal_eval
-import secrets
 from websocket import create_connection
 from handlers.utils import ProcessAggregatorRequest, RP_RESPONSE_FORMAT, RP_RESPONSE_STATUSES, standard_urn, \
     SESSION_STATUSES, get_channel

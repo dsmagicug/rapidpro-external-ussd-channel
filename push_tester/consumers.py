@@ -26,8 +26,6 @@ class PushConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         command = text_data_json
         # Send message to group
-        print("we are printing")
-        print(command)
         async_to_sync(self.channel_layer.group_send)(
             self.group_name,
             {

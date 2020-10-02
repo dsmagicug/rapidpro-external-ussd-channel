@@ -5,6 +5,13 @@ from django.http import HttpResponse
 from django import template
 from channel.models import USSDSession
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from handlers.utils import SESSION_STATUSES
+
+from datetime import datetime, timedelta
+
 
 @login_required(login_url="/login/")
 def index(request):
@@ -32,3 +39,20 @@ def pages(request):
     except:
         html_template = loader.get_template('error-500.html')
         return HttpResponse(html_template.render(context, request))
+
+
+@api_view(['GET'])
+def graph_data(request):
+    time_threshold = datetime.now() - timedelta(seconds=15)
+    now = datetime.now()
+    completed = USSDSession.objects.filter(last_access_at__range=[time_threshold, now]).filter(
+        status=SESSION_STATUSES["COMPLETED"]).count()
+    in_progress = USSDSession.objects.filter(last_access_at__range=[time_threshold, now]).filter(
+        status=SESSION_STATUSES["IN_PROGRESS"]).count()
+    timed_out = USSDSession.objects.filter(last_access_at__range=[time_threshold, now]).filter(
+        status=SESSION_STATUSES["TIMED_OUT"]).count()
+    success = completed
+    timeout = timed_out
+    in_progress = in_progress
+    data = [success, timeout, in_progress]
+    return Response({"status": "success", "data": data}, status=200)
