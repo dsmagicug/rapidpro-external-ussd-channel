@@ -28,7 +28,6 @@ class LiveSessionsConsumer(WebsocketConsumer):
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
         sessions = text_data_json
-        print(sessions)
         # Send message to group
         async_to_sync(self.channel_layer.group_send)(
             self.group_name,

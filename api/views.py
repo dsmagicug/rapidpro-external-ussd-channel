@@ -8,12 +8,8 @@ import secrets
 from websocket import create_connection
 from handlers.utils import ProcessAggregatorRequest, RP_RESPONSE_FORMAT, RP_RESPONSE_STATUSES, standard_urn, \
     SESSION_STATUSES, get_channel
-from channel.models import USSDChannel, USSDSession
 from core.utils import access_logger, error_logger
-from django.http import QueryDict
-from rest_framework.parsers import JSONParser
 from ast import literal_eval
-import re
 
 # Create your views here.
 
@@ -30,7 +26,7 @@ r = redis.Redis(host='localhost', port=6379, db=0)
 
 def push_ussd(payload):
     try:
-        ws = create_connection("ws://localhost:5000/ws/demo")
+        ws = create_connection("ws://129.205.2.58:5000/ws/demo")
         ws.send(json.dumps(payload))
         ws.close()
         return True
@@ -57,17 +53,14 @@ def send_url(request):
         if key1_val >= 0:
             r.lpush(key2, str(content))
         else:
-            msg_extras = dict(msg_type="Outgoing", status="Received")
+            action = "end"
+            if content["session_status"] == RP_RESPONSE_STATUSES["waiting"]:
+                action = "request"
+            msg_extras = dict(msg_type="Outgoing", status="Received", action=action)
             content.update(msg_extras)
             push = push_ussd(content)
             # reset key to 1
             r.set(key1, 0, ex=10)
-            if push:
-                # TODO inform RapidPro of the success
-                pass
-            else:
-                # TODO inform RapidPro of the failure
-                pass
         return Response({"message": "success"}, status=200)
     except Exception as err:
         error_logger.exception(err)
@@ -97,13 +90,11 @@ def call_back(request):
         else:
             text = standard_request_string["text"]
         allowed_urn = standard_urn(urn)
-        # TODO tell if its first string
 
         rapid_pro_request = {
             "from": allowed_urn,
             "text": text
         }
-        print(rapid_pro_request)
         # create redis keys
         key1 = f"MO_MT_KEY_{allowed_urn}"
         r.set(key1, 1)  # proven necessary or else

@@ -7,9 +7,10 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from countries_plus.models import Country
 import json
-from time import sleep
+from time import sleep, time
 from ast import literal_eval
 import re
+from random import random
 
 RESPONSE_FORMAT = [
     (1, "Is Key Value"),
@@ -100,13 +101,23 @@ def standard_urn(urn):
     return urn
 
 
+def create_session(urn,session_status):
+    ''''
+    for test purposes
+    a smarter one will be created once we have an aggregator that supports push
+    '''
+    session_id = str(time()).replace(".", "")
+
+    pass
+
+
 class ProcessAggregatorRequest:
     rapidpro_keys = []
     handler_keys = []
     standard_request = ''
     service_code = ''
     contact = None
-    still_in_flow = None
+    still_in_flow = False
     is_session_start = None
     handler = None
 
@@ -180,7 +191,6 @@ class ProcessAggregatorRequest:
             self.generate_standard_request()
             # save contact if it doesn't exist
             self.store_contact()
-            self.is_in_flow_session()
             return self.standard_request
         except Exception as err:
             print(err)
@@ -200,21 +210,28 @@ class ProcessAggregatorRequest:
         if filtered.exists():
             contact = Contact.objects.get(urn=self.standard_request['from'])
             self.contact = contact
+
         else:
             # created record
             contact = Contact.objects.create(urn=self.standard_request['from'])
             self.contact = contact
+        self.is_in_flow_session()
 
     def is_in_flow_session(self):
         # To know whether contact is hasn't completed a flow
         # Get their lastest session if any
         # check its status, if In Progress or Timed Out, then they are still in a flow.
-        latest_session = USSDSession.objects.filter(contact=self.contact).latest('started_at')
-
-        status = latest_session.status
-        if status == SESSION_STATUSES['TIMED_OUT'] or status == SESSION_STATUSES['IN_PROGRESS']:
-            self.still_in_flow = True
-        else:
+        try:
+            latest_session = USSDSession.objects.filter(contact=self.contact).latest('started_at')
+            print(latest_session)
+            if latest_session:
+                status = latest_session.status
+                if status == SESSION_STATUSES['TIMED_OUT'] or status == SESSION_STATUSES['IN_PROGRESS']:
+                    self.still_in_flow = True
+            else:
+                self.still_in_flow = False
+        except Exception as err:
+            # Django object.latest() makes an exception when nothing is in the DB
             self.still_in_flow = False
 
     def log_session(self):
