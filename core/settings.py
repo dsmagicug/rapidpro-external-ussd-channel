@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'channel',
     'handlers',
     'contacts',
-    'documentation',
+    'docs',
     'push_tester'
 ]
 
