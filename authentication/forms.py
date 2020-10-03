@@ -8,15 +8,13 @@ class LoginForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 "placeholder": "Username",
-                "value": "keeya",
-                "class": "form-control"
+                "class": "form-control",
             }
         ))
     password = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
                 "placeholder": "Password",
-                "value": "12345678",
                 "class": "form-control"
             }
         ))

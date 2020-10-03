@@ -20483,7 +20483,7 @@ return jQuery;
 		 * [jQuery.ajax](http://api.jquery.com/jQuery.ajax/) allowing fine control
 		 * of the Ajax request. DataTables has a number of default parameters which
 		 * you can override using this option. Please refer to the jQuery
-		 * documentation for a full description of the options available, although
+		 * docs for a full description of the options available, although
 		 * the following parameters provide additional options in DataTables or
 		 * require special consideration:
 		 *
@@ -25599,7 +25599,7 @@ return jQuery;
 	} );
 
 
-	// Information about events fired by DataTables - for documentation.
+	// Information about events fired by DataTables - for docs.
 	/**
 	 * Draw event, fired whenever the table is redrawn on the page, at the same
 	 * point as fnDrawCallback. This may be useful for binding events or
@@ -27228,7 +27228,7 @@ Buttons.background = function ( show, className, fade, insertPoint ) {
  * value from the buttons assigned to a DataTable. This is only useful if
  * multiple instances are attached to a DataTable.
  * @param  {string|int|array} Instance selector - see `instance-selector`
- *   documentation on the DataTables site
+ *   docs on the DataTables site
  * @param  {array} Button instance array that was attached to the DataTables
  *   settings object
  * @return {array} Buttons instances
@@ -27286,7 +27286,7 @@ Buttons.instanceSelector = function ( group, buttons )
  * operation can be performed on them.
  * @param  {array} Button instances array that the selector should operate on
  * @param  {string|int|node|jQuery|array} Button selector - see
- *   `button-selector` documentation on the DataTables site
+ *   `button-selector` docs on the DataTables site
  * @return {array} Array of objects containing `inst` and `idx` properties of
  *   the selected buttons so you know which instance each button belongs to.
  * @static
@@ -27419,7 +27419,7 @@ Buttons.buttonSelector = function ( insts, selector )
 
 
 /**
- * Buttons defaults. For full documentation, please refer to the docs/option
+ * Buttons defaults. For full docs, please refer to the docs/option
  * directory or the DataTables site.
  * @type {Object}
  * @static
@@ -27574,7 +27574,7 @@ $.extend( _dtButtons, {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * DataTables API
  *
- * For complete documentation, please refer to the docs/api directory or the
+ * For complete docs, please refer to the docs/api directory or the
  * DataTables site
  */
 
@@ -28906,7 +28906,7 @@ var _sheetname = function ( config )
 /**
  * Set the flash text. This has to be broken up into chunks as the Javascript /
  * Flash bridge has a size limit. There is no indication in the Flash
- * documentation what this is, and it probably depends upon the browser.
+ * docs what this is, and it probably depends upon the browser.
  * Experimentation shows that the point is around 50k when data starts to get
  * lost, so an 8K limit used here is safe.
  *

@@ -1,18 +1,4 @@
-<!--
-=========================================================
-* * Black Dashboard - v1.0.1
-=========================================================
 
-* Product Page: https://www.creative-tim.com/product/black-dashboard
-* Copyright 2019 Creative Tim (https://www.creative-tim.com)
-
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
--->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -29,7 +15,6 @@
     <title>
         USSD Channel {% block title %}{% endblock %}
     </title>
-
     <!--     Fonts and icons     -->
     <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet" />
     <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
@@ -38,7 +23,6 @@
     <!-- CSS Files -->
     <link href="{% static 'assets/css/black-dashboard.css' %}" rel="stylesheet"/>
     <!-- CSS Just for demo purpose, don't include it in your project -->
-    <link href="{% static 'assets/demo/demo.css' %}" rel="stylesheet"/>
 
     <!--Datatables-->
     <link href="{% static 'assets/css/datatables.css' %}" rel="stylesheet"/>
@@ -50,7 +34,7 @@
 <body class="white-content">
 <div class="wrapper">
 
-    {% if request.resolver_match.url_name != 'documentation' %}
+    {% if request.resolver_match.url_name != 'docs' %}
         {% include 'includes/sidebar.html' %}
     {% endif %}
 

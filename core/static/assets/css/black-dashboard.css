@@ -2610,7 +2610,7 @@ textarea.form-control.is-invalid {
   text-align: center;
   vertical-align: middle;
   user-select: none;
-  background-color: transparent;
+  background-color: #f4f5f7;
   border: 1px solid transparent;
   padding: 11px 40px;
   font-size: 0.875rem;
@@ -2659,15 +2659,15 @@ fieldset:disabled a.btn {
 
 .btn-primary {
   color: #ffffff;
-  background-color: #116596;
-  border-color: #116596;
+  background-color: #2962FF;
+  border-color: #2962FF;
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .btn-primary:hover {
   color: #ffffff;
-  background-color:#0D47A1;
-  border-color:#0D47A1;
+  background-color:#1565C0;
+  border-color:#1565C0;
 }
 
 .btn-primary:focus,
@@ -2678,8 +2678,8 @@ fieldset:disabled a.btn {
 .btn-primary.disabled,
 .btn-primary:disabled {
   color: #ffffff;
-  background-color: #0D47A1;
-  border-color: #0D47A1;
+  background-color: #448AFF;
+  border-color: #448AFF;
 }
 
 .btn-primary:not(:disabled):not(.disabled):active,
@@ -2737,15 +2737,15 @@ fieldset:disabled a.btn {
 
 .btn-success {
   color: #ffffff;
-  background-color: #00f2c3;
-  border-color: #00f2c3;
+  background-color: #00C853;
+  border-color: #00C853;
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .btn-success:hover {
   color: #ffffff;
-  background-color: #00cca4;
-  border-color: #00bf9a;
+  background-color: #00C853;
+  border-color: #00C853;
 }
 
 .btn-success:focus,
@@ -2971,15 +2971,15 @@ fieldset:disabled a.btn {
 
 .btn-default {
   color: #ffffff;
-  background-color: #344675;
+  background-color: #78909C;
   border-color: #344675;
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .btn-default:hover {
   color: #ffffff;
-  background-color: #28365b;
-  border-color: #243152;
+  background-color: #78909C;
+  border-color: #78909C;
 }
 
 .btn-default:focus,
@@ -2990,8 +2990,8 @@ fieldset:disabled a.btn {
 .btn-default.disabled,
 .btn-default:disabled {
   color: #ffffff;
-  background-color: #344675;
-  border-color: #344675;
+  background-color: #78909C;
+  border-color: #78909C;
 }
 
 .btn-default:not(:disabled):not(.disabled):active,
@@ -20314,11 +20314,11 @@ Copyright (c) 2015 Daniel Eden
 }
 
 .card-user .author .block.block-one {
-  background: rgba(225, 78, 202, 0.6);
-  background: -webkit-linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
-  background: -o-linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
-  background: -moz-linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
-  background: linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
+  background: rgba(4, 21, 225, 0.69);
+  background: -webkit-linear-gradient(to right, rgba(14, 4, 225, 0.68) 0%, rgba(225, 78, 202, 0) 100%);
+  background: -o-linear-gradient(to right, rgba(14, 4, 225, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
+  background: -moz-linear-gradient(to right, rgba(14, 4, 225, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
+  background: linear-gradient(to right, rgba(14, 4, 225, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=10);
   -webkit-transform: rotate(150deg);
   -moz-transform: rotate(150deg);
@@ -20330,11 +20330,11 @@ Copyright (c) 2015 Daniel Eden
 }
 
 .card-user .author .block.block-two {
-  background: rgba(225, 78, 202, 0.6);
-  background: -webkit-linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
-  background: -o-linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
-  background: -moz-linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
-  background: linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
+  background: rgba(10, 13, 225, 0.6);
+  background: -webkit-linear-gradient(to right, rgba(14, 4, 225, 0.75) 0%, rgba(225, 78, 202, 0) 100%);
+  background: -o-linear-gradient(to right, rgba(9, 16, 225, 0.68) 0%, rgba(225, 78, 202, 0) 100%);
+  background: -moz-linear-gradient(to right, rgba(34, 28, 225, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
+  background: linear-gradient(to right, rgba(14, 4, 225, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=10);
   -webkit-transform: rotate(30deg);
   -moz-transform: rotate(30deg);
@@ -20346,11 +20346,11 @@ Copyright (c) 2015 Daniel Eden
 }
 
 .card-user .author .block.block-three {
-  background: rgba(225, 78, 202, 0.6);
-  background: -webkit-linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
-  background: -o-linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
-  background: -moz-linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
-  background: linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
+  background: rgba(22, 28, 225, 0.65);
+  background: -webkit-linear-gradient(to right, rgba(14, 4, 225, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
+  background: -o-linear-gradient(to right, rgba(14, 4, 225, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
+  background: -moz-linear-gradient(to right, rgba(14, 4, 225, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
+  background: linear-gradient(to right, rgba(14, 4, 225, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=10);
   -webkit-transform: rotate(170deg);
   -moz-transform: rotate(170deg);
@@ -20362,11 +20362,11 @@ Copyright (c) 2015 Daniel Eden
 }
 
 .card-user .author .block.block-four {
-  background: rgba(225, 78, 202, 0.6);
-  background: -webkit-linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
-  background: -o-linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
-  background: -moz-linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
-  background: linear-gradient(to right, rgba(225, 78, 202, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
+  background: rgba(10, 13, 225, 0.75);
+  background: -webkit-linear-gradient(to right, rgba(12, 20, 225, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
+  background: -o-linear-gradient(to right, rgba(14, 4, 225, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
+  background: -moz-linear-gradient(to right, rgba(14, 4, 225, 0.6) 0%, rgba(225, 78, 202, 0) 100%);
+  background: linear-gradient(to right, rgba(36, 11, 225, 0.71) 0%, rgba(225, 78, 202, 0) 100%);
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=10);
   -webkit-transform: rotate(150deg);
   -moz-transform: rotate(150deg);

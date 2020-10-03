@@ -27,7 +27,7 @@ urlpatterns = [
     path("", include("channel.urls")),
     path("", include("handlers.urls")),
     path("", include("contacts.urls")),
-    path("", include("documentation.urls"))
+    path("", include("docs.urls"))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
