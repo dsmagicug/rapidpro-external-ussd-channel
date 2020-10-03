@@ -18,8 +18,6 @@
                         <div class="auth-form-transparent col-lg-12 text-left p-3">
 
                             <hr>
-
-
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="card">
@@ -54,7 +52,7 @@
                                                                     data-dismiss="alert" aria-label="Close">
                                                                 <i class="tim-icons icon-simple-remove"></i>
                                                             </button>
-                                                            <span><b> Success</b>&nbsp; {{ msg  }}</span>
+                                                            <span><b> Success</b>&nbsp; {{ msg }}</span>
                                                         </div>
                                                     {% endif %}
                                                 </div>
@@ -83,12 +81,13 @@
                                                 {{ request.user.email }}
                                             </p>
                                             {% if user.is_superuser %}
-                                            <p>
-                                                <button class="btn btn-round btn-sm btn-outline-warning" data-toggle="modal"
-                                                        data-target="#invite-user">
-                                                    <i class="tim-icons icon-user-add"></i>&nbsp;&nbsp;Invite User
-                                                </button>
-                                            </p>
+                                                <p>
+                                                    <button class="btn btn-round btn-sm btn-outline-warning"
+                                                            data-toggle="modal"
+                                                            data-target="#invite-user">
+                                                        <i class="tim-icons icon-user-add"></i>&nbsp;&nbsp;Invite User
+                                                    </button>
+                                                </p>
                                             {% endif %}
                                             <p>
                                                 <button class="btn btn-round btn-sm btn-warning" data-toggle="modal"
@@ -100,53 +99,54 @@
                                     </div>
                                 </div>
                             </div>
-                        {% if user.is_superuser %}
-                            <div class="container row">
-                                <div class="col-md-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5 class="title">Other System Users</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <table class="table table-bordered">
-                                                <thead class="btn-primary">
-                                                <tr>
-                                                    <th class="text-center text-white">Username</th>
-                                                    <th class="text-center text-white">Email</th>
-                                                    <th class="text-center text-white">Enabled?</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                {% for user in users %}
+                            {% if user.is_superuser %}
+                                <div class="container row">
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="title">Other System Users</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <table class="table table-bordered table-responsive-lg">
+                                                    <thead class="btn-primary">
                                                     <tr>
-                                                        <td>{{ user.username }}</td>
-                                                        <td class="text-center">{{ user.email }} </td>
-                                                        <td class="text-center">
-                                                            {% if user.is_active %}
-                                                                <input class="toggle-one" type="checkbox" data-size="small" data-width="120"
-                                                                                       data-offstyle="danger"
-                                                                                       data-onstyle="info"
-                                                                                       data-on="Enabled" data-off="Disabled"
-                                                                                       checked data-toggle="toggle">
-                                                                {% else %}
-                                                                <input class="toggle-one" type="checkbox" data-size="small"
-                                                                        data-width="120"
-                                                                        data-offstyle="danger"
-                                                                        data-onstyle="info"
-                                                                        data-on="Enabled" data-off="Disabled"
-                                                                        data-toggle="toggle">
-                                                            {% endif %}
-                                                        </td>
+                                                        <th class="text-center text-white">Username</th>
+                                                        <th class="text-center text-white">Email</th>
+                                                        <th class="text-center text-white">Enabled?</th>
                                                     </tr>
-                                                {% endfor %}
-                                                </tbody>
-                                            </table>
+                                                    </thead>
+                                                    <tbody>
+                                                    {% for user in users %}
+                                                        <tr data-id="{{ user.id }}">
+                                                            <td>{{ user.username }}</td>
+                                                            <td class="text-center">{{ user.email }} </td>
+                                                            <td class="text-center">
+                                                                {% if user.is_active %}
+                                                                    <input class="toggle-one" type="checkbox"
+                                                                           data-size="small" data-width="120"
+                                                                           data-offstyle="danger"
+                                                                           data-onstyle="default"
+                                                                           data-on="Enabled" data-off="Disabled"
+                                                                           checked data-toggle="toggle">
+                                                                {% else %}
+                                                                    <input class="toggle-one" type="checkbox"
+                                                                           data-size="small"
+                                                                           data-width="120"
+                                                                           data-offstyle="danger"
+                                                                           data-onstyle="default"
+                                                                           data-on="Enabled" data-off="Disabled"
+                                                                           data-toggle="toggle">
+                                                                {% endif %}
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-
-                            </div>
-                        {% endif %}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -205,12 +205,67 @@
             </div>
         </div>
     </div>
+
+    <!--Invite modal-->
+    <div class="modal fade" id="invite-user" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-login">
+            <div class="modal-content">
+                <div class="card card-login card-plain">
+                    <div class="modal-header justify-content-center">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            <i class="tim-icons icon-simple-remove"></i>
+                        </button>
+
+                        <div class="header header-primary text-center">
+                            <div class="modal-profile">
+                                <i class="tim-icons icon-envelop text-default" style="font-size: 30pt"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                        <div class="modal-body">
+                            <form id="invite-form" class="form" method="" action="">
+                            {% csrf_token %}
+                            <div class="card-content">
+                                <div class="input-group no-border form-control-lg">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <i class="tim-icons icon-mailbox"></i>
+                                        </div>
+                                    </div>
+                                    <input name="email" id="id-email" type="email" class="form-control" required
+                                           placeholder="Enter email you want to invite"/>
+                                </div>
+
+                            </div>
+                        </form>
+                        </div>
+                        <div class="modal-footer text-center pt-4">
+                            <a href="#" id="submit-invite"
+                               class="btn btn-warning  btn-round btn-lg btn-block">Invite</a>
+                        </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-<script src="{% static 'assets/form/js/bootstrap-toggle.min.js' %}"></script>
+    <script src="{% static 'assets/form/js/bootstrap-toggle.min.js' %}"></script>
     <script>
+        function errorNotification(error) {
+            const icon = "tim-icons icon-alert-circle-exc";
+            demo.showNotification('top', 'right', 4, error, icon)
+        }
+
+        function successNotification(msg) {
+            const icon = "icons icon-check-2";
+            demo.showNotification('top', 'right', 2, msg, icon);
+        }
+
         $(document).ready(() => {
 
             $("#submit-change-password").on("click", function (e) {
@@ -222,17 +277,56 @@
                     type: 'post',
                     data: formData
                 }).done((response) => {
-                    if(response.status === "success"){
-                        const icon = "icons icon-check-2";
-                        demo.showNotification('top','right',2,response.message, icon);
+                    if (response.status === "success") {
+                        successNotification(response.message)
                         // Hide modal
                         $("#change-password").modal("hide")
+                    } else {
+                        successNotification(response.message)
                     }
-                    else{
-                        const icon = "tim-icons icon-alert-circle-exc";
-                        demo.showNotification('top','right',4,response.message, icon)
-                    }
+                }).fail(() => {
+                    errorNotification("An error Occured, Check your Network connection and try again")
                 })
+            });
+            $(".toggle-one").on("change", function () {
+                const isChecked = $(this).prop('checked');
+                const userId = $(this).closest("tr").attr("data-id");
+                const data = {user_id: userId, is_active: isChecked};
+                $.ajax({
+                    url: "{% url 'enable_disable' %}",
+                    method: "post",
+                    data: data
+                }).done((res) => {
+                    if (res.status === "success") {
+                        successNotification(res.message);
+                    }
+                }).fail((error) => {
+                    errorNotification("An error Occured, Check your Network connection and try again")
+                })
+            });
+            $("#submit-invite").on("click", function (e) {
+                if ($("#id-email").val() !== ""){
+                    const form = $("#invite-form");
+                const formData = form.serializeArray();
+                $.ajax({
+                    url: "{% url 'invite' %}",
+                    type: 'post',
+                    data: formData
+                }).done((response) => {
+                    if (response.status === "success") {
+                        successNotification(response.message);
+                        // Hide modal
+                        $("#invite-user").modal("hide")
+                    } else {
+                        errorNotification(response.message)
+                    }
+                }).fail(() => {
+                    errorNotification("An error Occured, Check your Network connection and try again")
+                })
+                }
+                else{
+                    errorNotification("Email Field required")
+                }
             })
         })
     </script>

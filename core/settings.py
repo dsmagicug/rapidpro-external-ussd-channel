@@ -113,7 +113,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -154,6 +153,12 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'core/static')
 ]
 
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR)
+
+HOST = "http://129.205.2.58:5000"
+EMAIL_HOST = "smtp.app.com"
+EMAIL_POST = 25
+EMAIL_HOST_USER = "example@app.com"
+EMAIL_HOST_PASSWORD = "xxxxx"
+

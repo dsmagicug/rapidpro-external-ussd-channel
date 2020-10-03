@@ -41,7 +41,7 @@
   --danger: #fd5d93;
   --light: #adb5bd;
   --dark: #212529;
-  --default: #78909C;
+  --default: #344675;
   --white: #ffffff;
   --neutral: #ffffff;
   --darker: black;
@@ -2610,7 +2610,7 @@ textarea.form-control.is-invalid {
   text-align: center;
   vertical-align: middle;
   user-select: none;
-  background-color: transparent;
+  background-color: #f4f5f7;
   border: 1px solid transparent;
   padding: 11px 40px;
   font-size: 0.875rem;
@@ -2622,8 +2622,6 @@ textarea.form-control.is-invalid {
 @media (prefers-reduced-motion: reduce) {
   .btn {
     transition: none;
-    background-color: #959fb7;
-  border-color: #959fb7;
   }
 }
 
@@ -2661,15 +2659,15 @@ fieldset:disabled a.btn {
 
 .btn-primary {
   color: #ffffff;
-  background-color: #116596;
-  border-color: #116596;
+  background-color: #2962FF;
+  border-color: #2962FF;
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .btn-primary:hover {
   color: #ffffff;
-  background-color:#116596;
-  border-color:#116596;
+  background-color:#1565C0;
+  border-color:#1565C0;
 }
 
 .btn-primary:focus,
@@ -2973,14 +2971,15 @@ fieldset:disabled a.btn {
 
 .btn-default {
   color: #ffffff;
-  background-color: #959fb7;
-  border-color: #959fb7;
+  background-color: #78909C;
+  border-color: #344675;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .btn-default:hover {
   color: #ffffff;
-  background-color: #959fb7;
-  border-color: #959fb7;
+  background-color: #78909C;
+  border-color: #78909C;
 }
 
 .btn-default:focus,
@@ -2991,16 +2990,16 @@ fieldset:disabled a.btn {
 .btn-default.disabled,
 .btn-default:disabled {
   color: #ffffff;
-  background-color: #B0BEC5;
-  border-color: #B0BEC5;
+  background-color: #78909C;
+  border-color: #78909C;
 }
 
 .btn-default:not(:disabled):not(.disabled):active,
 .btn-default:not(:disabled):not(.disabled).active,
 .show>.btn-default.dropdown-toggle {
   color: #ffffff;
-  background-color: #78909C;
-  border-color: #78909C;
+  background-color: #243152;
+  border-color: #202c49;
 }
 
 .btn-default:not(:disabled):not(.disabled):active:focus,
