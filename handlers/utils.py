@@ -26,8 +26,9 @@ METHODS = [
 
 RESPONSE_CONTENT_TYPES = [
     ('json', 'application/json'),
+    ('form-urlencoded', 'application/x-www-form-urlencoded'),
     ('text', 'text/plain'),
-    ('xml', 'application/xml')
+    ('xml', 'application/xml'),
 ]
 
 SESSION_STATUSES = dict(
@@ -102,7 +103,7 @@ def standard_urn(urn):
     return urn
 
 
-def create_session(urn,session_status):
+def create_session(urn, session_status):
     ''''
     for test purposes
     a smarter one will be created once we have an aggregator that supports push

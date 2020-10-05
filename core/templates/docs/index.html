@@ -34,12 +34,11 @@
                     <li class="nav-item"><a class="nav-link scrollto" href="#item-3-1">Channel Configurations</a></li>
                     <li class="nav-item"><a class="nav-link scrollto" href="#item-3-2">Aggregator Handler
                         Configurations</a></li>
-                    <!--<li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-4"><span
-                            class="theme-icon-holder mr-2"><i class="fas fa-cogs"></i></span>Integrations</a></li>
-                    <li class="nav-item"><a class="nav-link scrollto" href="#item-4-1">Section Item 4.1</a></li>
-                    <li class="nav-item"><a class="nav-link scrollto" href="#item-4-2">Section Item 4.2</a></li>
-                    <li class="nav-item"><a class="nav-link scrollto" href="#item-4-3">Section Item 4.3</a></li>
-                    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-5"><span
+                    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-4"><span
+                            class="theme-icon-holder mr-2"><i class="fas fa-tv"></i></span>Features</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-4-1">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-4-2">User Profile</a></li>
+                    <!--<li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-5"><span
                             class="theme-icon-holder mr-2"><i class="fas fa-tools"></i></span>Utilities</a></li>
                     <li class="nav-item"><a class="nav-link scrollto" href="#item-5-1">Section Item 5.1</a></li>
                     <li class="nav-item"><a class="nav-link scrollto" href="#item-5-2">Section Item 5.2</a></li>
@@ -677,43 +676,114 @@
                     </section>-->
                 </article><!--//docs-article-->
 
-                <!--<article class="docs-article" id="section-4">
+                <article class="docs-article" id="section-4">
                     <header class="docs-header">
-                        <h1 class="docs-heading">Intergrations</h1>
+                        <h1 class="docs-heading">Other Features</h1>
                         <section class="docs-intro">
-                            <p>Section intro goes here. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
-                                finibus condimentum nisl id vulputate. Praesent aliquet varius eros interdum suscipit.
-                                Donec eu purus sed nibh convallis bibendum quis vitae turpis. Duis vestibulum diam
-                                lorem, vitae dapibus nibh facilisis a. Fusce in malesuada odio.</p>
+                            <p>The USSD External Channel web interface has other features. Below we look at them.</p>
                         </section>
                     </header>
                     <section class="docs-section" id="item-4-1">
-                        <h2 class="section-heading">Section Item 4.1</h2>
-                        <p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis
-                            leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis
-                            felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio
-                            in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec
-                            arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
+                        <h2 class="section-heading">Dashboard</h2>
+                        <p>
+                        The dahboard provides a summary of live USSD sessions in two forms as shown in the image below.<br>
+                            <figure class="figure docs-figure py-3">
+                                        <a href="{% static 'assets/img/demo/dashboard.png' %}"
+                                           data-title="Dashboard"
+                                           data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded"
+                                                                       src="{% static 'assets/img/demo/dashboard.png' %}"
+                                                                       alt="" style="width: 600px;"></a>
+                                        <figcaption class="figure-caption mt-3"><i class="fas fa-image mr-2"></i>A screenshot of the Dashboard
+                                        </figcaption>
+                                    </figure>
+                            <ol>
+                                <li>
+                                    <h5>Bar Graph</h5>
+                                    <p>
+                                        This represents sessions on an <code>x-axis</code>(Timestamp in intervals of 5 secs) and <code>y-axis</code>(No. of sessions).
+                                        <br>
+                                        The key of this graph clearly shows that sessions are tracked by status i.e.
+                                        <ul>
+                                            <li><code>Timed Out</code>:&nbsp; <b style="color:red">Red</b></li>
+                                            <li><code>Completed</code>:&nbsp; <b style="color:green">Green</b></li>
+                                            <li><code>In Progress</code>:&nbsp; <b style="color:blue">Blue</b></li>
+                                        </ul>
+                                        <b style="color:red">Attention</b> is needed when the red Bar is taller or the only visible bar. This means sessions are timing out in at the USSD External channel side. i.e. The channel can not reach RapidPro or RapidPro is not responding to the requests our channel forwards to it.<br>
+                                        Please check if your RapidPro instance is online or if it is, check if it's replying to the <code>send-url</code> you set during channel cofigurations.<br>
+                                        You may also want to check if the <code>send-url</code> you set is correct.
+                                    </p>
+                                </li>
+                                <li>
+                                    <h5>Tabular Format</h5>
+                                    <p>
+                                        The table displays Live USSD Sessions, every new session is added to the top of the table.
+                                        Where as the Bar Graph represents only three session statuses, the table adds another status on top of the 3 seen above.
+                                        This is the <b style="color:orange">Terminated</b> status.<br>
+                                        Like in the Bar Graph, <b style="color:red">Red</b> calls for Attention but <b style="color:orange">Orange</b> should not raise any conserns.<br>
+                                        This is because USSD session termination is normal, a USSD session may expire on the end User's device or they may choose to cancel it by pressing the <code>CANCEL</code> button on their USSD enabled devices.<br>
+                                        Once this happens, the next time a this user initiates a new USSD, the last one is labelled as terminated.
+                                        Therefore, for every terminated session, it means a user was resumed from where they stopped in a given flow.
+
+
+                                    </p>
+                                </li>
+                            </ol>
+                        </p>
                     </section>
 
                     <section class="docs-section" id="item-4-2">
-                        <h2 class="section-heading">Section Item 4.2</h2>
-                        <p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis
-                            leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis
-                            felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio
-                            in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec
-                            arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
+                        <h2 class="section-heading">User Profile</h2>
+                        <p>
+                            This section handles Current user profile managment.
+                            for example, editing username, email and changing the password.
+                            <br>
+                            The Admin user(super user) is capable of the following extra activities;
+                            <ol>
+                                <li><h5>Enabling/Disabling other users.</h5>
+                                    <p>Disabled users will not be able to log into the system.</p>
+                                </li>
+                                <li><h5>Inviting Users by email.</h5>
+                                    <p>
+                                    The Admin clicks, Invite User, then a a form will appear(as shown in the image below) requesting for an invite email address to which on invite, a new account will be created.<br>
+                                    This account will have a randomly generated password. and a username which will be the first part of the email address before <code>@</code>.<br>
+                                    An email will then be sent to the address specified, with a link to the USSD External channel login page and the auto generated credentials.
+                                    The invited user can use these to login for the first time and can change their credentials once logged in.
+                                    <br> Note that these users won't be Admins, so they can only change their account profiles, other options like <code>Invite User</code>, <code>Enable/Disable users</code> won't be accessible to them.
+                                <figure class="figure docs-figure py-3">
+                                        <a href="{% static 'assets/img/demo/invite.png' %}"
+                                           data-title="Invite User form"
+                                           data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded"
+                                                                       src="{% static 'assets/img/demo/invite.png' %}"
+                                                                       alt="" style="width: 600px;"></a>
+                                        <figcaption class="figure-caption mt-3"><i class="fas fa-image mr-2"></i>Invite user by email
+                                        </figcaption>
+                                    </figure>      <br>
+                                    Note that for emails to be sent out, and SMTP server credentials must be provided in <code>core/settings.py</code>
+                                    below are the SMTP settings required for feature to work
+                        <div class="docs-code-block rounded">
+                                    <code class="code-samples hljs">
+                                        HOST = "http://link_to_external_channel.app" (this is your USSD External channel server link which will be sent in the email)<br>
+                                        EMAIL_HOST = "smtp.domain.com" (smtp server host e.g for gmail it's smtp.gmail.com)<br>
+                                        EMAIL_POST = 25 (SMTP port e.g 25, 465, 587)<br>
+                                        EMAIL_HOST_USER = "example@app.com" (your email address or username on this smtp server e.g a gmail user can set this to tester@gmail.com )<br>
+                                        EMAIL_HOST_PASSWORD = "xxxxx"(Your email password)
+                                    </code>
+                                </div>
+                    </p>
+                                </li>
+                    </ol>
+                            <figure class="figure docs-figure py-3">
+                                        <a href="{% static 'assets/img/demo/profile.png' %}"
+                                           data-title="User profile page"
+                                           data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded"
+                                                                       src="{% static 'assets/img/demo/profile.png' %}"
+                                                                       alt="" style="width: 600px;"></a>
+                                        <figcaption class="figure-caption mt-3"><i class="fas fa-image mr-2"></i>User profile page for Admin users
+                                        </figcaption>
+                                    </figure>
+                        </p>
                     </section>
-
-                    <section class="docs-section" id="item-4-3">
-                        <h2 class="section-heading">Section Item 4.3</h2>
-                        <p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis
-                            leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis
-                            felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio
-                            in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec
-                            arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
-                    </section>
-                </article>-->
+                </article>
 
                 <!--<article class="docs-article" id="section-5">
                     <header class="docs-header">

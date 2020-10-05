@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from handlers.utils import SESSION_STATUSES
 
 from datetime import datetime, timedelta
-
+from random import randint
 
 @login_required(login_url="/login/")
 def index(request):
@@ -53,6 +53,5 @@ def graph_data(request):
         status=SESSION_STATUSES["TIMED_OUT"]).count()
     success = completed
     timeout = timed_out
-    in_progress = in_progress
     data = [success, timeout, in_progress]
     return Response({"status": "success", "data": data}, status=200)
