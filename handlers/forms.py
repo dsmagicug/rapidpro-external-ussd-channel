@@ -8,6 +8,7 @@ class HandlerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(HandlerForm, self).__init__(*args, **kwargs)
         self.fields['push_support'].required = False
+        self.fields['response_structure'].required = False
 
     aggregator = forms.CharField(
         help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>USSD aggregator whose requests will be handled "

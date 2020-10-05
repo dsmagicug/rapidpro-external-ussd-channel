@@ -416,7 +416,12 @@
                             <p>
                                 Click Next to configure the <code>Trigger word</code> (default=USSD). This is a keyword
                                 to trigger a given flow execution in Rapidpro
-                                when a contact starts a new session when it isn't involved with any RapidPro flows yet.
+                                when a contact starts a new session when it isn't involved with any RapidPro flows yet.<br>
+                                Please <b>note</b> that in RapidPro, a keyword can be set to trigger only one flow at a time.
+                                So we advise that if multiple choices of flows are available to be used in USSD,
+                                The Rapidpro flow creator should create a flow which routes to other flows then assign this keyword to that flow.
+                                i.e a User on USSD will be presented with options of which flow to participate in then get routed accordingly.
+                                This way one keyword can trigger the router flow, and routes will be made according to user replies.
                             </p>
                         </li>
                         <li>

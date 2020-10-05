@@ -6,19 +6,21 @@
     }
 
     $(document).ready(() => {
-        const requestFormat = `[[short_code=ussdServiceCode]],  [[session_id=transactionId]], [[from=msisdn]], [[to=msisdn]], [[text=ussdRequestString]], [[date=creationTime]]`;
+        const requestFormat = `[[short_code=ussdServiceCode]],  [[session_id=transactionId]], [[from=msisdn]], [[text=ussdRequestString]]`;
         const responseStruncture = `[[text=responseString]], [[action=signal]]`;
         // double braces will be confused fro jinja. so we replace using regex
-        if ($("#id_request_format").val() === "") {
+        const label = $('label[for="id_response_structure"]');
+        const helpSpan = $("#help-response-structure");
+        const inputBox = $("#id_response_structure");
+        if (inputBox.val() === "") {
             $("#id_request_format").val(convertFormat(requestFormat));
         }
-        if ($("#id_response_structure").val() === "") {
+        if (inputBox.val() === "") {
             $("#id_response_structure").val(convertFormat(responseStruncture))
         }
+
         $("#id_response_format").on("change", function(){
-            const label = $("label").attr("for","id_response_structure");
-            const helpSpan = $("#help-response-structure");
-            const inputBox = $("#id_response_structure");
+
             if($(this).val() == 2){ //lets use == not ===
                 // hide response structure box
                 label.hide();
@@ -30,6 +32,11 @@
                 helpSpan.show();
                 inputBox.show()
             }
-        })
+        });
+        if($("#id_response_format").val() == 2){
+            label.hide();
+                helpSpan.hide();
+                inputBox.hide()
+        }
     });
 </script>
