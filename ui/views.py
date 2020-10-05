@@ -13,9 +13,10 @@ from handlers.utils import SESSION_STATUSES
 from datetime import datetime, timedelta
 from random import randint
 
+
 @login_required(login_url="/login/")
 def index(request):
-    sessions = USSDSession.objects.all().order_by("-started_at")
+    sessions = USSDSession.objects.all().order_by("-last_access_at")[:200]
     context = {"sessions": sessions}
     return render(request, "index.html", context)
 

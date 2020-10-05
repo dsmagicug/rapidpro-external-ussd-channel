@@ -73,10 +73,12 @@ def profile(request):
         action = request.POST['action']
         if action == "update":
             username = request.POST['username']
+            print(username)
             email = request.POST['email']
             ME.username = username
             ME.email = email
             ME.save()
+            login(request, ME)
             form = SignUpForm(instance=ME)
             msg = "Profile information successfully updated."
         else:

@@ -30,7 +30,12 @@ RESPONSE_CONTENT_TYPES = [
     ('text', 'text/plain'),
     ('xml', 'application/xml'),
 ]
-
+RP_RESPONSE_CONTENT_TYPES = {
+    "JSON": "application/json",
+    "URL_ENCODED": "application/x-www-form-urlencoded",
+    "TEXT": "text/plain",
+    "XML": "application/xml"
+}
 SESSION_STATUSES = dict(
     TIMED_OUT='Timed Out',
     TERMINATED='Terminated',
@@ -50,13 +55,13 @@ RP_RESPONSE_STATUSES = {
 
 
 def get_sessions():
-    sessions = USSDSession.objects.all().order_by("-started_at")
+    sessions = USSDSession.objects.all().order_by("-last_access_at")
     serializer = SessionSerializer(sessions, many=True)
     json_sessions = json.dumps(serializer.data)
     group_name = 'sessions'
     channel_layer = get_channel_layer()
     # broadcast sessions to group for live display
-    sleep(0.02)  # be kind to the
+    sleep(0.02)  # being kind to the system
     async_to_sync(channel_layer.group_send)(
         group_name,
         {
@@ -175,7 +180,7 @@ class ProcessAggregatorRequest:
                     return h_response
                 else:
                     raise Exception(f'The response structure "{response_structure}" has no keywords [text , action] '
-                                    f'in the cgi params definitions. ensure format is [{{text=..}},{{action=..}}]')
+                                    f'in the template definitions. ensure format is [{{text=..}},{{action=..}}]')
             else:
                 # string which begins with
                 h_response = f"{action.upper()} {text}"
@@ -256,6 +261,7 @@ class ProcessAggregatorRequest:
             get_sessions()
         return session
 
+    @property
     def get_handler(self):
         return self.handler
 
@@ -263,8 +269,10 @@ class ProcessAggregatorRequest:
         Please call these after self.log_session()
     '''
 
+    @property
     def is_new_session(self):
         return self.is_session_start
 
+    @property
     def is_in_flow(self):
         return self.still_in_flow

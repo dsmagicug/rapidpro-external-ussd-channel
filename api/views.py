@@ -5,7 +5,7 @@ import json
 import requests
 from websocket import create_connection
 from handlers.utils import ProcessAggregatorRequest, RP_RESPONSE_FORMAT, RP_RESPONSE_STATUSES, standard_urn, \
-    SESSION_STATUSES, get_channel, RESPONSE_CONTENT_TYPES
+    SESSION_STATUSES, get_channel, RP_RESPONSE_CONTENT_TYPES
 from core.utils import access_logger, error_logger
 from ast import literal_eval
 
@@ -43,7 +43,7 @@ def push_ussd(payload):
 def send_url(request):
     # access_logger.info(str(request.META))
     try:
-        if request.META["CONTENT_TYPE"] == RESPONSE_CONTENT_TYPES[1][1]:
+        if request.META["CONTENT_TYPE"] == RP_RESPONSE_CONTENT_TYPES["URL_ENCODED"]:
             data = request.data
             content = data.dict()
         else:
@@ -79,9 +79,9 @@ def call_back(request):
         sr = ProcessAggregatorRequest(request_dict)
         standard_request_string = sr.process_handler()
         current_session = sr.log_session()
-        is_new_session = sr.is_new_session()
-        still_in_flow = sr.is_in_flow()
-        handler = sr.get_handler()
+        is_new_session = sr.is_new_session
+        still_in_flow = sr.is_in_flow
+        handler = sr.get_handler
         end_action = handler.signal_end_string
         reply_action = handler.signal_reply_string
         urn = standard_request_string['from']

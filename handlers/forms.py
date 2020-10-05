@@ -40,7 +40,7 @@ class HandlerForm(forms.ModelForm):
             }
         ))
     response_format = forms.CharField(
-        help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>Specify whether the response to  aggregator API "
+        help_text=mark_safe("<pre  style='font-size:8pt;color:#757575'>Specify whether the response to  aggregator API "
                             "should be json or a string \nthat starts with a keyword. This ensures the right USSD "
                             "Menu is sent to the user</pre>"),
         widget=forms.Select(
@@ -79,12 +79,12 @@ class HandlerForm(forms.ModelForm):
         widget=forms.TextInput(
             attrs={
                 "class": "form-control",
-                "value": "END"
+                "placeholder": "e.g. END"
             }
         )
     )
     response_structure = forms.CharField(
-        help_text=mark_safe("<pre  style='font-size:8pt;color:#757575'>The structure of the response as expected by "
+        help_text=mark_safe("<pre id='help-response-structure' style='font-size:8pt;color:#757575'>The structure of the response as expected by "
                             "the aggregator API\n e.g. {{text=responseString}}, {{action=signal}}. means the "
                             "aggregator API expects \na response structure similar to \n"
                             "{\"responseString\":\"Hello User how are you\": \"signal\":\"Signal_keyword\"}</pre><br>"),
