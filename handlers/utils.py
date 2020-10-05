@@ -208,6 +208,7 @@ class ProcessAggregatorRequest:
         for code in codes:
             if str(code) in self.request_data.values():
                 self.service_code = str(code)
+                return self.service_code
             else:
                 raise Exception("This aggregator most likely has no handler or a wrong shortcode was registered with "
                                 "handler")
