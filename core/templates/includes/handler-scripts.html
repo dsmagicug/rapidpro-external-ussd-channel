@@ -1,0 +1,42 @@
+<script>
+    function convertFormat(string) {
+        const formats = string.replace(/\[/g, '{').replace(/\]/g, '}');
+        return formats
+
+    }
+
+    $(document).ready(() => {
+        const requestFormat = `[[short_code=ussdServiceCode]],  [[session_id=transactionId]], [[from=msisdn]], [[text=ussdRequestString]]`;
+        const responseStruncture = `[[text=responseString]], [[action=signal]]`;
+        // double braces will be confused fro jinja. so we replace using regex
+        const label = $('label[for="id_response_structure"]');
+        const helpSpan = $("#help-response-structure");
+        const inputBox = $("#id_response_structure");
+        if (inputBox.val() === "") {
+            $("#id_request_format").val(convertFormat(requestFormat));
+        }
+        if (inputBox.val() === "") {
+            $("#id_response_structure").val(convertFormat(responseStruncture))
+        }
+
+        $("#id_response_format").on("change", function(){
+
+            if($(this).val() == 2){ //lets use == not ===
+                // hide response structure box
+                label.hide();
+                helpSpan.hide();
+                inputBox.hide()
+            }
+            else{
+                label.show();
+                helpSpan.show();
+                inputBox.show()
+            }
+        });
+        if($("#id_response_format").val() == 2){
+            label.hide();
+                helpSpan.hide();
+                inputBox.hide()
+        }
+    });
+</script>

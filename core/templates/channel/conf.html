@@ -208,21 +208,5 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-    <script>
-        $(document).ready(function () {
-            $('[data-toggle="popover"]').popover();
-             let sendURL = "{% url 'send_url' %}";
-            $("#id_send_url").on("input",function(){
-
-                $("#generated-url").html(`${$(this).val()}${sendURL}`)
-            });
-            {% if success and msg %}
-                let msg = "{{ msg }}";
-                demo.showNotification('top','center',2, msg);
-                {% elif msg %}
-                let errorMsg = "{{ msg }}";
-                demo.showNotification('top','center',4,errorMsg);
-            {% endif %}
-        });
-    </script>
+{% include 'includes/channel-scripts.html' %}
 {% endblock javascripts %}

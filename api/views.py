@@ -5,7 +5,7 @@ import json
 import requests
 from websocket import create_connection
 from handlers.utils import ProcessAggregatorRequest, RP_RESPONSE_FORMAT, RP_RESPONSE_STATUSES, standard_urn, \
-    SESSION_STATUSES, get_channel
+    SESSION_STATUSES, get_channel, RP_RESPONSE_CONTENT_TYPES
 from core.utils import access_logger, error_logger
 from ast import literal_eval
 
@@ -20,6 +20,12 @@ HEADERS.update(
 )
 
 r = redis.Redis(host='localhost', port=6379, db=0)
+
+
+def changeSessionStatus(session, status, badge):
+    session.status = status
+    session.badge = badge
+    session.save()
 
 
 def push_ussd(payload):
@@ -37,7 +43,7 @@ def push_ussd(payload):
 def send_url(request):
     # access_logger.info(str(request.META))
     try:
-        if request.META["CONTENT_TYPE"] == "application/x-www-form-urlencoded":
+        if request.META["CONTENT_TYPE"] == RP_RESPONSE_CONTENT_TYPES["URL_ENCODED"]:
             data = request.data
             content = data.dict()
         else:
@@ -73,9 +79,9 @@ def call_back(request):
         sr = ProcessAggregatorRequest(request_dict)
         standard_request_string = sr.process_handler()
         current_session = sr.log_session()
-        is_new_session = sr.is_new_session()
-        still_in_flow = sr.is_in_flow()
-        handler = sr.get_handler()
+        is_new_session = sr.is_new_session
+        still_in_flow = sr.is_in_flow
+        handler = sr.get_handler
         end_action = handler.signal_end_string
         reply_action = handler.signal_reply_string
         urn = standard_request_string['from']
@@ -116,24 +122,20 @@ def call_back(request):
                     action = reply_action
                 else:
                     # mark session complete and give is a green badge
-                    current_session.status = SESSION_STATUSES['COMPLETED']
-                    current_session.badge = "success"
-                    current_session.save()
+                    changeSessionStatus(current_session, SESSION_STATUSES['COMPLETED'], 'success')
                     action = end_action
                 new_format = dict(text=text, action=action)
                 response = sr.get_expected_response(new_format)
             else:
                 # mark session timed out and give it a red badge
-                current_session.status = SESSION_STATUSES['TIMED_OUT']
-                current_session.badge = "danger"
-                current_session.save()
-
+                changeSessionStatus(current_session, SESSION_STATUSES['TIMED_OUT'], 'danger')
                 error_logger.debug(f"Response timed out for redis key {key2}")
                 # pop key2
                 # r.lpop(key2)
                 res_format = dict(text="Response timed out", action=end_action)
                 response = sr.get_expected_response(res_format)
         else:
+            changeSessionStatus(current_session, SESSION_STATUSES['TIMED_OUT'], 'danger')
             res_format = dict(text="External Application unreachable", action=end_action)
             error_logger.exception(req.content)
             response = sr.get_expected_response(res_format)
@@ -142,5 +144,3 @@ def call_back(request):
         error_logger.exception(err)
         response = {"responseString": "External Application unreachable", "action": "end"}
         return Response(response, status=500)
-
-

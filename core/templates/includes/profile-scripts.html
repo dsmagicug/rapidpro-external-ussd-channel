@@ -1,0 +1,75 @@
+<script>
+    function errorNotification(error) {
+        const icon = "tim-icons icon-alert-circle-exc";
+        demo.showNotification('top', 'right', 4, error, icon)
+    }
+
+    function successNotification(msg) {
+        const icon = "icons icon-check-2";
+        demo.showNotification('top', 'right', 2, msg, icon);
+    }
+
+    $(document).ready(() => {
+
+        $("#submit-change-password").on("click", function (e) {
+            e.preventDefault();
+            const form = $("#change-password-form");
+            const formData = form.serializeArray();
+            $.ajax({
+                url: "{% url 'profile' %}",
+                type: 'post',
+                data: formData
+            }).done((response) => {
+                if (response.status === "success") {
+                    successNotification(response.message);
+                    form[0].reset(); // clear form
+                    // Hide modal
+                    $("#change-password").modal("hide")
+                } else {
+                    errorNotification(response.message)
+                }
+            }).fail(() => {
+                errorNotification("An error Occurred, Check your Network connection and try again")
+            })
+        });
+        $(".toggle-one").on("change", function () {
+            const isChecked = $(this).prop('checked');
+            const userId = $(this).closest("tr").attr("data-id");
+            const data = {user_id: userId, is_active: isChecked};
+            $.ajax({
+                url: "{% url 'enable_disable' %}",
+                method: "post",
+                data: data
+            }).done((res) => {
+                if (res.status === "success") {
+                    successNotification(res.message);
+                }
+            }).fail((error) => {
+                errorNotification("An error Occured, Check your Network connection and try again")
+            })
+        });
+        $("#submit-invite").on("click", function (e) {
+            if ($("#id-email").val() !== "") {
+                const form = $("#invite-form");
+                const formData = form.serializeArray();
+                $.ajax({
+                    url: "{% url 'invite' %}",
+                    type: 'post',
+                    data: formData
+                }).done((response) => {
+                    if (response.status === "success") {
+                        successNotification(response.message);
+                        // Hide modal
+                        $("#invite-user").modal("hide")
+                    } else {
+                        errorNotification(response.message)
+                    }
+                }).fail(() => {
+                    errorNotification("An error Occured, Check your Network connection and try again")
+                })
+            } else {
+                errorNotification("Email Field required")
+            }
+        })
+    })
+</script>
