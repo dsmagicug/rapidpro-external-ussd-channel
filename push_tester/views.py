@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from .models import Tester
 from msgs.models import Msg
 from .serializers import TesterSerializer, MsgSerializer
-
+from handlers.utils import standard_urn
 
 # Create your views here.
 
@@ -31,7 +31,8 @@ def demo_register(request):
 @api_view(['GET'])
 def get_tester(request, msisdn):
     try:
-        tester = Tester.objects.get(msisdn=msisdn)
+        standard_msisdn = standard_urn(msisdn)
+        tester = Tester.objects.get(msisdn=standard_msisdn)
         serializer = TesterSerializer(tester)
         tester_json = serializer.data
         return Response({"status": "success", "data": tester_json}, status=200)
