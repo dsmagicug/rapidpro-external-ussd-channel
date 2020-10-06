@@ -83,7 +83,6 @@ TEMPLATES = [
 
 # WSGI_APPLICATION = 'core.wsgi.application'
 
-# WSGI_APPLICATION = 'core.wsgi.application'
 ASGI_APPLICATION = "core.routing.application"
 CHANNEL_LAYERS = {
     'default': {
