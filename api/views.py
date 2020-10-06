@@ -1,4 +1,4 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes,permission_classes
 from rest_framework.response import Response
 import redis
 import json
@@ -7,7 +7,10 @@ from websocket import create_connection
 from handlers.utils import ProcessAggregatorRequest, RP_RESPONSE_FORMAT, RP_RESPONSE_STATUSES, standard_urn, \
     SESSION_STATUSES, get_channel, RP_RESPONSE_CONTENT_TYPES
 from core.utils import access_logger, error_logger
+from django.views.decorators.csrf import csrf_exempt
 from ast import literal_eval
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
@@ -70,13 +73,18 @@ def send_url(request):
         error_logger.exception(err)
 
 
-@api_view(['POST', 'GET', 'PUT'])
+@api_view(['GET', 'POST'])
+@authentication_classes([])
+@permission_classes([])
 def call_back(request):
-    access_logger.info(str(request.META))
+    # CHECK METHOD USED
+    if request.META["REQUEST_METHOD"] == "GET":
+        data = request.GET
+        request_data = data.dict()
+    else:
+        request_data = request.data
     try:
-        request_dict = literal_eval(json.dumps(request.data['info']))  # from GCE
-        # request_dict = literal_eval(json.dumps(request.data))
-        sr = ProcessAggregatorRequest(request_dict)
+        sr = ProcessAggregatorRequest(request_data)
         standard_request_string = sr.process_handler()
         current_session = sr.log_session()
         is_new_session = sr.is_new_session
