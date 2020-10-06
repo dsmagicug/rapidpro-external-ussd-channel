@@ -72,7 +72,7 @@ def send_url(request):
 
 @api_view(['POST', 'GET', 'PUT'])
 def call_back(request):
-    # access_logger.info(str(request.META))
+    access_logger.info(str(request.META))
     try:
         request_dict = literal_eval(json.dumps(request.data['info']))  # from GCE
         # request_dict = literal_eval(json.dumps(request.data))
