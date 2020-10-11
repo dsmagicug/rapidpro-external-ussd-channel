@@ -65,7 +65,10 @@ Still inside your project root directory, run the following command
 ```
 $python manage.py migrate
 ```
-
+Django countries  requires you populate the Countries table with the latest country data using
+```
+$python manage.py update_countries_plus
+```
 #### collect static files
 ```
 $python manage.py collectstatic
