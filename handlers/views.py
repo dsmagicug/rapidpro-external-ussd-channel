@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from .forms import HandlerForm
 from .models import Handler
-
 from core.utils import access_logger, error_logger
 
 
@@ -17,7 +16,7 @@ class HandlersListView(TemplateView, LoginRequiredMixin):
     raise_exception = False
 
     def get(self, request):
-        access_logger(str(request))
+        access_logger.info(str(request))
         handlers = Handler.objects.all()
         return render(request, self.template_name, {"handlers": handlers})
 
@@ -58,7 +57,7 @@ class RegisterHandlerView(View, LoginRequiredMixin):
             self.create_auth_user()
 
     def get(self, request, handler_id=None):
-        access_logger(str(request))
+        access_logger.info(str(request))
         try:
             if handler_id:
                 if Handler.objects.filter(id=handler_id).exists():
@@ -76,7 +75,7 @@ class RegisterHandlerView(View, LoginRequiredMixin):
             error_logger.exception(err)
 
     def post(self, request, handler_id=None):
-        access_logger(request)
+        access_logger.info(request)
         try:
             if handler_id:
                 handler = Handler.objects.get(pk=handler_id)
