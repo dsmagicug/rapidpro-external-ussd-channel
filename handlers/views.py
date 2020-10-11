@@ -6,6 +6,8 @@ from rest_framework.authtoken.models import Token
 from .forms import HandlerForm
 from .models import Handler
 
+from core.utils import access_logger, error_logger
+
 
 # Create your views here.
 
@@ -15,6 +17,7 @@ class HandlersListView(TemplateView, LoginRequiredMixin):
     raise_exception = False
 
     def get(self, request):
+        access_logger(str(request))
         handlers = Handler.objects.all()
         return render(request, self.template_name, {"handlers": handlers})
 
@@ -55,39 +58,48 @@ class RegisterHandlerView(View, LoginRequiredMixin):
             self.create_auth_user()
 
     def get(self, request, handler_id=None):
-        if handler_id:
-            if Handler.objects.filter(id=handler_id).exists():
-                handler = Handler.objects.get(pk=handler_id)
-                self.aggregator = handler.aggregator
-                form = HandlerForm(instance=handler)
-                self.get_auth_token()
+        access_logger(str(request))
+        try:
+            if handler_id:
+                if Handler.objects.filter(id=handler_id).exists():
+                    handler = Handler.objects.get(pk=handler_id)
+                    self.aggregator = handler.aggregator
+                    form = HandlerForm(instance=handler)
+                    self.get_auth_token()
+                else:
+                    form = HandlerForm()
+                    redirect('add_handler', permanent=True)
             else:
                 form = HandlerForm()
-                redirect('add_handler', permanent=True)
-        else:
-            form = HandlerForm()
-        return render(request, self.template_name, {"form": form})
+            return render(request, self.template_name, {"form": form, "token": self.token})
+        except Exception as err:
+            error_logger.exception(err)
 
     def post(self, request, handler_id=None):
-        if handler_id:
-            handler = Handler.objects.get(pk=handler_id)
-            self.aggregator = handler.aggregator
-            self.get_auth_token()
-            self.isNewHandler = False
-            form = HandlerForm(request.POST, instance=handler)
-        else:
-            form = HandlerForm(request.POST)
-        if form.is_valid():
-            form.save()
-            # create new non-staff user and assign them an auth token
-            if self.isNewHandler:
-                aggregator = form.cleaned_data["aggregator"]
-                self.create_auth_user(aggregator)
+        access_logger(request)
+        try:
+            if handler_id:
+                handler = Handler.objects.get(pk=handler_id)
+                self.aggregator = handler.aggregator
+                self.get_auth_token()
+                self.isNewHandler = False
+                form = HandlerForm(request.POST, instance=handler)
+            else:
+                form = HandlerForm(request.POST)
+            if form.is_valid():
+                form.save()
+                # create new non-staff user and assign them an auth token
+                if self.isNewHandler:
+                    aggregator = form.cleaned_data["aggregator"]
+                    self.create_auth_user(aggregator)
 
-            self.msg = 'Saved'
-            self.success = True
-        else:
-            self.msg = 'Form is invalid'
-            self.success = False
-        return render(request, self.template_name,
-                      {"form": form, "msg": self.msg, "token": self.token, "success": self.success})
+                self.msg = 'Saved'
+                self.success = True
+            else:
+                self.msg = 'Form is invalid'
+                self.success = False
+            return render(request, self.template_name,
+                          {"form": form, "msg": self.msg, "token": self.token, "success": self.success})
+
+        except Exception as err:
+            error_logger.exception(err)

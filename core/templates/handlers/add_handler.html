@@ -43,6 +43,11 @@
                                                 RapidPro.
                                             </div>
                                         <hr>
+                                    {% if token %}
+                                    <b>Auth Token is: {{ token }}</b>
+                                        <hr>
+                                    {% endif %}
+
                                     </div>
                                     <form role="form" method="post" action="" id="handler-form">
 

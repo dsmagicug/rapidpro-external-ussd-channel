@@ -1,18 +1,18 @@
-from rest_framework.decorators import api_view, authentication_classes,permission_classes
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 import redis
 import json
 import requests
 from websocket import create_connection
+from ast import literal_eval
+
 from handlers.utils import ProcessAggregatorRequest, RP_RESPONSE_FORMAT, RP_RESPONSE_STATUSES, standard_urn, \
     SESSION_STATUSES, get_channel, RP_RESPONSE_CONTENT_TYPES
 from core.utils import access_logger, error_logger
-from django.views.decorators.csrf import csrf_exempt
-from ast import literal_eval
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
 
-# Create your views here.
 
 HEADERS = requests.utils.default_headers()
 HEADERS.update(
@@ -44,7 +44,7 @@ def push_ussd(payload):
 
 @api_view(['POST'])
 def send_url(request):
-    # access_logger.info(str(request.META))
+    access_logger.info(str(request.META))
     try:
         if request.META["CONTENT_TYPE"] == RP_RESPONSE_CONTENT_TYPES["URL_ENCODED"]:
             data = request.data
@@ -74,8 +74,8 @@ def send_url(request):
 
 
 @api_view(['GET', 'POST'])
-@authentication_classes([])
-@permission_classes([])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def call_back(request):
     # CHECK METHOD USED
     if request.META["REQUEST_METHOD"] == "GET":
