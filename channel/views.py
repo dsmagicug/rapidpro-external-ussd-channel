@@ -3,7 +3,6 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import USSDChannel
 from .forms import ChannelConfForm
-from django.utils.formats import localize
 import socket
 from core.utils import access_logger, error_logger
 

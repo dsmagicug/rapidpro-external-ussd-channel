@@ -33,7 +33,7 @@ def changeSessionStatus(session, status, badge):
 
 def push_ussd(payload):
     try:
-        ws = create_connection("ws://129.205.2.58:5000/ws/demo")
+        ws = create_connection("ws://localhost:5000/ws/demo")
         ws.send(json.dumps(payload))
         ws.close()
         return True
@@ -138,8 +138,6 @@ def call_back(request):
                 # mark session timed out and give it a red badge
                 changeSessionStatus(current_session, SESSION_STATUSES['TIMED_OUT'], 'danger')
                 error_logger.debug(f"Response timed out for redis key {key2}")
-                # pop key2
-                # r.lpop(key2)
                 res_format = dict(text="Response timed out", action=end_action)
                 response = sr.get_expected_response(res_format)
         else:

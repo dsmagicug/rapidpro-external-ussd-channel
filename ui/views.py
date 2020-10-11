@@ -4,14 +4,10 @@ from django.template import loader
 from django.http import HttpResponse
 from django import template
 from channel.models import USSDSession
-
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
 from handlers.utils import SESSION_STATUSES
-
 from datetime import datetime, timedelta
-from random import randint
 
 
 @login_required(login_url="/login/")
@@ -27,7 +23,6 @@ def pages(request):
     # All resource paths end in .html.
     # Pick out the html file name from the url. And load that template.
     try:
-
         load_template = request.path.split('/')[-1]
         html_template = loader.get_template(load_template)
         return HttpResponse(html_template.render(context, request))
@@ -36,7 +31,6 @@ def pages(request):
 
         html_template = loader.get_template('error-404.html')
         return HttpResponse(html_template.render(context, request))
-
     except:
         html_template = loader.get_template('error-500.html')
         return HttpResponse(html_template.render(context, request))
