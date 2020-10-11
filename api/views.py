@@ -74,8 +74,8 @@ def send_url(request):
 
 
 @api_view(['GET', 'POST'])
-@authentication_classes([])
-@permission_classes([])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def call_back(request):
     # CHECK METHOD USED
     if request.META["REQUEST_METHOD"] == "GET":
