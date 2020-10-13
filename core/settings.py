@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'api.apps.ChannelApiConfig',
     'countries_plus',
     'rest_framework',
+    'rest_framework.authtoken',
     'msgs',
     'ui',
     'channel',
