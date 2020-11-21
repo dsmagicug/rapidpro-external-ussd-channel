@@ -59,6 +59,7 @@ def send_url(request):
             r.lpush(key2, str(content))
         else:
             action = "end"
+            # code here is currently temporary
             if content["session_status"] == RP_RESPONSE_STATUSES["waiting"]:
                 action = "request"
             msg_extras = dict(msg_type="Outgoing", status="Received", action=action)
@@ -128,7 +129,7 @@ def call_back(request):
                 if status == RP_RESPONSE_STATUSES['waiting']:
                     action = reply_action
                 else:
-                    # mark session complete and give is a green badge
+                    # mark session complete and give it a green badge
                     changeSessionStatus(current_session, SESSION_STATUSES['COMPLETED'], 'success')
                     action = end_action
                 new_format = dict(text=text, action=action)
