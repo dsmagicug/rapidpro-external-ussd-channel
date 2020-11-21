@@ -13,12 +13,10 @@ from handlers.utils import ProcessAggregatorRequest, RP_RESPONSE_FORMAT, RP_RESP
     SESSION_STATUSES, get_channel, RP_RESPONSE_CONTENT_TYPES
 from core.utils import access_logger, error_logger
 
-
 HEADERS = requests.utils.default_headers()
 HEADERS.update(
     {
-        'Content-type': 'application/x-www-form-urlencoded',
-        # 'Content-type': 'application/json',
+        'Content-type': 'application/x-www-form-urlencoded',  # for now this is what works with rapidPro
     }
 )
 
@@ -68,6 +66,7 @@ def send_url(request):
             push = push_ussd(content)
             # reset key to 1
             r.set(key1, 0, ex=10)
+            # TODO add logic for a real PUSH capable USSD aggregator
         return Response({"message": "success"}, status=200)
     except Exception as err:
         error_logger.exception(err)

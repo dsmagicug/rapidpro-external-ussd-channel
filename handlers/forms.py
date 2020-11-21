@@ -9,6 +9,7 @@ class HandlerForm(forms.ModelForm):
         super(HandlerForm, self).__init__(*args, **kwargs)
         self.fields['push_support'].required = False
         self.fields['response_structure'].required = False
+        self.fields['push_url'].required = False
 
     aggregator = forms.CharField(
         help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>USSD aggregator whose requests will be handled "
@@ -111,6 +112,15 @@ class HandlerForm(forms.ModelForm):
             }
         )
     )
+    push_url = forms.CharField(
+        help_text=mark_safe("<pre id='push-url' style='font-size:8pt;color:#757575'>The URL this channel will call "
+                            "for USSD PUSH services.</pre>"),
+        widget=forms.URLInput(
+            attrs={
+                "class": "form-control",
+                "value": f"https://"
+            }
+        ))
 
     class Meta:
         model = Handler
