@@ -124,7 +124,21 @@ With your [RapidPro](https://github.com/rapidpro/rapidpro) instance running eith
  
  2. Fill the rest of RapidPro's External API configuration form and then submit it.
  You will be presented with a page that has instructions on how to setup an external 
- service (The USSD External Channel) .
+ service (The USSD External Channel).
+ 
+    **NOTE**: Before submiting RapidPro's External API configuration form, make sure you add cgi params 
+    
+    ```session_status={{session_status}}&to_no_plus={{to_no_plus}}&from_no_plus={{from_no_plus}}```
+    
+    to the `Request Body` field. These are required when rapidPro is making a request to the USSD external channel in addition to the default 
+    
+    ```id={{id}}&text={{text}}&to={{to}}&from={{from}}&channel={{channel}}```.
+    
+    Your configuration will not work if these cgi-params are not set at this level since the channel uses `session_status` within the request from RapidPro to tell if the interaction is still ongoing or completed so as it initiates the right USSD menu to the end user device. If you are confused, just copy
+    
+    ```id={{id}}&text={{text}}&to={{to}}&to_no_plus={{to_no_plus}}&from={{from}}&from_no_plus={{from_no_plus}}&channel={{channel}}&session_status={{session_status}}``` 
+    
+    and paste it in Request Body field.
  
  3. On the above instructions pages in RapidPro, copy the `RECEIVE URL` and head back to the USSD channel form.
  
