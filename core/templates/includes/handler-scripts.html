@@ -12,6 +12,14 @@
         const label = $('label[for="id_response_structure"]');
         const helpSpan = $("#help-response-structure");
         const inputBox = $("#id_response_structure");
+        const pushUrlLabel = $('label[for="id_push_url"]');
+        const pushUrlHelpSpan = $("#push-url");
+        const pushUrlInputBox = $("#id_push_url");
+        //hide push url staff right away
+        pushUrlLabel.hide();
+        pushUrlHelpSpan.hide();
+        pushUrlInputBox.hide();
+
         if (inputBox.val() === "") {
             $("#id_request_format").val(convertFormat(requestFormat));
         }
@@ -38,5 +46,16 @@
                 helpSpan.hide();
                 inputBox.hide()
         }
+        $("#id_push_support").on("change", function () {
+            if($(this).is(":checked")){
+                pushUrlLabel.show();
+                pushUrlHelpSpan.show();
+                pushUrlInputBox.show();
+            }else{
+                pushUrlLabel.hide();
+                pushUrlHelpSpan.hide();
+                pushUrlInputBox.hide();
+            }
+        })
     });
 </script>
