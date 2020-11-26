@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-
+from django.conf import settings
 import redis
 import json
 import requests
@@ -20,7 +20,7 @@ HEADERS.update(
     }
 )
 
-r = redis.Redis(host='localhost', port=6379, db=0)
+r = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
 
 
 def changeSessionStatus(session, status, badge):
@@ -113,7 +113,7 @@ def call_back(request):
         key2 = f"MSG_KEY_{allowed_urn}"
         """""Channel details """""
 
-        # receive_url is used to send msgs to rapidpro
+        # receive_url is used to send msgs to rapidPro
         receive_url = channel.rapidpro_receive_url
         # req = requests.post(receive_url, json.dumps(rapid_pro_request), headers=HEADERS)
         req = requests.post(receive_url, rapid_pro_request, headers=HEADERS)

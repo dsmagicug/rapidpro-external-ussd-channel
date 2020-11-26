@@ -86,7 +86,8 @@ class HandlerForm(forms.ModelForm):
         )
     )
     response_structure = forms.CharField(
-        help_text=mark_safe("<pre id='help-response-structure' style='font-size:8pt;color:#757575'>The structure of the response as expected by "
+        help_text=mark_safe("<pre id='help-response-structure' style='font-size:8pt;color:#757575'>The structure of "
+                            "the response as expected by "
                             "the aggregator API\n e.g. {{text=responseString}}, {{action=signal}}. means the "
                             "aggregator API expects \na response structure similar to \n"
                             "{\"responseString\":\"Hello User how are you\": \"signal\":\"Signal_keyword\"}</pre><br>"),
@@ -118,7 +119,7 @@ class HandlerForm(forms.ModelForm):
         widget=forms.URLInput(
             attrs={
                 "class": "form-control",
-                "value": f"https://"
+                "value": f"https://aggregator.app"
             }
         ))
 

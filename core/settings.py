@@ -163,3 +163,7 @@ EMAIL_POST = 25
 EMAIL_HOST_USER = "example@app.com"
 EMAIL_HOST_PASSWORD = "xxxxx"
 
+# REDIS CONFIG
+REDIS_HOST = "localhost"
+REDIS_PORT = 6379
+REDIS_DB = 0

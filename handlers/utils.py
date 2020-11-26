@@ -116,7 +116,6 @@ def create_session(urn, session_status):
     session_id = str(time()).replace(".", "")
 
 
-
 class ProcessAggregatorRequest:
     rapidpro_keys = []
     handler_keys = []
