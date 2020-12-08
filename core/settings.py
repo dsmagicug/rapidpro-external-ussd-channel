@@ -157,7 +157,7 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR)
 
-HOST = "http://129.205.2.58:5000"
+HOST = "https://domain.com"
 EMAIL_HOST = "smtp.app.com"
 EMAIL_POST = 25
 EMAIL_HOST_USER = "example@app.com"

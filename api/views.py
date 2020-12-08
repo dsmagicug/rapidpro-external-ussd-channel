@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
+
 import redis
 import json
 import requests
@@ -20,6 +21,7 @@ HEADERS.update(
     }
 )
 
+# TODO a singleton for this so that we have only one redis connection for all requests
 r = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
 
 

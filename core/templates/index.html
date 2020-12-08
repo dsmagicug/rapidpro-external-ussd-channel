@@ -25,7 +25,6 @@
           </div>
         </div>
       </div>
-
     </div>
 
     <div class="row">
@@ -43,11 +42,14 @@
                     <th>
                       Session&nbsp;ID
                     </th>
-                    <th>
+                    <th class="text-center">
                       Contact
                     </th>
-                    <th>
-                      Aggregator(Handler)
+                    <th class="text-center">
+                      Aggregator
+                    </th>
+                    <th class="text-center">
+                      Shortcode
                     </th>
                     <th class="text-center">
                       Status
@@ -60,11 +62,14 @@
                     <td>
                       {{ session.session_id }}
                     </td>
-                    <td>
+                    <td class="text-center">
                         {{ session.contact }}
                     </td>
-                    <td>
-                      {{ session.handler }}
+                    <td class="text-center">
+                      {{ session.handler.aggregator }}
+                    </td>
+                    <td class="text-center">
+                      {{ session.handler.short_code }}
                     </td>
                     <td  class="text-center">
                       <div class="badge-{{ session.badge }}">{{ session.status }}</div>
@@ -92,6 +97,7 @@
              { data: 'session_id' },
              { data: 'contact' },
              { data: 'handler' },
+             { data: 'short_code' },
              { data: 'status' }]
              });
       // Javascript method's body can be found in assets/js/demos.js
@@ -114,8 +120,8 @@
             const newSessions = JSON.parse(data.sessions);
             let trows='';
             newSessions.forEach((session)=>{
-                const {session_id, contact,handler, badge, status} = session;
-                trows +=`<tr><td>${session_id}</td><td>${contact}</td><td>${handler}</td><td class="text-center"><div class="badge-${badge}">${status}</div></td></tr>`
+                const {session_id, contact,handler,short_code, badge, status} = session;
+                trows +=`<tr><td>${session_id}</td><td class="text-center" >${contact}</td><td class="text-center">${handler}</td><td class="text-center">${short_code}</td><td class="text-center"><div class="badge-${badge}">${status}</div></td></tr>`
             });
             //$('#table-sessions-live tbody').append(trows)
             setTimeout(()=>{
