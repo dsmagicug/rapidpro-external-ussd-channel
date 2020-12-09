@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
+
 import redis
 import json
 import requests
@@ -12,6 +13,7 @@ from ast import literal_eval
 from handlers.utils import ProcessAggregatorRequest, RP_RESPONSE_FORMAT, RP_RESPONSE_STATUSES, standard_urn, \
     SESSION_STATUSES, get_channel, RP_RESPONSE_CONTENT_TYPES
 from core.utils import access_logger, error_logger
+from channel.models import USSDSession
 
 HEADERS = requests.utils.default_headers()
 HEADERS.update(
@@ -20,6 +22,7 @@ HEADERS.update(
     }
 )
 
+# TODO a singleton for this so that we have only one redis connection for all requests
 r = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
 
 
@@ -149,4 +152,16 @@ def call_back(request):
     except Exception as err:
         error_logger.exception(err)
         response = {"responseString": "External Application unreachable", "action": "end"}
+        return Response(response, status=500)
+
+@api_view(['GET'])
+def clear_sessions(request):
+    try:
+        # delete all sessions
+        USSDSession.objects.all().delete()
+        response = dict(status="success")
+        return Response(response, status=200)
+    except Exception as error:
+        error_logger.exception(error)
+        response = dict(status="error", message=f"{str(error)}")
         return Response(response, status=500)

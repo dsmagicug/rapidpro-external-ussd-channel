@@ -1,0 +1,167 @@
+<script>
+    function toDjangoDateFormat(dateString) {
+        const date = new Date(dateString)
+        const dateStrng = date.toString()
+        const splited = dateStrng.split(" ")
+        const month = splited[1]
+        const day = splited[2]
+        const year = splited[3]
+        const allHour = splited[4]
+        const topHour = parseInt(allHour.split(":")[0])
+        const min = allHour.split(":")[1]
+        let datetime = `${month}. ${day}, ${year}, ${topHour}:${min} a.m.`
+        if (topHour > 12) {
+            datetime = `${month}. ${day}, ${year}, ${24 - topHour}:${min} p.m.`
+        }
+        return datetime
+    }
+
+    
+    function clearSessions(callback) {
+      const url = "{% url 'clear_sessions' %}";
+      $.ajax({
+        type: "GET",
+        url: url,
+        success: callback
+      }).fail((error) => {
+        const icon = "tim-icons icon-alert-circle-exc";
+        demo.showNotification('bottom', 'right', 4, "An error occured, check your network and try again", icon)
+        $("#sessionClearStatus").val("false");
+      })
+      if ($("#sessionClearStatus").val() == "true") {
+        console.log($("#sessionClearStatus").val())
+        return true;
+      }
+      else {
+        console.log($("#sessionClearStatus").val())
+        return false;
+      }
+    }
+    $(document).ready(function () {
+      const sessionsTable = $('#table-sessions-live');
+      const sessionDatatable = sessionsTable.DataTable(
+        {
+          searching: false, info: false, pageLength: 10, ordering: false,
+          columns: [
+            { data: 'session_id' },
+            { data: 'contact' },
+            { data: 'handler' },
+            { data: 'short_code' },
+            { data: 'status' },
+            { data: 'date' }
+            ],
+          initComplete: function () {
+            $('.buttons-excel').hide(); // lets hide this default button but we shall override it bellow
+          },
+          dom: 'Bfrtip',
+          buttons: [
+            {
+              extend: 'excelHtml5',
+              text: 'Export to Excel',
+              titleAttr: 'Generate Excel',
+              className: 'btn-outline-success btn-sm mr-1',
+            },
+            {
+              extend: 'copyHtml5',
+              text: 'Copy',
+              titleAttr: 'Copy to clipboard',
+              className: 'btn-outline-primary btn-sm mr-1'
+            },
+            {
+              text: 'Export & Clear',
+              action: function (e, dt, node, config) {
+                $.confirm({
+                  title: "Caution!",
+                  content: 'Choose to export before clearing sessions or not',
+                  type: 'blue',
+                  typeAnimated: true,
+                  buttons: {
+                    info: {
+                      text: "Export & Clear",
+                      btnClass: 'btn-blue',
+                      action: function () {
+                        // ajax call to clear sessions
+                        var isSuccess;
+                        clearSessions(function (response) {
+                          if (response.status === "success") {
+                            const icon = "icons icon-check-2";
+                            demo.showNotification('bottom', 'right', 2, "Sessions cleared!", icon);
+                            // export trigger a click event on the button we hid during dataTable initialization
+                            $(".buttons-excel").trigger("click");
+                            isSuccess = true;
+                          }
+                          // lets the table after we are sure the export has finished.
+                          if (isSuccess) {
+                            clearTable()
+                          }
+                        });
+                      }
+                    },
+                    danger: {
+                      text: "Just Clear",
+                      btnClass: 'btn-red any-other-class',
+                      action: function () {
+                        $.confirm({
+                          title: `<i class="fa fa-exclamation-triangle" style="color:red"></i>`,
+                          content: `<span style="color:red;font-weight:bold">Clearing Sessions will delete them parmanently from the database.<br>Are you sure you want to continue without exporting them first?</span>`,
+                          buttons: {
+                            info: {
+                              text: "Continue",
+                              btnClass: 'btn-red',
+                              action: function () {
+                                clearSessions(function (response) {
+                                  if (response.status === "success") {
+                                    const icon = "icons icon-check-2";
+                                    demo.showNotification('bottom', 'right', 2, "Sessions cleared!", icon);
+                                    // just clear the table don't export anything
+                                    clearTable();
+                                  }
+                                });
+                              }
+                            },
+                            cancel: function () { },
+                          }
+                        })
+                      }
+                    },
+                  }
+                });
+  
+              }
+            }
+          ]
+        });
+      function clearTable() {
+        sessionDatatable.clear().draw()
+      }
+      // Javascript method's body can be found in assets/js/demos.js
+      //demo.showNotification('top','center',1,"Welcome to Exteranal USSD channel for RapidPro ");
+      //websocket
+  
+      console.log('ws://' + window.location.host + '/ws/sessions');
+      const chatSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/sessions'
+      );
+      chatSocket.onopen = function (e) {
+        console.log("connection established")
+      };
+      chatSocket.onclose = function (e) {
+        console.log("connection Closed")
+      };
+      chatSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        sessionsTable.DataTable().clear();
+        const newSessions = JSON.parse(data.sessions);
+        let trows = '';
+        newSessions.forEach((session) => {
+          const { session_id, contact, handler, short_code, badge, status, last_access_at } = session;
+          const niceDate = toDjangoDateFormat(last_access_at);
+          trows += `<tr><td>${session_id}</td><td class="text-center" >${contact}</td><td class="text-center">${handler}</td><td class="text-center">${short_code}</td><td class="text-center"><div class="badge-${badge}">${status}</div></td><td class="text-center">${niceDate}</td></tr>`
+        });
+        setTimeout(() => {
+          sessionsTable.DataTable().rows.add($(trows)).draw()
+        }, 1000) // sleep for one second
+      };
+  
+    });
+  </script>
