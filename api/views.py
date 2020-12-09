@@ -13,6 +13,7 @@ from ast import literal_eval
 from handlers.utils import ProcessAggregatorRequest, RP_RESPONSE_FORMAT, RP_RESPONSE_STATUSES, standard_urn, \
     SESSION_STATUSES, get_channel, RP_RESPONSE_CONTENT_TYPES
 from core.utils import access_logger, error_logger
+from channel.models import USSDSession
 
 HEADERS = requests.utils.default_headers()
 HEADERS.update(
@@ -151,4 +152,16 @@ def call_back(request):
     except Exception as err:
         error_logger.exception(err)
         response = {"responseString": "External Application unreachable", "action": "end"}
+        return Response(response, status=500)
+
+@api_view(['GET'])
+def clear_sessions(request):
+    try:
+        # delete all sessions
+        USSDSession.objects.all().delete()
+        response = dict(status="success")
+        return Response(response, status=200)
+    except Exception as error:
+        error_logger.exception(error)
+        response = dict(status="error", message=f"{str(error)}")
         return Response(response, status=500)

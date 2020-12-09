@@ -1,135 +1,99 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} Dashboard {% endblock %} 
+{% block title %} Dashboard {% endblock %}
 {% load static %}
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
 
-    <div class="row">
-      <div class="col-12">
-        <div class="card card-chart">
-          <div class="card-header ">
-            <div class="row">
-              <div class="col-sm-6 text-left">
-                <h5 class="card-category"></h5>
-                <h2 class="card-title">Performance</h2>
-              </div>
-            </div>
-          </div>
-          <div class="h-75 card-body">
-            <div class="chart-area" style="height:280px">
-              <canvas class="h-100" id="sessionsChart"></canvas>
-            </div>
+<div class="row">
+  <div class="col-12">
+    <div class="card card-chart">
+      <div class="card-header ">
+        <div class="row">
+          <div class="col-sm-6 text-left">
+            <h5 class="card-category"></h5>
+            <h2 class="card-title">Performance</h2>
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="row">
-
-      <div class="col-lg-12 col-md-12">
-        <div class="card ">
-          <div class="card-header">
-            <h4 class="card-title">Live USSD Sessions</h4>
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table id = "table-sessions-live" class="table tablesorter " >
-                <thead class=" text-primary">
-                  <tr>
-                    <th>
-                      Session&nbsp;ID
-                    </th>
-                    <th class="text-center">
-                      Contact
-                    </th>
-                    <th class="text-center">
-                      Aggregator
-                    </th>
-                    <th class="text-center">
-                      Shortcode
-                    </th>
-                    <th class="text-center">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                {% for session in sessions %}
-                    <tr>
-                    <td>
-                      {{ session.session_id }}
-                    </td>
-                    <td class="text-center">
-                        {{ session.contact }}
-                    </td>
-                    <td class="text-center">
-                      {{ session.handler.aggregator }}
-                    </td>
-                    <td class="text-center">
-                      {{ session.handler.short_code }}
-                    </td>
-                    <td  class="text-center">
-                      <div class="badge-{{ session.badge }}">{{ session.status }}</div>
-                    </td>
-                  </tr>
-                {%  endfor %}
-
-                </tbody>
-              </table>
-            </div>
-          </div>
+      <div class="h-75 card-body">
+        <div class="chart-area" style="height:280px">
+          <canvas class="h-100" id="sessionsChart"></canvas>
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="row">
+  <input type="hidden" id="sessionClearStatus" />
+  <div class="col-lg-12 col-md-12">
+    <div class="card ">
+      <div class="card-header">
+        <h4 class="card-title">Live USSD Sessions</h4>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="table-sessions-live" class="table tablesorter ">
+            <thead class=" text-primary">
+              <tr>
+                <th>
+                  Session&nbsp;ID
+                </th>
+                <th class="text-center">
+                  Contact
+                </th>
+                <th class="text-center">
+                  Aggregator
+                </th>
+                <th class="text-center">
+                  Shortcode
+                </th>
+                <th class="text-center">
+                  Status
+                </th>
+                <th class="text-center">
+                  Date
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for session in sessions %}
+              <tr>
+                <td>
+                  {{ session.session_id }}
+                </td>
+                <td class="text-center">
+                  {{ session.contact }}
+                </td>
+                <td class="text-center">
+                  {{ session.handler.aggregator }}
+                </td>
+                <td class="text-center">
+                  {{ session.handler.short_code }}
+                </td>
+                <td class="text-center">
+                  <div class="badge-{{ session.badge }}">{{ session.status }}</div>
+                </td>
+                <td class="text-center">
+                  {{session.last_access_at}}
+                </td>
+              </tr>
+              {%  endfor %}
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 {% include 'includes/graph.html' %}
-    <script>
-    $(document).ready(function() {
-        const sessionsTable = $('#table-sessions-live');
-         sessionsTable.DataTable(
-             {searching: false, info: false,pageLength:10,ordering:false, columns:[
-             { data: 'session_id' },
-             { data: 'contact' },
-             { data: 'handler' },
-             { data: 'short_code' },
-             { data: 'status' }]
-             });
-      // Javascript method's body can be found in assets/js/demos.js
-        //demo.showNotification('top','center',1,"Welcome to Exteranal USSD channel for RapidPro ");
-        //websocket
-
-        console.log('ws://'+ window.location.host+ '/ws/sessions');
-        const chatSocket = new WebSocket(
-            'ws://'+ window.location.host+ '/ws/sessions'
-        );
-        chatSocket.onopen = function(e){
-            console.log("connection established")
-        };
-        chatSocket.onclose = function(e){
-            console.log("connection Closed")
-        };
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            sessionsTable.DataTable().clear();
-            const newSessions = JSON.parse(data.sessions);
-            let trows='';
-            newSessions.forEach((session)=>{
-                const {session_id, contact,handler,short_code, badge, status} = session;
-                trows +=`<tr><td>${session_id}</td><td class="text-center" >${contact}</td><td class="text-center">${handler}</td><td class="text-center">${short_code}</td><td class="text-center"><div class="badge-${badge}">${status}</div></td></tr>`
-            });
-            //$('#table-sessions-live tbody').append(trows)
-            setTimeout(()=>{
-                sessionsTable.DataTable().rows.add($(trows)).draw()
-            },1000) // sleep for one second
-        };
-
-    });
-  </script>
-
+{% include 'includes/index-scripts.html' %}
 {% endblock javascripts %}

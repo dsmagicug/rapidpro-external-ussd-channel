@@ -11,10 +11,10 @@ Once RapidPro is up and running, you can install and configure the channel servi
 
 The minimum requirements for the channel service are the same as those for RapidPro, specifically:
 
- * [Python v3.6](https://www.python.org/downloads/release/python-360/) and later
+ * [Python >= v3.6](https://www.python.org/downloads/release/python-360/) and later
 
  * An RDBMS preferably [PostgreSQL 9.6](https://www.postgresql.org/) or later
- * [Redis 3.2](https://redis.io/) or later
+ * [Redis >= v5.0](https://redis.io/) or later
  
 This means that RapidPro and the channel service can co-exist on the same server instance.
 
@@ -22,7 +22,7 @@ The setup has been broken down into five simple steps described below.
 
 ### Database setup
 
-Start the [Redis 3.2](https://redis.io/) server. 
+Start the [Redis](https://redis.io/) server. 
  
 You can use other RDMS like MySQL but we recommend  [PostgreSQL](https://www.postgresql.org/).
 
@@ -256,3 +256,64 @@ Two options are provided,
 Submit this form and enjoy the power of RapidPro through USSD. 
 You can configure multiple handlers for multiple aggregators but each aggregator must have one handler depending on the format of their requests/responses. 
  
+### RapidPro USSD Flow Setup and best Practices
+
+Although the channel does not require much changes in the normal RapidPro SMS flows, for a swift experience using this channel, you may want to revisit your SMS flow designs to best serve USSD. Below we present you our recommended best practices.
+
+
+ * Create a RapidPro trigger that corresponds to the `Trigger word` that was specified during `step 6` under Channel config above.
+ * If you want the one shortcode to support multiple flows, create a single flow that routes to other flows and assign a the trigger (create in above) to that flow. for example if You have 3 flows (Register flow, Login flow, and Survey flow), you can create an extra flow say  `Link flow` and route the user accordingly as below.
+```
+ 1. Register
+ 2. Login
+ 3. Survey
+ ```
+
+ * Ensure that there are no open nodes in the flows, for example if a node (a step in flow) requires a user to provide options as below; 
+ ```
+ 1. Yes
+ 2. No
+ 3. Opt out
+ 4. Back to main menu
+ ```
+ Your flow has to have a node that handles a scenario where a user enters a 5 or anything undesirable. This is normally provided by RapidPro using the route called `Other`. Make sure `Other` is handled and not left open. i.e. you can create a node that notifies the user of a wrong entry and routes back to waiting another entry. Failure to handle `Other` may result into bad channel behaviour which can be frustrating.
+
+ * When designing your flows for USSD, make sure the user does not have to enter long responses whenever you can. e.g. provide options to pick from as numbers (1,2,3,4,5....) like in the above examples.
+
+ * Its good practice to provide an option for Cancelling and routing back to the previous step or back to main menu  in your flows. For example
+ ```
+ 1. Yes
+ 2. No
+ 3. Back
+ 4. Back to main menu
+ 5. Cancel(Opt out)
+ ```
+ 
+### Deployement
+We have looked at setting up a development server for this channel above. let us look at how quickly you can set up an instance for production.  
+
+The External Channel applications uses [Django Channels](https://channels.readthedocs.io/en/stable/index.html)
+
+Channels is a project that takes Django and extends its abilities beyond HTTP - to handle WebSockets, chat protocols, IoT protocols, and more. It’s built on a Python specification called [ASGI](http://asgi.readthedocs.io/)
+
+In order to support live session table on the dashboard i.e. whenever a user initiates a USSD session, it can be visible in realtime on the graph and table on the dashboard. This ability uses websockets which if not deployed well may disable the feature. 
+
+Note that this has no negative effects on the overall performance of the system. Its just grants you the ability to watch USSD sessions as they are initiated in realtime. So if you are excited about this feature, we offer you an easy way of getting started.
+
+ * The system comes with [Daphne](https://pypi.org/project/daphne/) which is a HTTP, HTTP2 and WebSocket protocol server for ASGI and ASGI-HTTP, developed to power Django Channels.
+
+ * The system has an `asgi.py` file under `project_folder/core/` which is ready to get you started quickly. What you need to do is simply run `daphne -b 0.0.0.0 -p 8000 core.asgi:application`
+ inside your project directory and you are good to go. You can run daphne user a python virtual environment by simply using `venv/bin/daphne -b 0.0.0.0 -p 8000 core.asgi:application`
+
+ You can run this as a daemon if you want using [systemd](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwia1-WAkcHtAhVbilwKHSD2AFgQFjAKegQIIhAC&url=https%3A%2F%2Fwiki.archlinux.org%2Findex.php%2Fsystemd&usg=AOvVaw0gaiXnpOAFuudxBlQMopBx) or similar projects on Linux or macOS.
+
+There are also alternative ASGI servers that you can use for serving Channels as described [here](https://channels.readthedocs.io/en/stable/deploying.html)
+
+Another important resource on this can be found [here](https://docs.djangoproject.com/en/3.1/howto/deployment/asgi/daphne/)
+
+You can as well deploy the system using `wsgi` and it will still work, only that you won't get live tables on your dashboard. Under this setup, you can only see new USSD sessions after reloading the page.
+But the graphs will still give you a relatively better update of what's happening.
+
+Thank you.
+
+Good luck.
