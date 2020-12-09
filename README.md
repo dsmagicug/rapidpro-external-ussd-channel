@@ -262,7 +262,7 @@ Although the channel does not require much changes in the normal RapidPro SMS fl
 
 
  * Create a RapidPro trigger that corresponds to the `Trigger word` that was specified during `step 6` under Channel config above.
- * If you want the one shortcode to support multiple flows, create a single flow that routes to other flows and assign a the trigger (create in above) to that flow. for example if You have 3 flows (Register flow, Login flow, and Survey flow), you can create an extra flow say  `Link flow` and route the user accordingly as below.
+ * If you want a single shortcode to support multiple flows, create a single flow that routes to other flows and assign a the trigger (create in above) to that flow. for example if You have 3 flows (Register flow, Login flow, and Survey flow), you can create an extra flow say  `Link flow` and route the user accordingly as below.
 ```
  1. Register
  2. Login
