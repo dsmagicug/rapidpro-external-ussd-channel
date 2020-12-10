@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-
+{% load readable%}
 {% block title %} Handlers {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
@@ -61,7 +61,7 @@
                                                         {{ handler.aggregator }}
                                                     </td>
                                                     <td class="text-center">
-                                                        {{ handler.short_code }}
+                                                        {{ handler.short_code | readable}}
                                                     </td>
                                                     <td class="text-center">
                                                         {% if handler.push_support == False %}
