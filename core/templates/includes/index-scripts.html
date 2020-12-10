@@ -156,7 +156,8 @@
         newSessions.forEach((session) => {
           const { session_id, contact, handler, short_code, badge, status, last_access_at } = session;
           const niceDate = toDjangoDateFormat(last_access_at);
-          trows += `<tr><td>${session_id}</td><td class="text-center" >${contact}</td><td class="text-center">${handler}</td><td class="text-center">${short_code}</td><td class="text-center"><div class="badge-${badge}">${status}</div></td><td class="text-center">${niceDate}</td></tr>`
+          const shortCode = standardShortcode(short_code);
+          trows += `<tr><td>${session_id}</td><td class="text-center" >${contact}</td><td class="text-center">${handler}</td><td class="text-center">${shortCode}</td><td class="text-center"><div class="badge-${badge}">${status}</div></td><td class="text-center">${niceDate}</td></tr>`
         });
         setTimeout(() => {
           sessionsTable.DataTable().rows.add($(trows)).draw()

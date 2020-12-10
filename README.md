@@ -276,7 +276,7 @@ Although the channel does not require much changes in the normal RapidPro SMS fl
  3. Opt out
  4. Back to main menu
  ```
- Your flow has to have a node that handles a scenario where a user enters a 5 or anything undesirable. This is normally provided by RapidPro using the route called `Other`. Make sure `Other` is handled and not left open. i.e. you can create a node that notifies the user of a wrong entry and routes back to waiting another entry. Failure to handle `Other` may result into bad channel behaviour which can be frustrating.
+ Your flow should have a node that handles a scenario where a user enters a 5 or anything undesirable. This is normally provided by RapidPro using the route called `Other`. Make sure `Other` is handled and not left open. i.e. you can create a node that notifies the user of a wrong entry and routes back to waiting another entry. Failure to handle `Other` may result into bad channel behaviour which can be frustrating.
 
  * When designing your flows for USSD, make sure the user does not have to enter long responses whenever you can. e.g. provide options to pick from as numbers (1,2,3,4,5....) like in the above examples.
 
@@ -288,8 +288,9 @@ Although the channel does not require much changes in the normal RapidPro SMS fl
  4. Back to main menu
  5. Cancel(Opt out)
  ```
- 
-### Deployement
+ * Lastly, RapidPro provides a flow feature which expires inactive contacts after a give period of time, make sure you specify this period during or after flow creation to avoid scenarios where a contact who dailed a shortcode a month ago and probably forgot where they stopped,comes back and picks up from where they left off. You may want to set the flows to restart these cases afresh.
+
+### Deployment (enable Live session tracking table)
 We have looked at setting up a development server for this channel above. let us look at how quickly you can set up an instance for production.  
 
 The External Channel applications uses [Django Channels](https://channels.readthedocs.io/en/stable/index.html)
@@ -298,7 +299,7 @@ Channels is a project that takes Django and extends its abilities beyond HTTP - 
 
 In order to support live session table on the dashboard i.e. whenever a user initiates a USSD session, it can be visible in realtime on the graph and table on the dashboard. This ability uses websockets which if not deployed well may disable the feature. 
 
-Note that this has no negative effects on the overall performance of the system. Its just grants you the ability to watch USSD sessions as they are initiated in realtime. So if you are excited about this feature, we offer you an easy way of getting started.
+Note that this has no negative effects on the overall performance of the system. It just grants you the ability to watch USSD sessions as they are initiated in realtime. If you are excited about this feature, we offer you an easy way of getting started.
 
  * The system comes with [Daphne](https://pypi.org/project/daphne/) which is a HTTP, HTTP2 and WebSocket protocol server for ASGI and ASGI-HTTP, developed to power Django Channels.
 
@@ -311,7 +312,7 @@ There are also alternative ASGI servers that you can use for serving Channels as
 
 Another important resource on this can be found [here](https://docs.djangoproject.com/en/3.1/howto/deployment/asgi/daphne/)
 
-You can as well deploy the system using `wsgi` and it will still work, only that you won't get live tables on your dashboard. Under this setup, you can only see new USSD sessions after reloading the page.
+You can as well deploy the system using `wsgi` and it will still work, except you won't get a live session tracking table on your dashboard. Under this setup, you can only see new USSD sessions after reloading the page.
 But the graphs will still give you a relatively better update of what's happening.
 
 Thank you.

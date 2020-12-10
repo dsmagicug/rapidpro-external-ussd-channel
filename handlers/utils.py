@@ -125,7 +125,8 @@ class ProcessAggregatorRequest:
     still_in_flow = False
     is_session_start = None
     handler = None
-
+    
+    # define a constructor thay takes in a dict request from an aggregator api
     def __init__(self, aggregator_request):
         self.request_data = aggregator_request
 
