@@ -33,7 +33,7 @@ class Handler(AuthSignature):
         default=False
     )
     push_url = models.URLField(
-        null=True
+        null=True, blank=True
     )
 
     def __str__(self):

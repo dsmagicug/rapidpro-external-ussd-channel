@@ -9,7 +9,6 @@ from .models import Handler
 from core.utils import access_logger, error_logger
 
 
-
 class HandlersListView(TemplateView, LoginRequiredMixin):
     template_name = 'handlers/handler.html'
     login_url = 'login'

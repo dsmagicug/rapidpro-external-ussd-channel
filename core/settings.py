@@ -71,7 +71,6 @@ TEMPLATES = [
     },
 ]
 
-
 # WSGI_APPLICATION = 'core.wsgi.application'
 
 ASGI_APPLICATION = "core.routing.application"
@@ -123,7 +122,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
