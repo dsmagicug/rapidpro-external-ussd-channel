@@ -2,8 +2,6 @@ from django.db import models
 from core.utils import AuthSignature
 
 
-# Create your models here.
-
 class Handler(AuthSignature):
     aggregator = models.CharField(
         max_length=50

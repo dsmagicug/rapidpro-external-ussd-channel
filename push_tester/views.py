@@ -1,12 +1,17 @@
+'''
+This module  uses web sockets together with a an android app to found at 
+https://github.com/ekeeya/ussd-push-simulator
+Remember to change the constants in /src/utils before generating the APK
+'''
+
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
 from .models import Tester
 from msgs.models import Msg
 from .serializers import TesterSerializer, MsgSerializer
 from handlers.utils import standard_urn
-
-# Create your views here.
 
 
 @api_view(['POST'])
