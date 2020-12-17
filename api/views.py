@@ -5,14 +5,14 @@ from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 
 import redis
-import json
 import requests
 from websocket import create_connection
 from ast import literal_eval
+import json
 
 from handlers.utils import ProcessAggregatorRequest, RP_RESPONSE_FORMAT, RP_RESPONSE_STATUSES, standard_urn, \
     SESSION_STATUSES, get_channel, RP_RESPONSE_CONTENT_TYPES
-from core.utils import access_logger, error_logger
+from core.utils import error_logger
 from channel.models import USSDSession
 
 HEADERS = requests.utils.default_headers()
@@ -32,9 +32,10 @@ def changeSessionStatus(session, status, badge):
     session.save()
 
 
-def push_ussd(payload):
+def push_ussd(payload, request):
     try:
-        ws = create_connection("ws://localhost:5000/ws/demo")
+        host = request.get_host()
+        ws = create_connection(f"ws://{host}/ws/demo")
         ws.send(json.dumps(payload))
         ws.close()
         return True
@@ -45,14 +46,16 @@ def push_ussd(payload):
 
 @api_view(['POST'])
 def send_url(request):
-    access_logger.info(str(request.META))
     try:
-        if request.META["CONTENT_TYPE"] == RP_RESPONSE_CONTENT_TYPES["URL_ENCODED"]:
+        if "CONTENT_TYPE" in request.META:
+            content_type = "CONTENT_TYPE"
+        else:
+            content_type = "HTTP_CONTENT_TYPE"
+        if request.META[content_type] == RP_RESPONSE_CONTENT_TYPES["URL_ENCODED"]:
             data = request.data
             content = data.dict()
         else:
-            # TODO handle other content types
-            content = set()
+            content = request.data
         # decrement key1
         to = content['to_no_plus']
         key1 = f"MO_MT_KEY_{to}"
@@ -67,10 +70,9 @@ def send_url(request):
                 action = "request"
             msg_extras = dict(msg_type="Outgoing", status="Received", action=action)
             content.update(msg_extras)
-            push = push_ussd(content)
+            push = push_ussd(content,request)
             # reset key to 1
             r.set(key1, 0, ex=10)
-            # TODO add logic for a real PUSH capable USSD aggregator
         return Response({"message": "success"}, status=200)
     except Exception as err:
         error_logger.exception(err)
@@ -153,6 +155,7 @@ def call_back(request):
         error_logger.exception(err)
         response = {"responseString": "External Application unreachable", "action": "end"}
         return Response(response, status=500)
+
 
 @api_view(['GET'])
 def clear_sessions(request):

@@ -16,6 +16,7 @@ import random, string
 from django.core.mail import send_mail
 from django.conf import settings
 
+
 def login_view(request):
     form = LoginForm(request.POST or None)
 
@@ -73,7 +74,6 @@ def profile(request):
         action = request.POST['action']
         if action == "update":
             username = request.POST['username']
-            print(username)
             email = request.POST['email']
             ME.username = username
             ME.email = email
@@ -124,9 +124,8 @@ def invite(request):
         username = email.split("@")[0]
         password = "".join(random.choices(string.ascii_uppercase + string.digits, k=15))
         new_user = User.objects.create_user(username=username, email=email, password=password)
-        msg = mark_safe(f"Hello\nYou have been invited by {request.user.email} to RapidPro External USSG channel.\nVisit {settings.HOST} and login with " \
-              f"the following credentials\n<tr><td><b>Username</b></td><td>{username}</td></tr><tr><td><b>Password</b" \
-              f"></td><td>{password}</td></tr>\nPlease change your password upon logging in")
+        msg = mark_safe(
+            f"Hello\nYou have been invited by {request.user.email} to RapidPro External USSG channel.\nVisit {settings.HOST} and login with " f"the following credentials\n<tr><td><b>Username</b></td><td>{username}</td></tr><tr><td><b>Password</b" f"></td><td>{password}</td></tr>\nPlease change your password upon logging in")
         new_user.save()
         # TODO SMTP to send mail
         send_mail(
