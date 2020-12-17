@@ -3,12 +3,11 @@ from django.views.generic import View, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
+
 from .forms import HandlerForm
 from .models import Handler
 from core.utils import access_logger, error_logger
 
-
-# Create your views here.
 
 class HandlersListView(TemplateView, LoginRequiredMixin):
     template_name = 'handlers/handler.html'

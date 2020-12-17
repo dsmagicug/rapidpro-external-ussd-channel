@@ -71,7 +71,6 @@ TEMPLATES = [
     },
 ]
 
-
 # WSGI_APPLICATION = 'core.wsgi.application'
 
 ASGI_APPLICATION = "core.routing.application"
@@ -124,7 +123,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
@@ -144,3 +142,4 @@ EMAIL_HOST_PASSWORD = "xxxxx"
 REDIS_HOST = "localhost"
 REDIS_PORT = 6379
 REDIS_DB = 0
+

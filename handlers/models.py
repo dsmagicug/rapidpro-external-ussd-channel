@@ -2,8 +2,6 @@ from django.db import models
 from core.utils import AuthSignature
 
 
-# Create your models here.
-
 class Handler(AuthSignature):
     aggregator = models.CharField(
         max_length=50
@@ -35,7 +33,7 @@ class Handler(AuthSignature):
         default=False
     )
     push_url = models.URLField(
-        null=True
+        null=True, blank=True
     )
 
     def __str__(self):

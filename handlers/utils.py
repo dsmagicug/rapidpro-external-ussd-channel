@@ -9,9 +9,7 @@ from countries_plus.models import Country
 import json
 from time import sleep, time
 from core.utils import error_logger, access_logger
-from ast import literal_eval
 import re
-from random import random
 
 RESPONSE_FORMAT = [
     (1, "Is Key Value"),
