@@ -34,6 +34,8 @@
                     <li class="nav-item"><a class="nav-link scrollto" href="#item-3-1">Channel Configurations</a></li>
                     <li class="nav-item"><a class="nav-link scrollto" href="#item-3-2">Aggregator Handler
                         Configurations</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-3-3">RapidPro USSD Flow Setup and best Practices</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-3-4">Deployment (enable Live session tracking table)</a></li>
                     <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-4"><span
                             class="theme-icon-holder mr-2"><i class="fas fa-tv"></i></span>Features</a></li>
                     <li class="nav-item"><a class="nav-link scrollto" href="#item-4-1">Dashboard</a></li>
@@ -255,6 +257,16 @@
                                 </code>
                             </div>
                         </div>
+                        <p>
+                            Django countries requires you populate the Countries table with the latest country data using
+                        </p>
+                        <div class="docs-code-block">
+                            <div class="shadow-lg rounded">
+                                <code class="code-samples hljs">
+                                    $python manage.py update_countries_plus
+                                </code>
+                            </div>
+                        </div>
                         <h2 class="section-heading">Start django server</h2>
                         <p>
                             Start the django (rocket) server by running the code below.<br>
@@ -356,8 +368,7 @@
                                 <li>
                                     <code>Send&nbsp;URL</code>
                         <p>
-                            This is a URL which RapidPro will call when sending an outgoing message. This URL will be
-                            generated as you input your local server URL required.<br><br>
+                            This is a URL which RapidPro will call when sending an outgoing message. This URL will be generated as you input your local server URL required.<br><br>
                             The format of the SEND URL will be like this;
                             <code>http://yourmachine/adaptor/send-url</code>.
                             Copy this link, head to RapidPro's External API form and paste it under the <code>SEND
@@ -388,7 +399,17 @@
                                     <figcaption class="figure-caption mt-3"><i class="fas fa-image mr-2"></i>Receive URL
                                         required from RapidPro at step4 below
                                     </figcaption>
-                                </figure>
+                                </figure><br>
+                                <b>NOTE:</b> Before submiting RapidPro's External API configuration form, make sure you add cgi params.
+                                <br>
+                                <code style="color:blue">session_status={% templatetag openvariable %}session_status}}&to_no_plus={% templatetag openvariable %}to_no_plus}}&from_no_plus={% templatetag openvariable %}from_no_plus}}</code>
+                                <br>
+                                to the Request Body field. These are required when rapidPro is making a request to the USSD external channel in addition to the default
+                                <code style="color:blue">id={% templatetag openvariable %}id}}&text={% templatetag openvariable %}text}}&to={% templatetag openvariable %}to}}&from={% templatetag openvariable %}from}}&channel={% templatetag openvariable %}channel}}</code>.
+                                <br><br>Your configuration will not work if these cgi-params are not set at this level since the channel uses <code>session_status</code> within the request from RapidPro to tell if the interaction is still ongoing or completed so as it initiates the right USSD menu to the end user device. If you are confused, just copy
+                                <br>
+                                <code style="color:blue">id={% templatetag openvariable %}id}}&text={% templatetag openvariable %}text}}&to={% templatetag openvariable %}to}}&to_no_plus={% templatetag openvariable %}to_no_plus}}&from={% templatetag openvariable %}from}}&from_no_plus={% templatetag openvariable %}from_no_plus}}&channel={% templatetag openvariable %}channel}}&session_status={% templatetag openvariable %}session_status}}</code>
+                                and paste it in Request Body field.
                             </p>
                         </li>
                         <li>
@@ -430,17 +451,14 @@
                             </p>
                         </li>
                         </ol>
-
                         </p>
-                    </section><!--//section-->
+                    </section>
 
                     <section class="docs-section" id="item-3-2">
                         <h2 class="section-heading">Aggregator Handler Configurations</h2>
                         <p>
-                            Since different USSD aggregator APIs have different Request/Response formats, this channel
-                            standardizes these formats into one understood by RapidPro.<br>
-                            This is achieved through configuring handlers for each one of the
-                            aggregator APIs that you want to use.<br>
+                            Since different USSD aggregator APIs have different Request/Response formats, this channel standardizes these formats into one understood by RapidPro.<br>
+                            This is achieved through configuring handlers for each of the aggregator APIs that you want to use.<br>
                             To set up a Handelr;<br><br>
                             Go to <code>HANDLERS</code> on your side menu, click <code>Add Handler</code> button. You
                             will be
@@ -669,6 +687,77 @@
                         format of their requests/responses.
                         </p>
                     </section><!--//section-->
+
+                    <section class="docs-section" id="item-3-3">
+                        <h2 class="section-heading">RapidPro USSD Flow Setup and best Practices</h2>
+                        <p>
+                            Although the channel does not require much changes in the normal RapidPro SMS flows, for a swift experience using this channel, you may want to revisit your SMS flow designs to best serve USSD. Below we present you our recommended best practices.<br><br>
+                            <ul>
+                                <li>Create a RapidPro trigger that corresponds to the <code>Trigger word</code> that was specified during step 6 under Channel config above.</li>
+                                <li>If you want a single shortcode to support multiple flows, create a single flow that routes to other flows and assign a the trigger (create in above) to that flow. for example if You have 3 flows (Register flow, Login flow, and Survey flow), you can create an extra flow say <code>Link flow</code> and route the user accordingly as below.</li>
+                                <ol>
+                                    <li>Register</li>
+                                    <li>Login</li>
+                                    <li>Survey</li>
+                                </ol>
+                                <li>Ensure that there are no open nodes in the flows, for example if a node (a step in flow) requires a user to provide options as below;</li>
+                                <ol>
+                                    <li>Yes</li>
+                                    <li>No</li>
+                                    <li>Opt out</li>
+                                    <li>Back to main menu</li>
+                                </ol>
+                            </ul>
+
+                            <br>
+                            Your flow should have a node that handles a scenario where a user enters a 5 or anything undesirable. This is normally provided by RapidPro using the route called <code>Other</code>. Make sure <code>Other</code> is handled and not left open. i.e. you can create a node that notifies the user of a wrong entry and routes back to waiting another entry. Failure to handle <code>Other</code> may result into bad channel behaviour which can be frustrating.
+                            <ul>
+                                <li>When designing your flows for USSD, make sure the user does not have to enter long responses whenever you can. e.g. provide options to pick from as numbers (1,2,3,4,5....) like in the above examples. </li>
+                            <li>Its good practice to provide an option for Cancelling and routing back to the previous step or back to main menu in your flows. For example</li>
+                            <ol>
+                                <li>Yes</li>
+                                <li>No</li>
+                                <li>Back</li>
+                                <li>Back to main menu</li>
+                                <li>Cancel(Opt out)</li>
+                            </ol>
+                                <li>
+                                    Lastly, RapidPro provides a flow feature which expires inactive contacts after a give period of time, make sure you specify this period during or after flow creation to avoid scenarios where a contact who dailed a shortcode a month ago and probably forgot where they stopped,comes back and picks up from where they left off. You may want to set the flows to restart these cases afresh.
+                                </li>
+                            </ul>
+                        <br>
+                        </p>
+                    </section>
+
+                    <section class="docs-section" id="item-3-4">
+                        <h2 class="section-heading">Deployment (enable Live session tracking table)</h2>
+                        <p>
+                            We have looked at setting up a development server for this channel above. let us look at how quickly you can set up an instance for production.<br><br>
+                            The External Channel applications uses <a href="https://channels.readthedocs.io/en/stable/index.html">Django Channels</a><br>
+                            <br>
+                            Channels is a project that takes Django and extends its abilities beyond HTTP - to handle WebSockets, chat protocols, IoT protocols, and more. It’s built on a Python specification called <a href="http://asgi.readthedocs.io/">ASGI</a>
+                            <br><br>
+                            In order to support live session table on the dashboard i.e. whenever a user initiates a USSD session, it can be visible in realtime on the graph and table on the dashboard. This ability uses websockets which if not deployed well may disable the feature.
+                            <br><br>
+                            Note that this has no negative effects on the overall performance of the system. It just grants you the ability to watch USSD sessions as they are initiated in realtime. If you are excited about this feature, we offer you an easy way of getting started.
+                            <ul>
+                                <li>The system comes with <a href="https://pypi.org/project/daphne/">Daphne</a> which is a HTTP, HTTP2 and WebSocket protocol server for ASGI and ASGI-HTTP, developed to power Django Channels.</li>
+                                <li>The system has an <code>asgi.py</code> file under <code>project_folder/core/</code> which is ready to get you started quickly. What you need to do is simply run <code>daphne -b 0.0.0.0 -p 8000 core.asgi:application</code> inside your project directory and you are good to go. You can run daphne user a python virtual environment by simply using <code>venv/bin/daphne -b 0.0.0.0 -p 8000 core.asgi:application</code></li>
+                            </ul>
+                        <br><br>
+                        You can run this as a daemon if you want using <a href="https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwia1-WAkcHtAhVbilwKHSD2AFgQFjAKegQIIhAC&url=https%3A%2F%2Fwiki.archlinux.org%2Findex.php%2Fsystemd&usg=AOvVaw0gaiXnpOAFuudxBlQMopBx">systemd</a> or similar projects on Linux or macOS.
+                        <br><br>
+                        There are also alternative ASGI servers that you can use for serving Channels as described <a href="https://channels.readthedocs.io/en/stable/deploying.html">here</a>.
+                        <br><br>
+                        Another important resource on this can be found <a href="https://docs.djangoproject.com/en/3.1/howto/deployment/asgi/daphne/">here</a>
+                        <br><br>
+                        You can as well deploy the system using wsgi and it will still work, except you won't get a live session tracking table on your dashboard. Under this setup, you can only see new USSD sessions after reloading the page. But the graphs will still give you a relatively better update of what's happening.
+                        <br><br>
+                        Thank You
+                        <br><br>
+                        Good luck.
+                        </p>
+                    </section>
 
 
                 </article><!--//docs-article-->
