@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api.apps.ChannelApiConfig',
+    'django_celery_beat',
     'countries_plus',
     'rest_framework',
     'rest_framework.authtoken',

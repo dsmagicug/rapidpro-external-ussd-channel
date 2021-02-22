@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.safestring import mark_safe
 from .models import Handler
-from .utils import RESPONSE_FORMAT, METHODS, RESPONSE_CONTENT_TYPES
+from .utils import RESPONSE_FORMAT, METHODS, RESPONSE_CONTENT_TYPES, AUTH_SCHEMES
 
 
 class HandlerForm(forms.ModelForm):
@@ -122,6 +122,16 @@ class HandlerForm(forms.ModelForm):
                 "value": f"https://aggregator.app"
             }
         ))
+    auth_scheme = forms.CharField(
+        help_text=mark_safe("<pre style='font-size:8pt;color:#757575' >Choose a scheme to authenticate the "
+                            "aggregator's API requests.</pre>"),
+        widget=forms.Select(
+            choices=AUTH_SCHEMES,
+            attrs={
+                "class": "form-control"
+            }
+        )
+    )
 
     class Meta:
         model = Handler

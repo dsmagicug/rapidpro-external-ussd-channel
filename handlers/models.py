@@ -35,6 +35,15 @@ class Handler(AuthSignature):
     push_url = models.URLField(
         null=True, blank=True
     )
+    NONE = "NONE"
+    TOKEN = "TOKEN"
+    BASIC = "BASIC"
+
+    AUTH_SCHEMES = [
+        (NONE, "NONE"),
+        (TOKEN, "TOKEN")
+    ]
+    auth_scheme = models.CharField(max_length=30, default=TOKEN)
 
     def __str__(self):
         return self.aggregator

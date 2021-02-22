@@ -32,6 +32,7 @@ class RegisterHandlerView(View, LoginRequiredMixin):
         self.isNewHandler = True
         self.aggregator = None
         self.token = None
+        self.auth_scheme = None
 
     # will be used to authenticate aggregator requests
     def create_auth_user(self, aggregator=None):
@@ -61,6 +62,7 @@ class RegisterHandlerView(View, LoginRequiredMixin):
             if handler_id:
                 if Handler.objects.filter(id=handler_id).exists():
                     handler = Handler.objects.get(pk=handler_id)
+                    self.auth_scheme = handler.auth_scheme
                     self.aggregator = handler.aggregator
                     form = HandlerForm(instance=handler)
                     self.get_auth_token()
@@ -69,7 +71,9 @@ class RegisterHandlerView(View, LoginRequiredMixin):
                     redirect('add_handler', permanent=True)
             else:
                 form = HandlerForm()
-            return render(request, self.template_name, {"form": form, "token": self.token})
+            return render(request, self.template_name,
+                          {"form": form, "token": self.token, "auth_scheme": self.auth_scheme})
+
         except Exception as err:
             error_logger.exception(err)
 
@@ -78,6 +82,7 @@ class RegisterHandlerView(View, LoginRequiredMixin):
         try:
             if handler_id:
                 handler = Handler.objects.get(pk=handler_id)
+                self.auth_scheme = handler.auth_scheme
                 self.aggregator = handler.aggregator
                 self.get_auth_token()
                 self.isNewHandler = False
@@ -97,7 +102,8 @@ class RegisterHandlerView(View, LoginRequiredMixin):
                 self.msg = 'Form is invalid'
                 self.success = False
             return render(request, self.template_name,
-                          {"form": form, "msg": self.msg, "token": self.token, "success": self.success})
+                          {"form": form, "msg": self.msg, "token": self.token, "success": self.success,
+                           "auth_scheme": self.auth_scheme})
 
         except Exception as err:
             error_logger.exception(err)

@@ -3,6 +3,7 @@ from contacts.models import Contact
 from channel.models import USSDSession, USSDChannel
 from channel.serializers import SessionSerializer
 from django.utils import timezone
+from django_celery_beat.models import PeriodicTask, IntervalSchedule
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from countries_plus.models import Country
@@ -20,6 +21,10 @@ METHODS = [
     ('POST', 'HTTP POST'),
     ('GET', 'HTTP GET'),
     ('PUT', 'HTTP PUT')
+]
+AUTH_SCHEMES = [
+    ("TOKEN", "TOKEN"),
+    ("NONE", "NONE"),
 ]
 
 RESPONSE_CONTENT_TYPES = [
@@ -114,6 +119,21 @@ def create_session(urn, session_status):
     session_id = str(time()).replace(".", "")
 
 
+def clear_timedout_sessions():
+    # lets create a 5 mins scheduler
+    schedule, created = IntervalSchedule.objects.get_or_create(
+        every=5,  # five seconds
+        period=IntervalSchedule.SECONDS,
+    )
+
+    # create the periodic task to run using the above scheduler
+    PeriodicTask.objects.get_or_create(
+        interval=schedule,
+        name='Clear_Timedout_sessions',
+        task='api.tasks.clear_timed_out_sessions',
+    )
+
+
 class ProcessAggregatorRequest:
     rapidpro_keys = []
     handler_keys = []
@@ -123,7 +143,7 @@ class ProcessAggregatorRequest:
     still_in_flow = False
     is_session_start = None
     handler = None
-    
+
     # define a constructor they takes in a dict request from an aggregator api
     def __init__(self, aggregator_request):
         self.request_data = aggregator_request
@@ -185,6 +205,14 @@ class ProcessAggregatorRequest:
 
     def process_handler(self):
         try:
+            '''
+            Lets first run the clear_timedout_sessions(), to create a task that deletes timed-out sessions
+            '''
+            if PeriodicTask.objects.filter(name="Clear_Timedout_sessions").exists():
+                pass
+            else:
+                # only if the task and its scheduler have not been create yet
+                clear_timedout_sessions()
             # determine service_code
             self.determine_service_code()
             self.handler = Handler.objects.get(short_code=self.service_code)
@@ -199,6 +227,16 @@ class ProcessAggregatorRequest:
         except Exception as err:
             error_logger.exception(err)
 
+    # call this after self.process_handler()
+    @property
+    def get_auth_scheme(self):
+
+        if self.handler:
+            auth_scheme = self.handler.auth_scheme
+            return auth_scheme
+        else:
+            return "NONE"
+
     def determine_service_code(self):
         short_codes = Handler.objects.values_list('short_code', flat=True)
         codes = list(short_codes)
@@ -207,8 +245,10 @@ class ProcessAggregatorRequest:
                 self.service_code = str(code)
                 return self.service_code
             else:
-                raise Exception("This aggregator most likely has no handler or a wrong shortcode was registered with "
-                                "handler")
+                # raise Exception("This aggregator most likely has no handler or a wrong shortcode was registered
+                # with handler")
+                self.service_code = None
+                return self.service_code
 
     def store_contact(self):
         filtered = Contact.objects.filter(urn=self.standard_request['from'])
