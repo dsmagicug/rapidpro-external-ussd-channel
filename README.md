@@ -13,7 +13,7 @@ The minimum requirements for the channel service are the same as those for Rapid
 
  * [Python >= v3.6](https://www.python.org/downloads/release/python-360/) and later
 
- * An RDBMS preferably [PostgreSQL 9.6](https://www.postgresql.org/) or later
+ * An RDBMS preferably [PostgreSQL 10](https://www.postgresql.org/) or later
  * [Redis >= v5.0](https://redis.io/) or later
  
 This means that RapidPro and the channel service can co-exist on the same server instance.
@@ -171,7 +171,7 @@ You will then be presented with a form with the following fields;
  1. `Aggregator`: (the name of the USSD aggregator that you want to use 
  for example [DMARK](#) or [Africa's Talking](https://africastalking.com/ussd))
  
- 2. `Shortcode`: (The shortcode provided by your aggregator e.g `348`.)
+ 2. `Shortcode`: (The USSD shortcode returned by the aggregator in the response string e.g `255*4`.If aggregator does not return one in the response, please set one in settings.DEFAULT_SHORT_CODE and use that here.)
  
  3. `Request format`: This is a very important field which must be set correctly 
  in order for the channel to safely standardize aggregator Requests.
