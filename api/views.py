@@ -98,13 +98,14 @@ class CallBack(APIView):
         self.request_factory = ProcessAggregatorRequest(request_data)
         self.standard_request_string = self.request_factory.process_handler()
         auth_scheme = self.request_factory.get_auth_scheme
-        if auth_scheme == "NONE":  # for now lets use Token Authentication
+        if auth_scheme == "NONE":
             self.authentication_classes = []
             self.permission_classes = []
         else:
-
+            # Token Authentication
             self.authentication_classes.append(TokenAuthentication)
             self.permission_classes.append(IsAuthenticated)
+            # Here you can add other authentication classes as well by elif
 
     def process_request(self):
         try:

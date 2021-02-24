@@ -3,6 +3,7 @@ from contacts.models import Contact
 from channel.models import USSDSession, USSDChannel
 from channel.serializers import SessionSerializer
 from django.utils import timezone
+from django.conf import settings
 from django_celery_beat.models import PeriodicTask, IntervalSchedule
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -162,6 +163,7 @@ class ProcessAggregatorRequest:
             if item is not None:
                 # update request_data with new key names
                 self.request_data[item[0]] = self.request_data.pop(item[1])
+
         if "session_id" not in self.request_data:
             raise Exception(
                 f"Make sure your {{session_id=someThing}} is defined in aggregator {self.handler.aggregator}'s "
@@ -215,7 +217,6 @@ class ProcessAggregatorRequest:
                 clear_timedout_sessions()
             # determine service_code
             self.determine_service_code()
-            self.handler = Handler.objects.get(short_code=self.service_code)
             request_format = self.handler.request_format
             # use defined template
             self.rapidpro_keys, self.handler_keys = separate_keys(request_format)
@@ -239,16 +240,22 @@ class ProcessAggregatorRequest:
 
     def determine_service_code(self):
         short_codes = Handler.objects.values_list('short_code', flat=True)
-        codes = list(short_codes)
-        for code in codes:
-            if str(code) in self.request_data.values():
-                self.service_code = str(code)
-                return self.service_code
+        codes = set(short_codes)
+        request_values = set(self.request_data.values())
+        intersect = codes.intersection(request_values)
+        if len(intersect) > 0:
+            self.service_code = list(intersect)[0]
+        else:
+            '''Lets default to the settings.DEFAULT_SHORT_CODE'''
+            # check for any handlers registered with default shortcode
+            if Handler.objects.filter(short_code=settings.DEFAULT_SHORT_CODE).exists():
+                self.service_code = settings.DEFAULT_SHORT_CODE
             else:
-                # raise Exception("This aggregator most likely has no handler or a wrong shortcode was registered
-                # with handler")
-                self.service_code = None
-                return self.service_code
+                raise Exception(
+                    "This aggregator most likely has no handler or a wrong shortcode was registered when creating a "
+                    "handler check spelling of the code in the subsequent handler record and try again")
+        # set handler is all is well
+        self.handler = Handler.objects.get(short_code=self.service_code)
 
     def store_contact(self):
         filtered = Contact.objects.filter(urn=self.standard_request['from'])
