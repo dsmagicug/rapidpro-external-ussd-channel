@@ -278,6 +278,8 @@ class ProcessAggregatorRequest:
                 status = latest_session.status
                 if status == SESSION_STATUSES['TIMED_OUT'] or status == SESSION_STATUSES['IN_PROGRESS']:
                     self.still_in_flow = True
+                else:
+                    self.still_in_flow = False
             else:
                 self.still_in_flow = False
         except Exception as err:
