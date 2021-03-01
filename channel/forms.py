@@ -21,15 +21,6 @@ class ChannelConfForm(forms.ModelForm):
                 "value": "https://rapidpro.app/"
             }
         ))
-    trigger_word = forms.CharField(
-        help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>Initial word(statement) to trigger initial flow "
-                            "executions in RapidPro</pre>"),
-        widget=forms.TextInput(
-            attrs={
-                "value": "USSD",
-            }
-        )
-    )
     timeout_after = forms.IntegerField(
         help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>Time in seconds the channel should wait for a "
                             "response from RapidPro (default=10s)</pre><br>"),

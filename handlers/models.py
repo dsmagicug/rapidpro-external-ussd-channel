@@ -1,5 +1,6 @@
 from django.db import models
 from core.utils import AuthSignature
+from django.utils import timezone
 
 
 class Handler(AuthSignature):
@@ -44,6 +45,10 @@ class Handler(AuthSignature):
         (TOKEN, "TOKEN")
     ]
     auth_scheme = models.CharField(max_length=30, default=TOKEN)
+
+    trigger_word = models.CharField(max_length=50, default="USSD")
+    expire_on_inactivity_of = models.IntegerField(default=300)  # 5 minutes
+    last_accessed_at = models.DateTimeField(default=timezone.now, editable=False)
 
     def __str__(self):
         return self.aggregator

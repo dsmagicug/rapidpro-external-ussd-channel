@@ -5,7 +5,6 @@ from handlers.models import Handler
 from countries_plus.models import Country
 from django.utils.safestring import mark_safe
 
-
 DEFAULT_COUNTRY = "UG"
 
 
@@ -27,10 +26,6 @@ class USSDChannel(AuthSignature):
                             "standard phone contacts)<pre>"),
         on_delete=models.CASCADE,
         default=DEFAULT_COUNTRY
-    )
-    trigger_word = models.CharField(
-        max_length=20,
-        default="USSD"
     )
 
 

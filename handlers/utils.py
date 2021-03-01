@@ -133,6 +133,12 @@ def clear_timedout_sessions():
         name='Clear_Timedout_sessions',
         task='api.tasks.clear_timed_out_sessions',
     )
+    # Periodic task to expire contacts out of their flows using handler's set expire_on_inactivity_of
+    PeriodicTask.objects.get_or_create(  # get_or_create ensures task is created only once
+        interval=schedule,
+        name='Expire_contacts',
+        task='api.tasks.expire_contacts_on_idle_handler',
+    )
 
 
 class ProcessAggregatorRequest:
@@ -310,6 +316,11 @@ class ProcessAggregatorRequest:
 
     @property
     def get_handler(self):
+        # update last accessed value
+        handler = self.handler
+        handler.last_accessed_at = timezone.now()
+        handler.save()
+        self.handler = handler
         return self.handler
 
     ''''

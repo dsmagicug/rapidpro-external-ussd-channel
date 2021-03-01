@@ -125,6 +125,26 @@ class HandlerForm(forms.ModelForm):
                 "value": f"https://aggregator.app"
             }
         ))
+    trigger_word = forms.CharField(
+        help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>Initial word(statement) to trigger initial flow "
+                            "executions in RapidPro</pre>"),
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "value": "USSD",
+            }
+        )
+    )
+    expire_on_inactivity_of = forms.CharField(
+        help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>Expire all contacts out of their flows, "
+                            "when handler is idle for these seconds</pre>"),
+        widget=forms.NumberInput(
+            attrs={
+                "class": "form-control",
+                "value": "300",
+            }
+        )
+    )
     auth_scheme = forms.CharField(
         help_text=mark_safe("<pre style='font-size:8pt;color:#757575' >Choose a scheme to authenticate the "
                             "aggregator's API requests.</pre>"),

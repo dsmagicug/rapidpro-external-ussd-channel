@@ -4,6 +4,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from rest_framework.views import APIView
+from contacts.models import Contact
 
 import redis
 import requests
@@ -13,7 +14,7 @@ import json
 
 from handlers.utils import ProcessAggregatorRequest, RP_RESPONSE_FORMAT, RP_RESPONSE_STATUSES, standard_urn, \
     SESSION_STATUSES, get_channel, RP_RESPONSE_CONTENT_TYPES
-from core.utils import error_logger
+from core.utils import error_logger, access_logger
 from channel.models import USSDSession
 
 HEADERS = requests.utils.default_headers()
@@ -121,7 +122,7 @@ class CallBack(APIView):
                 raise Exception("Could not continue without a channel, configure one first and try again")
 
             if is_new_session:
-                text = " " if still_in_flow else channel.trigger_word
+                text = " " if still_in_flow else handler.trigger_word
             else:
                 text = self.standard_request_string["text"]
             allowed_urn = standard_urn(urn)
@@ -130,6 +131,8 @@ class CallBack(APIView):
                 "from": allowed_urn,
                 "text": text
             }
+            access_logger.info(f"Is new session: {is_new_session}, Still in flow: {still_in_flow}")
+            access_logger.info(rapid_pro_request)
             # create redis keys
             key1 = f"MO_MT_KEY_{allowed_urn}"
             r.set(key1, 1)  # proven necessary or else
@@ -148,6 +151,7 @@ class CallBack(APIView):
                     feedback = literal_eval(data[1].decode("utf-8"))  # from RapidPro
                     text = feedback[RP_RESPONSE_FORMAT['text']]
                     status = feedback[RP_RESPONSE_FORMAT['session_status']]
+                    access_logger.info(data)
                     if status == RP_RESPONSE_STATUSES['waiting']:
                         action = reply_action
                     else:
@@ -161,10 +165,18 @@ class CallBack(APIView):
                     changeSessionStatus(current_session, SESSION_STATUSES['TIMED_OUT'], 'danger')
                     error_logger.debug(f"Response timed out for redis key {key2}")
                     res_format = dict(text="Response timed out", action=end_action)
+                    '''
+                    We need to delete this contact as it will delete-cascade(which ever way they say it) sessions attached to it.
+                    Next time user comes back, they will submit a trigger word
+                    '''
+                    contact = Contact.objects.get(urn=urn)
+                    contact.delete()
                     response = self.request_factory.get_expected_response(res_format)
             else:
                 changeSessionStatus(current_session, SESSION_STATUSES['TIMED_OUT'], 'danger')
                 res_format = dict(text="External Application unreachable", action=end_action)
+                contact = Contact.objects.get(urn=urn)
+                contact.delete()
                 error_logger.exception(req.content)
                 response = self.request_factory.get_expected_response(res_format)
             return Response(response, status=200)
