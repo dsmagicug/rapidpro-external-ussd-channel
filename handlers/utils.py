@@ -62,6 +62,7 @@ def get_sessions():
     sessions = USSDSession.objects.all().order_by("-last_access_at")
     serializer = SessionSerializer(sessions, many=True)
     json_sessions = json.dumps(serializer.data)
+    error_logger.debug(json_sessions)
     group_name = 'sessions'
     channel_layer = get_channel_layer()
     # broadcast sessions to group for live display
@@ -311,7 +312,7 @@ class ProcessAggregatorRequest:
             in_progress_sessions.update(status='Terminated', badge='warning')
             # create session
             session = USSDSession.objects.create(session_id=session_id, contact=contact, handler=self.handler)
-            get_sessions()
+            # get_sessions()
         return session
 
     @property
