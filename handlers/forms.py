@@ -1,7 +1,8 @@
 from django import forms
 from django.utils.safestring import mark_safe
+from django.conf import settings
 from .models import Handler
-from .utils import RESPONSE_FORMAT, METHODS, RESPONSE_CONTENT_TYPES
+from .utils import RESPONSE_FORMAT, METHODS, RESPONSE_CONTENT_TYPES, AUTH_SCHEMES
 
 
 class HandlerForm(forms.ModelForm):
@@ -21,12 +22,14 @@ class HandlerForm(forms.ModelForm):
             }
         ))
     short_code = forms.CharField(
-        help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>The USSD shortcode provided by the aggregator "
-                            "above.</pre><hr>"),
+        help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>The USSD shortcode returned by the aggregator "
+                            "in the response string.If aggregator does<br>not return one in the response, please set "
+                            "one in settings.DEFAULT_SHORT_CODE</pre><hr>"),
         widget=forms.TextInput(
             attrs={
                 "placeholder": "e.g. 255",
-                "class": "form-control"
+                "class": "form-control",
+                "value": settings.DEFAULT_SHORT_CODE
             }
         ))
     request_format = forms.CharField(
@@ -122,6 +125,36 @@ class HandlerForm(forms.ModelForm):
                 "value": f"https://aggregator.app"
             }
         ))
+    trigger_word = forms.CharField(
+        help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>Initial word(statement) to trigger initial flow "
+                            "executions in RapidPro</pre>"),
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "value": "USSD",
+            }
+        )
+    )
+    expire_on_inactivity_of = forms.CharField(
+        help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>Expire all contacts out of their flows, "
+                            "when handler is idle for these seconds</pre>"),
+        widget=forms.NumberInput(
+            attrs={
+                "class": "form-control",
+                "value": "300",
+            }
+        )
+    )
+    auth_scheme = forms.CharField(
+        help_text=mark_safe("<pre style='font-size:8pt;color:#757575' >Choose a scheme to authenticate the "
+                            "aggregator's API requests.</pre>"),
+        widget=forms.Select(
+            choices=AUTH_SCHEMES,
+            attrs={
+                "class": "form-control"
+            }
+        )
+    )
 
     class Meta:
         model = Handler

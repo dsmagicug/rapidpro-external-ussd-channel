@@ -34,6 +34,7 @@
                     <li class="nav-item"><a class="nav-link scrollto" href="#item-3-1">Channel Configurations</a></li>
                     <li class="nav-item"><a class="nav-link scrollto" href="#item-3-2">Aggregator Handler
                         Configurations</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#item-3-5">Clear Timeout sessions</a></li>
                     <li class="nav-item"><a class="nav-link scrollto" href="#item-3-3">RapidPro USSD Flow Setup and best Practices</a></li>
                     <li class="nav-item"><a class="nav-link scrollto" href="#item-3-4">Deployment (enable Live session tracking table)</a></li>
                     <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-4"><span
@@ -500,7 +501,7 @@
                         </li>
                         <li><code>Shotcode</code>
                             <p>
-                                The shortcode provided by your aggregator e.g 348.
+                                The USSD shortcode returned by the aggregator in the response string e.g <code>255*4</code>.If aggregator does not return one in the response, please set one in <code>settings.DEFAULT_SHORT_CODE</code> and use that here.
                             </p>
                         </li>
                         <li><code>Request format</code>
@@ -687,6 +688,44 @@
                         format of their requests/responses.
                         </p>
                     </section><!--//section-->
+                    <section class="docs-section" id="item-3-5">
+                        <h2 class="section-heading">Clear Timed-out sessiosn</h2>
+                        <p>
+                            Although Timed-out sessions allow us deduce that the channel has a connection issue to either RapidPro or the aggregator's API, they also some times lock a user inside a timed-out state. <br>
+                            In order to fix this, a background task keeps deleting all timed-out sessions and this section indicates on how to configure that task.
+                            <br>
+                            <br>
+                            Run the following command inside the project directory
+                            <div class="shadow-lg rounded">
+                                <code class="code-samples hljs">
+                                    celery -A core worker --beat --scheduler django --loglevel=info
+                                </code>
+                            </div>
+                            <br>
+                            <b>Daemonize the above command</b>
+                            <br>
+                              This can be done using a process manager like <code>systemd</code> or its alternatives depending on the OS you are running. In this demo, we shall use <code>systemd</code> to create a service that runs this command in the background.
+                            <br>
+                            In your <code>/etc/system/systemd/</code>, create a file named <code>ussd_session_clear.service</code>. You can use any name but keep the prefix <code>.service</code>
+                            <br>In this file, paste the following content;<br>
+                            <div class="shadow-lg rounded">
+                                <code class="code-samples hljs">
+                                    [Unit]<br>
+                                        &nbsp;&nbsp;Description=Clear sessions service
+                                    <br>
+                                    [Service]<br>
+                                        &nbsp;&nbsp;WorkingDirectory=/project_folder # substitute with correct project folder<br>
+                                        &nbsp;&nbsp;ExecStart= /project_folder/venv/bin/celery -A core worker --beat --scheduler django --loglevel=info
+                                        &nbsp;&nbsp;Type=simple<br>
+
+                                    [Install]<br>
+                                    &nbsp;&nbsp;WantedBy=multi-user.target
+                                </code>
+                            </div><br>
+                        Then run <code>systemctl start ussd_session_clear.service</code><br>
+                        Make sure <code>systemctl status ussd_session_clear.service</code>  indicates that the service is running and active
+                        </p>
+                    </section>
 
                     <section class="docs-section" id="item-3-3">
                         <h2 class="section-heading">RapidPro USSD Flow Setup and best Practices</h2>

@@ -3,6 +3,8 @@ from contacts.models import Contact
 from channel.models import USSDSession, USSDChannel
 from channel.serializers import SessionSerializer
 from django.utils import timezone
+from django.conf import settings
+from django_celery_beat.models import PeriodicTask, IntervalSchedule
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from countries_plus.models import Country
@@ -20,6 +22,10 @@ METHODS = [
     ('POST', 'HTTP POST'),
     ('GET', 'HTTP GET'),
     ('PUT', 'HTTP PUT')
+]
+AUTH_SCHEMES = [
+    ("TOKEN", "TOKEN"),
+    ("NONE", "NONE"),
 ]
 
 RESPONSE_CONTENT_TYPES = [
@@ -56,6 +62,7 @@ def get_sessions():
     sessions = USSDSession.objects.all().order_by("-last_access_at")
     serializer = SessionSerializer(sessions, many=True)
     json_sessions = json.dumps(serializer.data)
+    error_logger.debug(json_sessions)
     group_name = 'sessions'
     channel_layer = get_channel_layer()
     # broadcast sessions to group for live display
@@ -114,6 +121,27 @@ def create_session(urn, session_status):
     session_id = str(time()).replace(".", "")
 
 
+def clear_timedout_sessions():
+    # lets create a 5 mins scheduler
+    schedule, created = IntervalSchedule.objects.get_or_create(
+        every=5,  # five seconds
+        period=IntervalSchedule.SECONDS,
+    )
+
+    # create the periodic task to run using the above scheduler
+    PeriodicTask.objects.get_or_create(
+        interval=schedule,
+        name='Clear_Timedout_sessions',
+        task='api.tasks.clear_timed_out_sessions',
+    )
+    # Periodic task to expire contacts out of their flows using handler's set expire_on_inactivity_of
+    PeriodicTask.objects.get_or_create(  # get_or_create ensures task is created only once
+        interval=schedule,
+        name='Expire_contacts',
+        task='api.tasks.expire_contacts_on_idle_handler',
+    )
+
+
 class ProcessAggregatorRequest:
     rapidpro_keys = []
     handler_keys = []
@@ -123,8 +151,8 @@ class ProcessAggregatorRequest:
     still_in_flow = False
     is_session_start = None
     handler = None
-    
-    # define a constructor thay takes in a dict request from an aggregator api
+
+    # define a constructor they takes in a dict request from an aggregator api
     def __init__(self, aggregator_request):
         self.request_data = aggregator_request
 
@@ -142,6 +170,7 @@ class ProcessAggregatorRequest:
             if item is not None:
                 # update request_data with new key names
                 self.request_data[item[0]] = self.request_data.pop(item[1])
+
         if "session_id" not in self.request_data:
             raise Exception(
                 f"Make sure your {{session_id=someThing}} is defined in aggregator {self.handler.aggregator}'s "
@@ -185,9 +214,16 @@ class ProcessAggregatorRequest:
 
     def process_handler(self):
         try:
+            '''
+            Lets first run the clear_timedout_sessions(), to create a task that deletes timed-out sessions
+            '''
+            if PeriodicTask.objects.filter(name="Clear_Timedout_sessions").exists():
+                pass
+            else:
+                # only if the task and its scheduler have not been create yet
+                clear_timedout_sessions()
             # determine service_code
             self.determine_service_code()
-            self.handler = Handler.objects.get(short_code=self.service_code)
             request_format = self.handler.request_format
             # use defined template
             self.rapidpro_keys, self.handler_keys = separate_keys(request_format)
@@ -199,16 +235,34 @@ class ProcessAggregatorRequest:
         except Exception as err:
             error_logger.exception(err)
 
+    # call this after self.process_handler()
+    @property
+    def get_auth_scheme(self):
+
+        if self.handler:
+            auth_scheme = self.handler.auth_scheme
+            return auth_scheme
+        else:
+            return "NONE"
+
     def determine_service_code(self):
         short_codes = Handler.objects.values_list('short_code', flat=True)
-        codes = list(short_codes)
-        for code in codes:
-            if str(code) in self.request_data.values():
-                self.service_code = str(code)
-                return self.service_code
+        codes = set(short_codes)
+        request_values = set(self.request_data.values())
+        intersect = codes.intersection(request_values)
+        if len(intersect) > 0:
+            self.service_code = list(intersect)[0]
+        else:
+            '''Lets default to the settings.DEFAULT_SHORT_CODE'''
+            # check for any handlers registered with default shortcode
+            if Handler.objects.filter(short_code=settings.DEFAULT_SHORT_CODE).exists():
+                self.service_code = settings.DEFAULT_SHORT_CODE
             else:
-                raise Exception("This aggregator most likely has no handler or a wrong shortcode was registered with "
-                                "handler")
+                raise Exception(
+                    "This aggregator most likely has no handler or a wrong shortcode was registered when creating a "
+                    "handler check spelling of the code in the subsequent handler record and try again")
+        # set handler is all is well
+        self.handler = Handler.objects.get(short_code=self.service_code)
 
     def store_contact(self):
         filtered = Contact.objects.filter(urn=self.standard_request['from'])
@@ -231,6 +285,8 @@ class ProcessAggregatorRequest:
                 status = latest_session.status
                 if status == SESSION_STATUSES['TIMED_OUT'] or status == SESSION_STATUSES['IN_PROGRESS']:
                     self.still_in_flow = True
+                else:
+                    self.still_in_flow = False
             else:
                 self.still_in_flow = False
         except Exception as err:
@@ -256,11 +312,16 @@ class ProcessAggregatorRequest:
             in_progress_sessions.update(status='Terminated', badge='warning')
             # create session
             session = USSDSession.objects.create(session_id=session_id, contact=contact, handler=self.handler)
-            get_sessions()
+            # get_sessions()
         return session
 
     @property
     def get_handler(self):
+        # update last accessed value
+        handler = self.handler
+        handler.last_accessed_at = timezone.now()
+        handler.save()
+        self.handler = handler
         return self.handler
 
     ''''

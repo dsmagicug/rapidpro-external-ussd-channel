@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
+from rest_framework.views import APIView
+from contacts.models import Contact
 
 import redis
 import requests
@@ -12,7 +14,7 @@ import json
 
 from handlers.utils import ProcessAggregatorRequest, RP_RESPONSE_FORMAT, RP_RESPONSE_STATUSES, standard_urn, \
     SESSION_STATUSES, get_channel, RP_RESPONSE_CONTENT_TYPES
-from core.utils import error_logger
+from core.utils import error_logger, access_logger
 from channel.models import USSDSession
 
 HEADERS = requests.utils.default_headers()
@@ -70,7 +72,7 @@ def send_url(request):
                 action = "request"
             msg_extras = dict(msg_type="Outgoing", status="Received", action=action)
             content.update(msg_extras)
-            push = push_ussd(content,request)
+            push = push_ussd(content, request)
             # reset key to 1
             r.set(key1, 0, ex=10)
         return Response({"message": "success"}, status=200)
@@ -78,83 +80,119 @@ def send_url(request):
         error_logger.exception(err)
 
 
-@api_view(['GET', 'POST'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def call_back(request):
-    # CHECK METHOD USED
-    if request.META["REQUEST_METHOD"] == "GET":
-        data = request.GET
-        request_data = data.dict()
-    else:
-        request_data = request.data
-    try:
-        sr = ProcessAggregatorRequest(request_data)
-        standard_request_string = sr.process_handler()
-        current_session = sr.log_session()
-        is_new_session = sr.is_new_session
-        still_in_flow = sr.is_in_flow
-        handler = sr.get_handler
-        end_action = handler.signal_end_string
-        reply_action = handler.signal_reply_string
-        urn = standard_request_string['from']
-        channel = get_channel()
-        if channel is None:
-            raise Exception("Could not continue without a channel, configure one first and try again")
+class CallBack(APIView):
+    authentication_classes = []
+    permission_classes = []
+    request = None
+    request_factory = None
+    standard_request_string = None
 
-        if is_new_session:
-            text = " " if still_in_flow else channel.trigger_word
+    def perform_authentication(self, request):
+        # overriding perform_authentication method from APIView
+        # to examine the request and decide whether we apply authentication, which scheme or not
+        self.request = request
+        if request.META["REQUEST_METHOD"] == "GET":
+            data = request.GET
+            request_data = data.dict()
         else:
-            text = standard_request_string["text"]
-        allowed_urn = standard_urn(urn)
+            request_data = request.data
+        self.request_factory = ProcessAggregatorRequest(request_data)
+        self.standard_request_string = self.request_factory.process_handler()
+        auth_scheme = self.request_factory.get_auth_scheme
+        if auth_scheme == "NONE":
+            self.authentication_classes = []
+            self.permission_classes = []
+        else:
+            # Token Authentication
+            self.authentication_classes.append(TokenAuthentication)
+            self.permission_classes.append(IsAuthenticated)
+            # Here you can add other authentication classes as well by elif
 
-        rapid_pro_request = {
-            "from": allowed_urn,
-            "text": text
-        }
-        # create redis keys
-        key1 = f"MO_MT_KEY_{allowed_urn}"
-        r.set(key1, 1)  # proven necessary or else
-        key2 = f"MSG_KEY_{allowed_urn}"
-        """""Channel details """""
+    def process_request(self):
+        try:
+            current_session = self.request_factory.log_session()
+            is_new_session = self.request_factory.is_new_session
+            still_in_flow = self.request_factory.is_in_flow
+            handler = self.request_factory.get_handler
+            end_action = handler.signal_end_string
+            reply_action = handler.signal_reply_string
+            urn = self.standard_request_string['from']
+            channel = get_channel()
+            if channel is None:
+                raise Exception("Could not continue without a channel, configure one first and try again")
 
-        # receive_url is used to send msgs to rapidPro
-        receive_url = channel.rapidpro_receive_url
-        # req = requests.post(receive_url, json.dumps(rapid_pro_request), headers=HEADERS)
-        req = requests.post(receive_url, rapid_pro_request, headers=HEADERS)
-        if req.status_code == 200:
-            # increment key1
-            r.incr(key1)
-            r.expire(key1, 30)  # expire key1 after 30s
-            data = r.blpop(key2, channel.timeout_after)  # wait for configured time for rapidPro instance
-            if data:
-                feedback = literal_eval(data[1].decode("utf-8"))  # from RapidPro
-                text = feedback[RP_RESPONSE_FORMAT['text']]
-                status = feedback[RP_RESPONSE_FORMAT['session_status']]
-                if status == RP_RESPONSE_STATUSES['waiting']:
-                    action = reply_action
-                else:
-                    # mark session complete and give it a green badge
-                    changeSessionStatus(current_session, SESSION_STATUSES['COMPLETED'], 'success')
-                    action = end_action
-                new_format = dict(text=text, action=action)
-                response = sr.get_expected_response(new_format)
+            if is_new_session:
+                text = " " if still_in_flow else handler.trigger_word
             else:
-                # mark session timed out and give it a red badge
+                text = self.standard_request_string["text"]
+            allowed_urn = standard_urn(urn)
+
+            rapid_pro_request = {
+                "from": allowed_urn,
+                "text": text
+            }
+            access_logger.info(f"Is new session: {is_new_session}, Still in flow: {still_in_flow}")
+            access_logger.info(rapid_pro_request)
+            # create redis keys
+            key1 = f"MO_MT_KEY_{allowed_urn}"
+            r.set(key1, 1)  # proven necessary or else
+            key2 = f"MSG_KEY_{allowed_urn}"
+            """""Channel details """""
+
+            # receive_url is used to send msgs to rapidPro
+            receive_url = channel.rapidpro_receive_url
+            req = requests.post(receive_url, rapid_pro_request, headers=HEADERS)
+            if req.status_code == 200:
+                # increment key1
+                r.incr(key1)
+                r.expire(key1, 30)  # expire key1 after 30s
+                data = r.blpop(key2, channel.timeout_after)  # wait for configured time for rapidPro instance
+                if data:
+                    feedback = literal_eval(data[1].decode("utf-8"))  # from RapidPro
+                    text = feedback[RP_RESPONSE_FORMAT['text']]
+                    status = feedback[RP_RESPONSE_FORMAT['session_status']]
+                    access_logger.info(data)
+                    if status == RP_RESPONSE_STATUSES['waiting']:
+                        action = reply_action
+                    else:
+                        # mark session complete and give it a green badge
+                        changeSessionStatus(current_session, SESSION_STATUSES['COMPLETED'], 'success')
+                        action = end_action
+                    new_format = dict(text=text, action=action)
+                    response = self.request_factory.get_expected_response(new_format)
+                else:
+                    # mark session timed out and give it a red badge
+                    changeSessionStatus(current_session, SESSION_STATUSES['TIMED_OUT'], 'danger')
+                    error_logger.debug(f"Response timed out for redis key {key2}")
+                    res_format = dict(text="Response timed out", action=end_action)
+                    '''
+                    We need to delete this contact as it will delete-cascade(which ever way they say it) sessions attached to it.
+                    Next time user comes back, they will submit a trigger word
+                    '''
+                    contact = Contact.objects.get(urn=urn)
+                    contact.delete()
+                    response = self.request_factory.get_expected_response(res_format)
+            else:
                 changeSessionStatus(current_session, SESSION_STATUSES['TIMED_OUT'], 'danger')
-                error_logger.debug(f"Response timed out for redis key {key2}")
-                res_format = dict(text="Response timed out", action=end_action)
-                response = sr.get_expected_response(res_format)
-        else:
-            changeSessionStatus(current_session, SESSION_STATUSES['TIMED_OUT'], 'danger')
-            res_format = dict(text="External Application unreachable", action=end_action)
-            error_logger.exception(req.content)
-            response = sr.get_expected_response(res_format)
-        return Response(response, status=200)
-    except Exception as err:
-        error_logger.exception(err)
-        response = {"responseString": "External Application unreachable", "action": "end"}
-        return Response(response, status=500)
+                res_format = dict(text="External Application unreachable", action=end_action)
+                contact = Contact.objects.get(urn=urn)
+                contact.delete()
+                error_logger.exception(req.content)
+                response = self.request_factory.get_expected_response(res_format)
+            return Response(response, status=200)
+        except Exception as err:
+            error_logger.exception(err)
+            response = {"responseString": "External Application unreachable", "action": "end"}
+            return Response(response, status=500)
+
+    # override post and get methods too
+    def post(self, request):
+        response = self.process_request()
+        return response
+
+    def get(self, request):
+        response = self.process_request()
+        return response
 
 
 @api_view(['GET'])

@@ -43,7 +43,7 @@
                                                 RapidPro.
                                             </div>
                                         <hr>
-                                    {% if token %}
+                                    {% if auth_scheme == "TOKEN" %}
                                     <b>Auth Token is: {{ token }}</b>
                                         <hr>
                                     {% endif %}
