@@ -33,7 +33,10 @@ def expire_contacts_on_idle_handler():
     if len(handlers) > 0:
         for handler in handlers:
             last_accessed_at = handler.last_accessed_at
-            time_threshold = last_accessed_at + timedelta(seconds=handler.expire_on_inactivity_of)
+            # lets do it a minute earlier
+            expire_in = handler.expire_on_inactivity_of - 60  # making sure we expire them at the channel level as
+            # likely as possible
+            time_threshold = last_accessed_at + timedelta(seconds=expire_in)
             if time_now > time_threshold:
                 # get all session attached to this handler and delete them
                 sessions = USSDSession.objects.filter(handler=handler)
