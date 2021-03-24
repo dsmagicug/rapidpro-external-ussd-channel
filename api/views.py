@@ -58,6 +58,7 @@ def send_url(request):
             content = data.dict()
         else:
             content = request.data
+        access_logger.info(content)
         # decrement key1
         to = content['to_no_plus']
         key1 = f"MO_MT_KEY_{to}"
@@ -150,7 +151,7 @@ class CallBack(APIView):
                     feedback = literal_eval(data[1].decode("utf-8"))  # from RapidPro
                     text = feedback[RP_RESPONSE_FORMAT['text']]
                     status = feedback[RP_RESPONSE_FORMAT['session_status']]
-                    access_logger.info(data)
+                    access_logger.info(f"From redis key:  {data}")
                     if status == RP_RESPONSE_STATUSES['waiting']:
                         action = reply_action
                     else:
@@ -171,6 +172,8 @@ class CallBack(APIView):
                     contact = Contact.objects.get(urn=urn)
                     contact.delete()
                     response = self.request_factory.get_expected_response(res_format)
+
+                r.delete(key2)  # lets delete the key
             else:
                 changeSessionStatus(current_session, SESSION_STATUSES['TIMED_OUT'], 'danger')
                 res_format = dict(text="External Application error", action=end_action)
