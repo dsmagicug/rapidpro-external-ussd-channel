@@ -106,4 +106,9 @@ class RegisterHandlerView(View, LoginRequiredMixin):
                            "auth_scheme": self.auth_scheme})
 
         except Exception as err:
+            self.success = False
             error_logger.exception(err)
+            self.msg = str(err)
+            return render(request, self.template_name,
+                          {"form": form, "msg": self.msg, "token": self.token, "success": self.success,
+                           "auth_scheme": self.auth_scheme})
