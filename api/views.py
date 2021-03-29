@@ -20,7 +20,7 @@ from channel.models import USSDSession
 HEADERS = requests.utils.default_headers()
 HEADERS.update(
     {
-        'Content-type': 'application/x-www-form-urlencoded',  # for now this is what works with rapidPro
+        'Content-Type': 'application/x-www-form-urlencoded'  # for now this is what works with rapidPro
     }
 )
 
@@ -58,6 +58,7 @@ def send_url(request):
             content = data.dict()
         else:
             content = request.data
+        access_logger.info(content)
         # decrement key1
         to = content['to_no_plus']
         key1 = f"MO_MT_KEY_{to}"
@@ -120,11 +121,10 @@ class CallBack(APIView):
             channel = get_channel()
             if channel is None:
                 raise Exception("Could not continue without a channel, configure one first and try again")
-
             if is_new_session:
-                text = " " if still_in_flow else handler.trigger_word
+                text = "" if still_in_flow else handler.trigger_word
             else:
-                text = self.standard_request_string["text"]
+                text = self.standard_request_string["text"].strip()
             allowed_urn = standard_urn(urn)
 
             rapid_pro_request = {
@@ -151,7 +151,7 @@ class CallBack(APIView):
                     feedback = literal_eval(data[1].decode("utf-8"))  # from RapidPro
                     text = feedback[RP_RESPONSE_FORMAT['text']]
                     status = feedback[RP_RESPONSE_FORMAT['session_status']]
-                    access_logger.info(data)
+                    access_logger.info(f"From redis key:  {data}")
                     if status == RP_RESPONSE_STATUSES['waiting']:
                         action = reply_action
                     else:
@@ -172,9 +172,11 @@ class CallBack(APIView):
                     contact = Contact.objects.get(urn=urn)
                     contact.delete()
                     response = self.request_factory.get_expected_response(res_format)
+
+                r.delete(key2)  # lets delete the key
             else:
                 changeSessionStatus(current_session, SESSION_STATUSES['TIMED_OUT'], 'danger')
-                res_format = dict(text="External Application unreachable", action=end_action)
+                res_format = dict(text="External Application error", action=end_action)
                 contact = Contact.objects.get(urn=urn)
                 contact.delete()
                 error_logger.exception(req.content)
@@ -182,7 +184,7 @@ class CallBack(APIView):
             return Response(response, status=200)
         except Exception as err:
             error_logger.exception(err)
-            response = {"responseString": "External Application unreachable", "action": "end"}
+            response = {"responseString": "External Application error", "action": "end"}
             return Response(response, status=500)
 
     # override post and get methods too
