@@ -2,6 +2,7 @@ from django import forms
 from django.utils.safestring import mark_safe
 from django.conf import settings
 from .models import Handler
+from channel.models import USSDChannel
 from .utils import RESPONSE_FORMAT, METHODS, RESPONSE_CONTENT_TYPES, AUTH_SCHEMES
 
 
@@ -11,6 +12,7 @@ class HandlerForm(forms.ModelForm):
         self.fields['push_support'].required = False
         self.fields['response_structure'].required = False
         self.fields['push_url'].required = False
+        self.fields['repeat_trigger'].required = False
 
     aggregator = forms.CharField(
         help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>USSD aggregator whose requests will be handled "
@@ -21,6 +23,13 @@ class HandlerForm(forms.ModelForm):
                 "placeholder": "e.g. DMARK"
             }
         ))
+    channel = forms.ModelChoiceField(
+        help_text=mark_safe(
+            "<pre style='font-size:8pt;color:#757575'>Select an already configured channel that this handler will "
+            "forward traffic to</pre><br>"),
+        queryset=USSDChannel.objects.all().order_by("channel_name"),
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     short_code = forms.CharField(
         help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>The USSD shortcode returned by the aggregator "
                             "in the response string.If aggregator does<br>not return one in the response, please set "
@@ -30,6 +39,16 @@ class HandlerForm(forms.ModelForm):
                 "placeholder": "e.g. 255",
                 "class": "form-control",
                 "value": settings.DEFAULT_SHORT_CODE
+            }
+        ))
+    repeat_trigger = forms.CharField(
+        help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>This will be used in flow designs to signal "
+                            "when the USSD should repeat a step, <br>Leave blank to use the default \" \". Please "
+                            "refer to docs for more details</pre><hr>"),
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "value": " "
             }
         ))
     request_format = forms.CharField(

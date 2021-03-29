@@ -7,6 +7,13 @@ hostname = f"https://{socket.gethostname()}"
 
 
 class ChannelConfForm(forms.ModelForm):
+    channel_name = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Enter channel name"
+            }
+        )
+    )
     send_url = forms.CharField(
         widget=forms.URLInput(
             attrs={
@@ -29,6 +36,7 @@ class ChannelConfForm(forms.ModelForm):
                 "value": "10",
             }
         ))
+
     class Meta:
         model = USSDChannel
         exclude = ["is_active"]

@@ -14,7 +14,7 @@ class HandlersListView(TemplateView, LoginRequiredMixin):
     login_url = 'login'
     raise_exception = False
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         access_logger.info(str(request))
         handlers = Handler.objects.all()
         return render(request, self.template_name, {"handlers": handlers})
@@ -32,6 +32,7 @@ class RegisterHandlerView(View, LoginRequiredMixin):
         self.isNewHandler = True
         self.aggregator = None
         self.token = None
+        self.callback_url = None
         self.auth_scheme = None
 
     # will be used to authenticate aggregator requests
@@ -62,6 +63,7 @@ class RegisterHandlerView(View, LoginRequiredMixin):
             if handler_id:
                 if Handler.objects.filter(id=handler_id).exists():
                     handler = Handler.objects.get(pk=handler_id)
+                    self.callback_url = f"{handler.channel.send_url}/adaptor/call-back"
                     self.auth_scheme = handler.auth_scheme
                     self.aggregator = handler.aggregator
                     form = HandlerForm(instance=handler)
@@ -72,7 +74,8 @@ class RegisterHandlerView(View, LoginRequiredMixin):
             else:
                 form = HandlerForm()
             return render(request, self.template_name,
-                          {"form": form, "token": self.token, "auth_scheme": self.auth_scheme})
+                          {"form": form, "token": self.token, "auth_scheme": self.auth_scheme,
+                           "callback_url": self.callback_url})
 
         except Exception as err:
             error_logger.exception(err)

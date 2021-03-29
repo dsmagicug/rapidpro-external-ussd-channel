@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.template import loader
 from django.http import HttpResponse
 from django import template
-from channel.models import USSDSession
+from handlers.models import USSDSession
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from handlers.utils import SESSION_STATUSES

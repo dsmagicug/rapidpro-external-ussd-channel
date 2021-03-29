@@ -5,7 +5,6 @@ from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from rest_framework.views import APIView
 from contacts.models import Contact
-
 import redis
 import requests
 from websocket import create_connection
@@ -13,9 +12,9 @@ from ast import literal_eval
 import json
 
 from handlers.utils import ProcessAggregatorRequest, RP_RESPONSE_FORMAT, RP_RESPONSE_STATUSES, standard_urn, \
-    SESSION_STATUSES, get_channel, RP_RESPONSE_CONTENT_TYPES
+    SESSION_STATUSES, RP_RESPONSE_CONTENT_TYPES
 from core.utils import error_logger, access_logger
-from channel.models import USSDSession
+from handlers.models import USSDSession
 
 HEADERS = requests.utils.default_headers()
 HEADERS.update(
@@ -58,7 +57,7 @@ def send_url(request):
             content = data.dict()
         else:
             content = request.data
-        access_logger.info(content)
+        access_logger.info(f"From rapidPro: {content}")
         # decrement key1
         to = content['to_no_plus']
         key1 = f"MO_MT_KEY_{to}"
@@ -118,14 +117,13 @@ class CallBack(APIView):
             end_action = handler.signal_end_string
             reply_action = handler.signal_reply_string
             urn = self.standard_request_string['from']
-            channel = get_channel()
-            if channel is None:
-                raise Exception("Could not continue without a channel, configure one first and try again")
+            channel = handler.channel
+
             if is_new_session:
-                text = "" if still_in_flow else handler.trigger_word
+                text = handler.repeat_trigger if still_in_flow else handler.trigger_word
             else:
                 text = self.standard_request_string["text"].strip()
-            allowed_urn = standard_urn(urn)
+            allowed_urn = standard_urn(urn, handler)
 
             rapid_pro_request = {
                 "from": allowed_urn,
@@ -172,7 +170,6 @@ class CallBack(APIView):
                     contact = Contact.objects.get(urn=urn)
                     contact.delete()
                     response = self.request_factory.get_expected_response(res_format)
-
                 r.delete(key2)  # lets delete the key
             else:
                 changeSessionStatus(current_session, SESSION_STATUSES['TIMED_OUT'], 'danger')
