@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import USSDSession
+from handlers.models import USSDSession
 
 
 class SessionSerializer(serializers.ModelSerializer):

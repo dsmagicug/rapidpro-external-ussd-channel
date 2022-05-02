@@ -43,11 +43,16 @@
                                                 RapidPro.
                                             </div>
                                         <hr>
-                                    {% if auth_scheme == "TOKEN" %}
-                                    <b>Auth Token is: {{ token }}</b>
+                                    <div style="font-size: 12px">
+                                        {% if auth_scheme == "TOKEN" %}
+                                    <b>Auth Token is: {{ token }} </b>&nbsp;(share with aggregator)
                                         <hr>
                                     {% endif %}
-
+                                    {% if callback_url %}
+                                    Callback Url is:&nbsp;&nbsp;<b>{{ callback_url }}</b>&nbsp;&nbsp;(share with aggregator)
+                                        <hr>
+                                    {% endif %}
+                                    </div>
                                     </div>
                                     <form role="form" method="post" action="" id="handler-form">
 
@@ -56,7 +61,6 @@
 
                                             <div class="col-lg-12">
                                                 {{ form.as_p }}
-
                                             </div>
                                         </div>
                                         <div class="card-footer" style="margin-left:1em;">

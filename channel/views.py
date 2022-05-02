@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import USSDChannel
+from handlers.models import USSDChannel
 from .forms import ChannelConfForm
 
 import socket
@@ -21,23 +21,26 @@ class ChannelConf(LoginRequiredMixin, TemplateView):
     msg = None
     hostname = socket.gethostname()
 
-    def get(self, request):
-        access_logger.info(request.META)
-        channels = USSDChannel.objects.all()
-        if len(channels) > 0:
-            channel = channels[0]
+    def get(self, request, *args, **kwargs):
+        access_logger.info(request)
+        if "channel_id" in kwargs:
+            channel_id = kwargs['channel_id']
+            if USSDChannel.objects.filter(pk=channel_id).exists():
+                channel = USSDChannel.objects.get(pk=channel_id)
+            else:
+                return redirect(reverse('channel_conf'))
             form = ChannelConfForm(instance=channel)
         else:
             form = ChannelConfForm()
         return render(request, self.template_name, {"form": form, "msg": self.msg, "success": self.success,
                                                     "hostname": self.hostname})
 
-    def post(self, request):
-        access_logger.info(request.META)
+    def post(self, request, *args, **kwargs):
+        access_logger.info(request)
         try:
-            channels = USSDChannel.objects.all()
-            if len(channels) > 0:
-                channel = channels[0]
+            if "channel_id" in kwargs:
+                channel_id = kwargs['channel_id']
+                channel = USSDChannel.objects.get(pk=channel_id)
                 form = ChannelConfForm(request.POST, instance=channel)
             else:
                 form = ChannelConfForm(request.POST)
@@ -45,10 +48,21 @@ class ChannelConf(LoginRequiredMixin, TemplateView):
                 form.save()
                 self.msg = 'Channel configurations  successfully saved.'
                 self.success = True
-                return redirect("/")
+                return redirect(reverse("channel_list"))
             else:
                 self.msg = 'Form is not valid'
             return render(request, self.template_name,
                           {"form": form, "msg": self.msg, "success": self.success, "hostname": self.hostname})
         except Exception as err:
             error_logger.exception(err)
+
+
+class ChannelListView(LoginRequiredMixin, TemplateView):
+    template_name = 'channel/channels.html'
+    login_url = 'login'
+    raise_exception = False
+
+    def get(self, request, *args, **kwargs):
+        channels = USSDChannel.objects.all()
+        context = dict(channels=channels)
+        return render(request, self.template_name, context)

@@ -22,6 +22,33 @@
             <form method="POST" id="config-form" class="config-form" enctype="multipart/form-data">
                 {% csrf_token %}
                 <section class="content">
+                    Channel&nbsp;Name
+                </section>
+                <div class="text-center">
+
+                </div>
+                <fieldset>
+                    <div class="card card-body col-lg-12">
+                        <div class="text-center">
+                            <label id="header-label" style="margin-top: 2em" for="job" class="">Set Channel Name</label><br>
+                            <hr>
+                        </div>
+                        <div class="row form-row ">
+                            <div class="col-lg-4" style="margin-right: 0.5em">
+                            <span class="font-weight-lighter text-center" style="color:#000000">
+                                    Please Enter  Channel Name
+                                    This will uniquely identify a channel during handler creation.
+                                </span>
+                            </div>
+                            <div class="col-lg-7">
+                                <div class="form-group">
+                                    {{ form.channel_name }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <section class="content">
                     send url
                 </section>
                 <div class="text-center">

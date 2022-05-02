@@ -1,7 +1,6 @@
 from celery import shared_task
-from channel.models import USSDSession
-from handlers.models import Handler
-from datetime import datetime, timedelta
+from handlers.models import Handler, USSDSession
+from datetime import timedelta
 from django.utils import timezone
 
 

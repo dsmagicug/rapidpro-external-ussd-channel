@@ -1,6 +1,5 @@
-from .models import Handler
+from .models import Handler, USSDSession
 from contacts.models import Contact
-from channel.models import USSDSession, USSDChannel
 from channel.serializers import SessionSerializer
 from django.utils import timezone
 from django.conf import settings
@@ -76,15 +75,6 @@ def get_sessions():
     )
 
 
-# get configured channel, we can't simply assume the pk=1
-def get_channel():
-    channels = USSDChannel.objects.all()
-    if len(channels) > 0:
-        return channels[0]
-    else:
-        return None
-
-
 def separate_keys(string):
     """'
     @string => a string in the format of "{{short_code=ussdServiceCode}},  {{session_id=transactionId}}"
@@ -100,8 +90,9 @@ def separate_keys(string):
     return [rapidpro_keys, aggregator_keys]
 
 
-def standard_urn(urn):
-    channel = get_channel()
+def standard_urn(urn, handler):
+    print(handler)
+    channel = handler.channel
     country = channel.country_id
     country_obj = Country.objects.get(iso=country)
     dial_code = country_obj.phone
@@ -280,7 +271,7 @@ class ProcessAggregatorRequest:
         # Get their latest session if any
         # check its status, if In Progress or Timed Out, then they are still in a flow.
         try:
-            latest_session = USSDSession.objects.filter(contact=self.contact).latest('started_at')
+            latest_session = USSDSession.objects.filter(contact=self.contact, handler=self.handler).latest('started_at')
             if latest_session:
                 status = latest_session.status
                 if status == SESSION_STATUSES['TIMED_OUT'] or status == SESSION_STATUSES['IN_PROGRESS']:
@@ -308,7 +299,8 @@ class ProcessAggregatorRequest:
         else:
             # First End all sessions attached to this urn that may already be recorded
             self.is_session_start = True
-            in_progress_sessions = USSDSession.objects.filter(contact=contact, status=SESSION_STATUSES["IN_PROGRESS"])
+            in_progress_sessions = USSDSession.objects.filter(contact=contact, handler=self.handler,
+                                                              status=SESSION_STATUSES["IN_PROGRESS"])
             in_progress_sessions.update(status='Terminated', badge='warning')
             # create session
             session = USSDSession.objects.create(session_id=session_id, contact=contact, handler=self.handler)
