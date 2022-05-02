@@ -59,7 +59,7 @@ def send_url(request):
             content = request.data
         access_logger.info(f"From rapidPro: {content}")
         # decrement key1
-        to = content['to_no_plus']
+        to = content['to']
         key1 = f"MO_MT_KEY_{to}"
         key2 = f"MSG_KEY_{to}"
         key1_val = int(r.decr(key1))
@@ -116,7 +116,9 @@ class CallBack(APIView):
             handler = self.request_factory.get_handler
             end_action = handler.signal_end_string
             reply_action = handler.signal_reply_string
-            urn = self.standard_request_string['from']
+            urn = self.standard_request_string['from'] if not isinstance(self.standard_request_string['from'],
+                                                                         list) else self.standard_request_string[
+                'from'][0]
             channel = handler.channel
 
             if is_new_session:
