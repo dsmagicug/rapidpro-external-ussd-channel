@@ -17,6 +17,7 @@ from core.utils import error_logger, access_logger
 from handlers.models import USSDSession
 
 HEADERS = requests.utils.default_headers()
+
 HEADERS.update(
     {
         'Content-Type': 'application/x-www-form-urlencoded'  # for now this is what works with rapidPro
