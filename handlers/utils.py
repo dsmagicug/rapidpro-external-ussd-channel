@@ -91,7 +91,6 @@ def separate_keys(string):
 
 
 def standard_urn(urn, handler):
-    print(handler)
     channel = handler.channel
     country = channel.country_id
     country_obj = Country.objects.get(iso=country)
@@ -297,7 +296,7 @@ class ProcessAggregatorRequest:
             session.save()
             self.is_session_start = False
         else:
-            # First End all sessions attached to this urn that may already be recorded
+            # First End all sessions attached to this urn that may already be recorded at this particular handler
             self.is_session_start = True
             in_progress_sessions = USSDSession.objects.filter(contact=contact, handler=self.handler,
                                                               status=SESSION_STATUSES["IN_PROGRESS"])
