@@ -13,10 +13,11 @@ class Handler(AuthSignature):
         USSDChannel, on_delete=models.CASCADE
     )
     short_code = models.CharField(
-        max_length=10,
+        max_length=100,
         unique=True
     )
     request_format = models.TextField()
+
     response_content_type = models.CharField(
         max_length=10,
         default='json'
