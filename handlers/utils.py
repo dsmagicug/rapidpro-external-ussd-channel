@@ -154,7 +154,7 @@ class ProcessAggregatorRequest:
             key in self.request_data.keys()]
 
         # remove all we never defined in the template
-        print(self.request_data)
+        self.request_data = dict(self.request_data)
         [self.request_data.pop(v, None) for v in not_in_template if len(not_in_template) > 0]
 
         for item in map_list:

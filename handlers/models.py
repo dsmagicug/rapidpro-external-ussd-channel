@@ -66,7 +66,7 @@ class Handler(AuthSignature):
 
 class USSDSession(models.Model):
     session_id = models.CharField(
-        max_length=30,
+        max_length=255,
         unique=True
     )
     contact = models.ForeignKey(
