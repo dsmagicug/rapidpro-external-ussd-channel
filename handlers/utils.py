@@ -98,6 +98,9 @@ def standard_urn(urn, handler):
     if urn[0] == "0":
         # add prefix
         urn = re.sub('0', dial_code, urn, 1)
+    elif urn[0] == "+":
+        # add prefix
+        urn = urn[1:]  # remove the + it causes problems
     else:
         urn = urn
     return urn
@@ -256,15 +259,13 @@ class ProcessAggregatorRequest:
         self.handler = Handler.objects.get(short_code=self.service_code)
 
     def store_contact(self):
-        filtered = Contact.objects.filter(urn=self.standard_request['from'])
+        urn = standard_urn(self.standard_request['from'], self.handler)
+        filtered = Contact.objects.filter(urn=urn)
         if filtered.exists():
-            contact = Contact.objects.get(urn=self.standard_request['from'])
+            contact = Contact.objects.get(urn=urn)
             self.contact = contact
         else:
             # created record
-            urn = self.standard_request['from'] if not isinstance(self.standard_request['from'],
-                                                                  list) else self.standard_request[
-                'from'][0]
             contact = Contact.objects.create(urn=urn)
             self.contact = contact
         self.is_in_flow_session()

@@ -60,22 +60,12 @@ def send_url(request):
             content = request.data
         access_logger.info(f"From rapidPro: {content}")
         # decrement key1
-        to = content['to']
-        key1 = f"MO_MT_KEY_{to}"
+        to = content['to_no_plus']
+        # key1 = f"MO_MT_KEY_{to}"
         key2 = f"MSG_KEY_{to}"
-        key1_val = int(r.decr(key1))
-        if key1_val >= 0:
-            r.lpush(key2, str(content))
-        else:
-            action = "end"
-            # code here is currently temporary
-            if content["session_status"] == RP_RESPONSE_STATUSES["waiting"]:
-                action = "request"
-            msg_extras = dict(msg_type="Outgoing", status="Received", action=action)
-            content.update(msg_extras)
-            push = push_ussd(content, request)
-            # reset key to 1
-            r.set(key1, 0, ex=10)
+        # key1_val = int(r.decr(key1))
+        r.lpush(key2, str(content))
+        # Disable push for now
         return Response({"message": "success"}, status=200)
     except Exception as err:
         error_logger.exception(err)
