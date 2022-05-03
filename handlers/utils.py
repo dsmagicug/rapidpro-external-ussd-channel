@@ -262,7 +262,10 @@ class ProcessAggregatorRequest:
             self.contact = contact
         else:
             # created record
-            contact = Contact.objects.create(urn=self.standard_request['from'])
+            urn = self.standard_request['from'] if not isinstance(self.standard_request['from'],
+                                                                  list) else self.standard_request[
+                'from'][0]
+            contact = Contact.objects.create(urn=urn)
             self.contact = contact
         self.is_in_flow_session()
 
