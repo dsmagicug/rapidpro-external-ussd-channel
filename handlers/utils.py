@@ -291,7 +291,8 @@ class ProcessAggregatorRequest:
             access_logger.debug(err)
 
     def log_session(self):
-        session_id = self.standard_request['session_id']
+        ses_id = self.standard_request['session_id']
+        session_id = ses_id if not isinstance(ses_id, list) else ses_id[0]
         contact = self.contact
         # check if session id exists with
         if USSDSession.objects.filter(session_id=session_id).exists():
