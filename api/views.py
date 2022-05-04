@@ -160,8 +160,12 @@ class CallBack(APIView):
                     We need to delete this contact as it will delete-cascade(which ever way they say it) sessions attached to it.
                     Next time user comes back, they will submit a trigger word
                     '''
-                    contact = Contact.objects.get(urn=urn)
-                    contact.delete()
+                    print(urn)
+                    try:
+                        contact = Contact.objects.get(urn=urn)
+                        contact.delete()
+                    except:
+                        pass
                     response = self.request_factory.get_expected_response(res_format)
                 r.delete(key2)  # lets delete the key
             else:
