@@ -95,6 +95,7 @@ def standard_urn(urn, handler):
     country = channel.country_id
     country_obj = Country.objects.get(iso=country)
     dial_code = country_obj.phone
+    urn = urn if not isinstance(urn, list) else urn[0]
     if urn[0] == "0":
         # add prefix
         urn = re.sub('0', dial_code, urn, 1)
