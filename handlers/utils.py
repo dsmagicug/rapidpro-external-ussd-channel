@@ -171,6 +171,7 @@ class ProcessAggregatorRequest:
                 f"Make sure your {{session_id=someThing}} is defined in aggregator {self.handler.aggregator}'s "
                 f"Request Format settings")
         else:
+            access_logger.info(f"Request data: {self.request_data}")
             self.standard_request = self.request_data
 
     def get_expected_response(self, response_dict):
