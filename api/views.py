@@ -81,7 +81,6 @@ class CallBack(APIView):
     request = None
     request_factory = None
     standard_request_string = None
-    # parser_classes = (JSONParser, XMLParser)
     renderer_classes = (JSONRenderer, PlainTextRenderer, XMLRenderer,)
 
     def perform_authentication(self, request):
@@ -89,6 +88,7 @@ class CallBack(APIView):
         # overriding perform_authentication method from APIView
         # to examine the request and decide whether we apply authentication, which scheme or not
         self.request = request
+        access_logger.info(request.accepted_media_type)
         if request.META["REQUEST_METHOD"] == "GET":
             request_data = request.query_params.dict()
         else:
