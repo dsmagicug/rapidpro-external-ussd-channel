@@ -96,6 +96,7 @@ class CallBack(APIView):
                 request_data = request.data.dict()
             else:
                 request_data = request.data
+        access_logger.info(request_data)
         self.request_factory = ProcessAggregatorRequest(request_data)
         self.standard_request_string = self.request_factory.process_handler()
         auth_scheme = self.request_factory.get_auth_scheme
