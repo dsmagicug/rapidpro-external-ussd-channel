@@ -29,7 +29,6 @@ AUTH_SCHEMES = [
 
 RESPONSE_CONTENT_TYPES = [
     ('json', 'application/json'),
-    ('form-urlencoded', 'application/x-www-form-urlencoded'),
     ('text', 'text/plain'),
     ('xml', 'application/xml'),
 ]
@@ -91,11 +90,12 @@ def separate_keys(string):
 
 
 def standard_urn(urn, handler):
+    urn = urn.strip()
     channel = handler.channel
     country = channel.country_id
     country_obj = Country.objects.get(iso=country)
     dial_code = country_obj.phone
-    urn = urn if not isinstance(urn, list) else urn[0]
+    urn = urn
     if urn[0] == "0":
         # add prefix
         urn = re.sub('0', dial_code, urn, 1)
@@ -158,7 +158,7 @@ class ProcessAggregatorRequest:
             key in self.request_data.keys()]
 
         # remove all we never defined in the template
-        self.request_data = dict(self.request_data)
+        self.request_data = self.request_data
         [self.request_data.pop(v, None) for v in not_in_template if len(not_in_template) > 0]
 
         for item in map_list:
@@ -292,7 +292,7 @@ class ProcessAggregatorRequest:
 
     def log_session(self):
         ses_id = self.standard_request['session_id']
-        session_id = ses_id if not isinstance(ses_id, list) else ses_id[0]
+        session_id = ses_id
         contact = self.contact
         # check if session id exists with
         if USSDSession.objects.filter(session_id=session_id).exists():
