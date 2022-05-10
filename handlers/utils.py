@@ -291,6 +291,7 @@ class ProcessAggregatorRequest:
             access_logger.debug(err)
 
     def log_session(self):
+        access_logger.info(f"Standard request: {self.standard_request}")
         ses_id = self.standard_request['session_id']
         session_id = ses_id
         contact = self.contact
