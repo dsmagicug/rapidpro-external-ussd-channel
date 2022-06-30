@@ -125,16 +125,7 @@ class HandlerForm(forms.ModelForm):
                             "protocol (default=unchecked).</pre>")
     )
 
-    response_method = forms.CharField(
-        help_text=mark_safe("<pre style='font-size:8pt;color:#757575'>Response Method.</pre>"),
-        widget=forms.Select(
-            choices=METHODS,
-            attrs={
-                "class": "form-control",
-                "value": "POST"
-            }
-        )
-    )
+
     push_url = forms.CharField(
         help_text=mark_safe("<pre id='push-url' style='font-size:8pt;color:#757575'>The URL this channel will call "
                             "for USSD PUSH services.</pre>"),
@@ -177,4 +168,4 @@ class HandlerForm(forms.ModelForm):
 
     class Meta:
         model = Handler
-        exclude = ["is_active"]
+        exclude = ["is_active", 'response_method']

@@ -29,7 +29,6 @@ AUTH_SCHEMES = [
 
 RESPONSE_CONTENT_TYPES = [
     ('json', 'application/json'),
-    ('form-urlencoded', 'application/x-www-form-urlencoded'),
     ('text', 'text/plain'),
     ('xml', 'application/xml'),
 ]
@@ -91,13 +90,18 @@ def separate_keys(string):
 
 
 def standard_urn(urn, handler):
+    urn = urn.strip()
     channel = handler.channel
     country = channel.country_id
     country_obj = Country.objects.get(iso=country)
     dial_code = country_obj.phone
+    urn = urn
     if urn[0] == "0":
         # add prefix
         urn = re.sub('0', dial_code, urn, 1)
+    elif urn[0] == "+":
+        # add prefix
+        urn = urn[1:]  # remove the + it causes problems
     else:
         urn = urn
     return urn
@@ -154,6 +158,7 @@ class ProcessAggregatorRequest:
             key in self.request_data.keys()]
 
         # remove all we never defined in the template
+        self.request_data = self.request_data
         [self.request_data.pop(v, None) for v in not_in_template if len(not_in_template) > 0]
 
         for item in map_list:
@@ -166,6 +171,7 @@ class ProcessAggregatorRequest:
                 f"Make sure your {{session_id=someThing}} is defined in aggregator {self.handler.aggregator}'s "
                 f"Request Format settings")
         else:
+            access_logger.info(f"Request data: {self.request_data}")
             self.standard_request = self.request_data
 
     def get_expected_response(self, response_dict):
@@ -255,13 +261,14 @@ class ProcessAggregatorRequest:
         self.handler = Handler.objects.get(short_code=self.service_code)
 
     def store_contact(self):
-        filtered = Contact.objects.filter(urn=self.standard_request['from'])
+        urn = standard_urn(self.standard_request['from'], self.handler)
+        filtered = Contact.objects.filter(urn=urn)
         if filtered.exists():
-            contact = Contact.objects.get(urn=self.standard_request['from'])
+            contact = Contact.objects.get(urn=urn)
             self.contact = contact
         else:
             # created record
-            contact = Contact.objects.create(urn=self.standard_request['from'])
+            contact = Contact.objects.create(urn=urn)
             self.contact = contact
         self.is_in_flow_session()
 
@@ -285,7 +292,9 @@ class ProcessAggregatorRequest:
             access_logger.debug(err)
 
     def log_session(self):
-        session_id = self.standard_request['session_id']
+        access_logger.info(f"Standard request: {self.standard_request}")
+        ses_id = self.standard_request['session_id']
+        session_id = ses_id
         contact = self.contact
         # check if session id exists with
         if USSDSession.objects.filter(session_id=session_id).exists():

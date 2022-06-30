@@ -1,22 +1,27 @@
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import JSONRenderer
+from rest_framework_xml.renderers import XMLRenderer
+from django.http import QueryDict
 from django.conf import settings
 from rest_framework.views import APIView
 from contacts.models import Contact
 import redis
 import requests
+from requests.exceptions import ConnectionError, ConnectTimeout
 from websocket import create_connection
 from ast import literal_eval
 import json
 
 from handlers.utils import ProcessAggregatorRequest, RP_RESPONSE_FORMAT, RP_RESPONSE_STATUSES, standard_urn, \
     SESSION_STATUSES, RP_RESPONSE_CONTENT_TYPES
-from core.utils import error_logger, access_logger
+from core.utils import error_logger, access_logger, PlainTextRenderer
 from handlers.models import USSDSession
 
 HEADERS = requests.utils.default_headers()
+
 HEADERS.update(
     {
         'Content-Type': 'application/x-www-form-urlencoded'  # for now this is what works with rapidPro
@@ -60,21 +65,11 @@ def send_url(request):
         access_logger.info(f"From rapidPro: {content}")
         # decrement key1
         to = content['to_no_plus']
-        key1 = f"MO_MT_KEY_{to}"
+        # key1 = f"MO_MT_KEY_{to}"
         key2 = f"MSG_KEY_{to}"
-        key1_val = int(r.decr(key1))
-        if key1_val >= 0:
-            r.lpush(key2, str(content))
-        else:
-            action = "end"
-            # code here is currently temporary
-            if content["session_status"] == RP_RESPONSE_STATUSES["waiting"]:
-                action = "request"
-            msg_extras = dict(msg_type="Outgoing", status="Received", action=action)
-            content.update(msg_extras)
-            push = push_ussd(content, request)
-            # reset key to 1
-            r.set(key1, 0, ex=10)
+        # key1_val = int(r.decr(key1))
+        r.lpush(key2, str(content))
+        # Disable push for now
         return Response({"message": "success"}, status=200)
     except Exception as err:
         error_logger.exception(err)
@@ -86,16 +81,22 @@ class CallBack(APIView):
     request = None
     request_factory = None
     standard_request_string = None
+    renderer_classes = (JSONRenderer, PlainTextRenderer, XMLRenderer,)
 
     def perform_authentication(self, request):
+        access_logger.info(request.META)
         # overriding perform_authentication method from APIView
         # to examine the request and decide whether we apply authentication, which scheme or not
         self.request = request
+        access_logger.info(request.accepted_media_type)
         if request.META["REQUEST_METHOD"] == "GET":
-            data = request.GET
-            request_data = data.dict()
+            request_data = request.query_params.dict()
         else:
-            request_data = request.data
+            if isinstance(request.data, QueryDict):
+                request_data = request.data.dict()
+            else:
+                request_data = request.data
+        access_logger.info(request_data)
         self.request_factory = ProcessAggregatorRequest(request_data)
         self.standard_request_string = self.request_factory.process_handler()
         auth_scheme = self.request_factory.get_auth_scheme
@@ -109,38 +110,40 @@ class CallBack(APIView):
             # Here you can add other authentication classes as well by elif
 
     def process_request(self):
+        current_session = self.request_factory.log_session()
+        is_new_session = self.request_factory.is_new_session
+        still_in_flow = self.request_factory.is_in_flow
+        handler = self.request_factory.get_handler
+        end_action = handler.signal_end_string
+        reply_action = handler.signal_reply_string
+        urn = self.standard_request_string['from'] if not isinstance(self.standard_request_string['from'],
+                                                                     list) else self.standard_request_string[
+            'from'][0]
+        channel = handler.channel
+
+        if is_new_session:
+            text = handler.repeat_trigger if still_in_flow else handler.trigger_word
+        else:
+            text = self.standard_request_string["text"].strip()
+        allowed_urn = standard_urn(urn, handler)
+
+        rapid_pro_request = {
+            "from": allowed_urn,
+            "text": text
+        }
+        access_logger.info(f"Is new session: {is_new_session}, Still in flow: {still_in_flow}")
+        access_logger.info(rapid_pro_request)
+        # create redis keys
+        key1 = f"MO_MT_KEY_{allowed_urn}"
+        r.set(key1, 1)  # proven necessary or else
+        key2 = f"MSG_KEY_{allowed_urn}"
+        """""Channel details """""
+
+        # receive_url is used to send msgs to rapidPro
+        receive_url = channel.rapidpro_receive_url
         try:
-            current_session = self.request_factory.log_session()
-            is_new_session = self.request_factory.is_new_session
-            still_in_flow = self.request_factory.is_in_flow
-            handler = self.request_factory.get_handler
-            end_action = handler.signal_end_string
-            reply_action = handler.signal_reply_string
-            urn = self.standard_request_string['from']
-            channel = handler.channel
-
-            if is_new_session:
-                text = handler.repeat_trigger if still_in_flow else handler.trigger_word
-            else:
-                text = self.standard_request_string["text"].strip()
-            allowed_urn = standard_urn(urn, handler)
-
-            rapid_pro_request = {
-                "from": allowed_urn,
-                "text": text
-            }
-            access_logger.info(f"Is new session: {is_new_session}, Still in flow: {still_in_flow}")
-            access_logger.info(rapid_pro_request)
-            # create redis keys
-            key1 = f"MO_MT_KEY_{allowed_urn}"
-            r.set(key1, 1)  # proven necessary or else
-            key2 = f"MSG_KEY_{allowed_urn}"
-            """""Channel details """""
-
-            # receive_url is used to send msgs to rapidPro
-            receive_url = channel.rapidpro_receive_url
-            req = requests.post(receive_url, rapid_pro_request, headers=HEADERS)
-            if req.status_code == 200:
+            req = requests.post(receive_url, rapid_pro_request, headers=HEADERS, timeout=10)
+            if req.status_code in [200, 201]:
                 # increment key1
                 r.incr(key1)
                 r.expire(key1, 30)  # expire key1 after 30s
@@ -167,8 +170,9 @@ class CallBack(APIView):
                     We need to delete this contact as it will delete-cascade(which ever way they say it) sessions attached to it.
                     Next time user comes back, they will submit a trigger word
                     '''
-                    contact = Contact.objects.get(urn=urn)
-                    contact.delete()
+                    if Contact.objects.filter(urn=urn):
+                        contact = Contact.objects.get(urn=urn)
+                        contact.delete()
                     response = self.request_factory.get_expected_response(res_format)
                 r.delete(key2)  # lets delete the key
             else:
@@ -178,20 +182,22 @@ class CallBack(APIView):
                 contact.delete()
                 error_logger.exception(req.content)
                 response = self.request_factory.get_expected_response(res_format)
-            return Response(response, status=200)
-        except Exception as err:
-            error_logger.exception(err)
-            response = {"responseString": "External Application error", "action": "end"}
-            return Response(response, status=500)
+
+        except Exception as error:
+            error_logger.exception(req.content)
+            res_format = dict(text="External application error", action=end_action)
+            response = self.request_factory.get_expected_response(res_format)
+
+        return response
 
     # override post and get methods too
     def post(self, request):
         response = self.process_request()
-        return response
+        return Response(response, status=200)
 
     def get(self, request):
         response = self.process_request()
-        return response
+        return Response(response, status=200)
 
 
 @api_view(['GET'])

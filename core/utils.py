@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from rest_framework import renderers
 import threading
 from logzero import setup_logger
 import logging
@@ -8,7 +9,7 @@ import logging
 # logging
 log_folder = f"{settings.BASE_DIR}/logs"
 access_logger = setup_logger(name="debugger_logger", logfile=f"{log_folder}/access.log", backupCount=10,
-                               level=logging.INFO)
+                             level=logging.INFO)
 error_logger = setup_logger(name="error_logger", logfile=f"{log_folder}/error.log", backupCount=10,
                             level=logging.DEBUG)
 
@@ -46,3 +47,15 @@ class AuthSignature(models.Model):
 
     class Meta:
         abstract = True
+
+
+class PlainTextRenderer(renderers.BaseRenderer):
+    media_type = 'text/plain'
+    format = 'txt'
+    charset = 'utf-8'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        if isinstance(data, dict):
+            if 'detail' in data:
+                return data['detail'].encode(self.charset)
+        return data.encode(self.charset)
